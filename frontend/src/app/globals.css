@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand */
+  --color-primary:          #1D6A47;
+  --color-primary-hover:    #175839;
+  --color-primary-subtle:   #E8F5EE;
+  --color-secondary:        #F59E0B;
+  --color-secondary-subtle: #FEF3C7;
+  --color-tertiary:         #3B82F6;
+  --color-tertiary-subtle:  #EFF6FF;
+  --color-neutral:          #64748B;
+  --color-neutral-subtle:   #F8FAFC;
+
+  /* Categories / Sector Colors (Stitch Design System) */
+  --cat-pertanian:           #22C55E;
+  --cat-pertanian-subtle:    #DCFCE7;
+  --cat-umkm:                #F59E0B;
+  --cat-umkm-subtle:         #FEF3C7;
+  --cat-wisata:              #3B82F6;
+  --cat-wisata-subtle:       #EFF6FF;
+  --cat-infrastruktur:       #F43F5E;
+  --cat-infrastruktur-subtle:#FFE4E6;
+
+  /* Surfaces */
+  --bg-base:             #F8FAFC;
+  --bg-surface:          #FFFFFF;
+  --bg-surface-raised:   #F1F5F9;
+
+  /* Text (Stitch Design Tokens) */
+  --text-primary:        #0B1C30;
+  --text-secondary:      #3F4942;
+  --text-muted:          #6F7A72;
+
+  /* Borders */
+  --border-default:      #E2E8F0;
+  --border-strong:       #CBD5E1;
+
+  /* States */
+  --state-success:       #16A34A;
+  --state-warning:       #D97706;
+  --state-error:         #BA1A1A;
+
+  /* Overlay */
+  --overlay-backdrop:    rgba(11, 28, 48, 0.4);
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* Stitch Typography Scale Utilities */
+@layer utilities {
+  .display-lg {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 56px;
+    letter-spacing: -0.02em;
+  }
+  .headline-lg {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.01em;
+  }
+  .headline-md {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+  }
+  .title-lg {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+  }
+  .title-md {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+  .body-lg {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+  }
+  .body-md {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+  .label-md {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.01em;
+  }
+  .label-sm {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    letter-spacing: 0.02em;
+  }
+}

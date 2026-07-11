@@ -1,0 +1,25 @@
+services:
+  postgres:
+    restart: unless-stopped
+    ports: []
+
+  geoserver:
+    restart: unless-stopped
+    ports: []
+
+  backend:
+    restart: unless-stopped
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+    ports: []
+
+  frontend:
+    restart: unless-stopped
+    command: npm run start
+    ports: []
+
+  nginx:
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      # Uncomment port 443 when configuring SSL termination via Let's Encrypt / Certbot:
+      # - "443:443"
