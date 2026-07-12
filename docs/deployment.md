@@ -219,3 +219,31 @@ docker compose -p rambipuji -f docker-compose.yml -f docker-compose.prod.yml dow
 # Stop dan hapus SEMUA termasuk volumes (⚠️ DATA HILANG)
 docker compose -p rambipuji -f docker-compose.yml -f docker-compose.prod.yml down -v
 ```
+
+---
+
+## Otomatisasi Deployment (CI/CD Production)
+
+Proyek ini dilengkapi dengan skrip otomatisasi deployment ([`scripts/deploy-prod.sh`](file:///d:/zaky/Project/GIS%20Rambipuji/rambipuji-gis/scripts/deploy-prod.sh)) dan alur kerja GitHub Actions ([`.github/workflows/deploy-prod.yml`](file:///d:/zaky/Project/GIS%20Rambipuji/rambipuji-gis/.github/workflows/deploy-prod.yml)) agar setiap perubahan di branch `main` langsung di-deploy otomatis ke VPS tanpa intervensi manual.
+
+### Cara 1: Otomatisasi via GitHub Actions (CD Pipeline)
+
+1. Di repositori GitHub Anda (`https://github.com/BOXCS/rambipuji-gis`), masuk ke **Settings → Secrets and variables → Actions**.
+2. Klik **New repository secret** dan tambahkan variabel rahasia berikut:
+   - **`VPS_HOST`**: Alamat IP atau domain server VPS (misal: `rambipuji.research-ai.my.id`).
+   - **`VPS_USER`**: Username SSH di VPS (misal: `rambi8357` atau `root`).
+   - **`VPS_SSH_KEY`**: Private key SSH (`~/.ssh/id_rsa` atau ED25519) dari komputer yang punya akses ke VPS.
+   - **`VPS_PORT`**: Port SSH (opsional, default `22`).
+3. Setiap kali Anda melakukan `git push origin main` atau me-merge Pull Request ke branch `main`, GitHub Actions akan terpicu otomatis melewati 3 tahap:
+   - **`test-frontend`**: Memverifikasi pemeriksaan tipe TypeScript (`npx tsc --noEmit`) dan mencoba build produksi Next.js (`npm run build`).
+   - **`test-backend`**: Menjalankan container PostGIS sementara, menginstal GDAL/GeoDjango, melakukan pemeriksaan sistem Django (`manage.py check`), dan menjalankan seluruh unit test (`pytest`).
+   - **`deploy`**: **Hanya jika kedua tes di atas sukses 100%**, runner GitHub Actions masuk ke VPS via SSH dan mengeksekusi [`scripts/deploy-prod.sh`](file:///d:/zaky/Project/GIS%20Rambipuji/rambipuji-gis/scripts/deploy-prod.sh). Bila ada error pada kode, proses deploy dibatalkan otomatis sehingga server produksi selalu aman dari kode yang rusak.
+
+### Cara 2: Satu Perintah Deployment di VPS ( Tanpa GitHub Actions )
+
+Jika ingin memperbarui produksi secara cepat dari terminal VPS tanpa mengetik banyak perintah manual:
+
+```bash
+cd ~/public_html
+bash scripts/deploy-prod.sh
+```
