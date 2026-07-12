@@ -69,10 +69,10 @@ services:
     env_file:
       - .env
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8888/api
-      - NEXT_PUBLIC_GEOSERVER_URL=http://localhost:8888/geoserver
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_GEOSERVER_URL=${NEXT_PUBLIC_GEOSERVER_URL}
       - NEXT_PUBLIC_TOKEN_EXPIRY_HOURS=24
-      - INTERNAL_API_URL=http://backend:8000/api
+      - INTERNAL_API_URL=${INTERNAL_API_URL}
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
     ports:
