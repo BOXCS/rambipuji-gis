@@ -273,11 +273,7 @@ export default function AdminEditPage() {
         throw new Error("Lokasi belum ditentukan.");
       }
 
-      const geomString = JSON.stringify(geomPayload);
-      const geomBlob = new Blob([geomString], {
-        type: "application/json",
-      });
-      formData.set("geom", geomBlob, "geom.json");
+      formData.set("geom", JSON.stringify(geomPayload));
 
       if (fotoFile) {
         formData.set("foto", fotoFile);

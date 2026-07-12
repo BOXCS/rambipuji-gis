@@ -45,7 +45,18 @@ async function fetchAPI<T>(
     try {
       const errorBody = await response.json();
       console.error("API error detail:", errorBody);
-      if (errorBody && typeof errorBody.message === "string") {
+      if (
+        errorBody &&
+        errorBody.errors &&
+        typeof errorBody.errors === "object"
+      ) {
+        const details = Object.entries(
+          errorBody.errors as Record<string, unknown>
+        )
+          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+          .join(" | ");
+        errorMessage = `${errorBody.message || "Validasi gagal"} (${details})`;
+      } else if (errorBody && typeof errorBody.message === "string") {
         errorMessage = errorBody.message;
       } else if (errorBody && typeof errorBody.detail === "string") {
         errorMessage = errorBody.detail;
