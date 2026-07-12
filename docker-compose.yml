@@ -64,6 +64,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_GEOSERVER_URL: ${NEXT_PUBLIC_GEOSERVER_URL}
     container_name: rambipuji_frontend
     restart: unless-stopped
     env_file:
