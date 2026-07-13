@@ -25,6 +25,6 @@ services:
 
   nginx:
     restart: unless-stopped
-    ports:
+    ports: !override
       - "8890:80"
       # - "443:443"
