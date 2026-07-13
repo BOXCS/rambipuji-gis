@@ -31,3 +31,6 @@ geoserver_data/
 # Context
 /context/
 /CLAUDE.md
+
+# geoserver
+geoserver/styles/*.xml
