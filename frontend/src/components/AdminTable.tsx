@@ -101,8 +101,8 @@ export default function AdminTable({
   return (
     <>
       <div className="bg-white rounded-xl border border-[--border-default] overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
               <tr className="bg-[--bg-surface] border-b border-[--border-default] text-xs font-semibold text-[--text-secondary]">
                 <th className="px-4 py-3.5 w-14 text-center">No</th>

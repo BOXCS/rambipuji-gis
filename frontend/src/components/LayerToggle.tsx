@@ -49,6 +49,13 @@ export default function LayerToggle({
 }: LayerToggleProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
+  // Pada layar mobile (< 640px), default tertutup agar tidak menghalangi peta
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      setIsExpanded(false);
+    }
+  }, []);
+
   return (
     <div className="bg-white rounded-xl border border-[--border-default] shadow-floating overflow-hidden">
       <button

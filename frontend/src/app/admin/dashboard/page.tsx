@@ -180,7 +180,7 @@ export default function AdminDashboardPage() {
               return (
                 <div
                   key={`${kategori}-${id}`}
-                  className="px-5 py-3.5 flex items-center justify-between hover:bg-[--bg-surface] transition"
+                  className="px-4 sm:px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-[--bg-surface] transition"
                 >
                   <div className="flex items-center space-x-3">
                     <CategoryBadge kategori={kategori} />

@@ -56,8 +56,8 @@ export default function PotensiPage() {
       {/* Main content grid */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 md:px-8 py-8">
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((n) => (
               <div
                 key={n}
                 className="bg-white rounded-xl border border-[--border-default] overflow-hidden animate-pulse flex flex-col h-80"
@@ -82,7 +82,7 @@ export default function PotensiPage() {
             description="Coba ubah kata kunci pencarian atau kategori filter Anda."
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredFeatures.map((feature) => (
               <PotensiCard
                 key={`${feature.properties.kategori}-${feature.properties.id}`}

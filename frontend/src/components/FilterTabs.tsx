@@ -22,7 +22,7 @@ const TAB_OPTIONS: TabOption[] = [
 
 export default function FilterTabs({ active, onChange }: FilterTabsProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-[--border-default] overflow-x-auto">
+    <div className="flex items-center gap-1.5 sm:gap-2 border-b border-[--border-default] overflow-x-auto no-scrollbar w-full">
       {TAB_OPTIONS.map((tab) => {
         const isActive = active === tab.key;
         return (

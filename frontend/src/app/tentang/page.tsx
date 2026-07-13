@@ -114,7 +114,7 @@ export default async function TentangPage() {
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-10 flex-grow w-full">
         {/* StatCard Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             icon={Users}
             value={`${(profile.jumlah_penduduk ?? 0).toLocaleString("id-ID")} Jiwa`}

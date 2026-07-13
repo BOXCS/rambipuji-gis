@@ -63,7 +63,7 @@ export default function PetaPage() {
       />
 
       {/* LayerToggle sidebar top-left below navbar */}
-      <div className="absolute left-4 top-20 z-40 w-72 max-w-[calc(100vw-2rem)]">
+      <div className="absolute left-4 top-20 z-40 w-[calc(100vw-2rem)] sm:w-72">
         <LayerToggle
           activeLayers={activeLayers}
           counts={statistik}

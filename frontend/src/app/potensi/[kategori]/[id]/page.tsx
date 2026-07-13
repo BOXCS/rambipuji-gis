@@ -114,8 +114,8 @@ export default async function PotensiDetailPage({
     <div className="min-h-screen bg-[--bg-surface] pt-16">
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 space-y-6">
         {/* Breadcrumb & Back Link */}
-        <div className="flex items-center justify-between text-sm text-[--text-secondary]">
-          <nav className="flex items-center space-x-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-[--text-secondary]">
+          <nav className="flex flex-wrap items-center gap-1.5">
             <Link href="/" className="hover:text-[--text-primary]">
               Beranda
             </Link>
@@ -124,12 +124,14 @@ export default async function PotensiDetailPage({
               Potensi
             </Link>
             <span>/</span>
-            <span className="text-[--text-primary] font-medium">{title}</span>
+            <span className="text-[--text-primary] font-medium truncate max-w-[200px] sm:max-w-none">
+              {title}
+            </span>
           </nav>
 
           <Link
             href="/potensi"
-            className="inline-flex items-center text-[--color-primary] hover:underline font-medium"
+            className="inline-flex items-center text-[--color-primary] hover:underline font-medium self-start sm:self-auto"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Kembali ke Katalog
