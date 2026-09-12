@@ -24,7 +24,7 @@ export default function Navbar() {
     <header
       className={`w-full h-16 border-b border-[--border-default] z-50 flex items-center px-4 md:px-8 transition-colors ${
         isPetaRoute
-          ? "absolute top-0 left-0 right-0 bg-white/90 backdrop-blur-sm"
+          ? "absolute top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-sm"
           : "bg-white"
       }`}
     >

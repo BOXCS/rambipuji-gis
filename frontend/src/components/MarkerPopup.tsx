@@ -1,4 +1,4 @@
-import { MapPin, Navigation, X } from "lucide-react";
+import { Mountain, Navigation, X } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import type { PotensiFeature } from "../types";
@@ -63,8 +63,8 @@ export default function MarkerPopup({
 
   const detailHref = kategori && id ? `/potensi/${kategori}/${id}` : null;
 
-  const POPUP_WIDTH = 280;
-  const POPUP_HEIGHT = 280;
+  const POPUP_WIDTH = 288;
+  const POPUP_HEIGHT = 300;
   const ARROW_HEIGHT = 12;
   const OFFSET_Y = 36;
 
@@ -97,13 +97,15 @@ export default function MarkerPopup({
   return (
     <div
       style={position ? positionStyle : undefined}
-      className={`z-40 ${position
-        ? "animate-in fade-in duration-200"
-        : "absolute bottom-4 left-4 right-4 md:right-auto md:w-80"
-        }`}
+      className={`z-40 ${
+        position
+          ? "animate-in fade-in duration-200"
+          : "absolute bottom-4 left-4 right-4 md:right-auto md:w-72"
+      }`}
     >
-      <div className="bg-white rounded-xl border border-[--border-default] shadow-floating overflow-hidden flex flex-col">
-        <div className="relative w-full h-36 bg-[--color-neutral-subtle]">
+      <div className="bg-white rounded-2xl border border-[--border-default] shadow-xl overflow-hidden flex flex-col w-72">
+        {/* Photo area */}
+        <div className="relative w-full aspect-video bg-[--color-primary-subtle]">
           {foto ? (
             <img
               src={foto}
@@ -111,53 +113,54 @@ export default function MarkerPopup({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[--text-muted] text-xs">
-              Foto tidak tersedia
+            <div className="w-full h-full flex items-center justify-center text-[--color-primary] opacity-40">
+              <Mountain className="w-10 h-10" />
             </div>
           )}
+
+          {/* Close button */}
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-full transition"
+            className="absolute top-2 right-2 p-1 bg-white/80 hover:bg-white text-[--text-primary] rounded-full transition shadow-sm"
             aria-label="Tutup popup"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-4 flex flex-col space-y-2">
-          <div className="flex items-center justify-between">
-            {kategori ? (
-              <CategoryBadge kategori={kategori} />
-            ) : (
-              <span className="text-xs font-semibold text-[--text-secondary]">
-                Potensi
-              </span>
-            )}
-            <span className="inline-flex items-center text-xs text-[--text-secondary]">
-              <MapPin className="w-3.5 h-3.5 mr-1 text-[--color-primary]" />
-              Rambipuji
+        {/* Content area */}
+        <div className="p-4">
+          {/* Header row: badge */}
+          {kategori ? (
+            <CategoryBadge kategori={kategori} size="sm" />
+          ) : (
+            <span className="text-xs font-semibold text-[--text-secondary]">
+              Potensi
             </span>
-          </div>
+          )}
 
-          <h3 className="text-base font-semibold text-[--text-primary] line-clamp-1">
+          {/* Name */}
+          <h3 className="font-semibold text-base text-[--text-primary] mt-2 line-clamp-2">
             {title}
           </h3>
 
-          <p className="text-xs text-[--text-secondary] line-clamp-3">
+          {/* Description */}
+          <p className="text-sm text-[--text-secondary] mt-1 line-clamp-3">
             {deskripsi || "Informasi potensi desa di kawasan Rambipuji."}
           </p>
 
-          <div className="pt-2 flex items-center justify-between border-t border-[--border-default] gap-2">
+          {/* Action buttons */}
+          <div className="flex gap-2 mt-3">
             {detailHref ? (
               <Link
                 href={detailHref}
-                className="text-xs font-semibold text-[--color-primary] hover:underline"
+                className="flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-lg border border-[--color-primary] text-[--color-primary] hover:bg-[--color-primary-subtle] transition-colors duration-150"
               >
-                Lihat Detail →
+                Lihat Detail
               </Link>
             ) : (
-              <span className="text-xs text-[--text-muted]">
+              <span className="flex-1 flex items-center justify-center px-3 py-1.5 text-xs text-[--text-muted] rounded-lg border border-[--border-default]">
                 Detail tidak tersedia
               </span>
             )}
@@ -166,14 +169,16 @@ export default function MarkerPopup({
               href={gmapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-2.5 py-1.5 bg-[--color-primary] hover:bg-[--color-primary-hover] text-white text-xs font-medium rounded-lg transition"
+              className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-[--color-primary] hover:bg-[--color-primary-hover] text-white text-xs font-medium rounded-lg transition-colors duration-150"
             >
-              <Navigation className="w-3.5 h-3.5 mr-1" />
+              <Navigation className="w-3.5 h-3.5" />
               Rute
             </a>
           </div>
         </div>
       </div>
+
+      {/* Arrow pointing down to marker */}
       {position && (
         <div
           style={{

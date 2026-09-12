@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Layers } from "lucide-react";
+import { ChevronLeft, ChevronRight, Layers } from "lucide-react";
 import React, { useState } from "react";
 import type { KategoriSlug, StatistikData } from "../types";
 
@@ -12,6 +12,7 @@ interface LayerItem {
   key: KategoriSlug;
   label: string;
   colorVar: string;
+  borderColorVar: string;
   countKey: keyof StatistikData;
 }
 
@@ -20,24 +21,28 @@ const LAYERS: LayerItem[] = [
     key: "pertanian",
     label: "Pertanian & Perkebunan",
     colorVar: "var(--cat-pertanian)",
+    borderColorVar: "var(--cat-pertanian)",
     countKey: "pertanian",
   },
   {
     key: "umkm",
     label: "UMKM & Usaha Warga",
     colorVar: "var(--cat-umkm)",
+    borderColorVar: "var(--cat-umkm)",
     countKey: "umkm",
   },
   {
     key: "wisata",
     label: "Wisata & Budaya",
     colorVar: "var(--cat-wisata)",
+    borderColorVar: "var(--cat-wisata)",
     countKey: "wisata",
   },
   {
     key: "infrastruktur",
     label: "Infrastruktur & Fasilitas",
     colorVar: "var(--cat-infrastruktur)",
+    borderColorVar: "var(--cat-infrastruktur)",
     countKey: "infrastruktur",
   },
 ];
@@ -56,69 +61,99 @@ export default function LayerToggle({
     }
   }, []);
 
+  const total =
+    (counts.pertanian ?? 0) +
+    (counts.umkm ?? 0) +
+    (counts.wisata ?? 0) +
+    (counts.infrastruktur ?? 0);
+
   return (
-    <div className="bg-white rounded-xl border border-[--border-default] shadow-floating overflow-hidden">
+    <div
+      className="rounded-2xl shadow-lg border border-[--border-default] overflow-hidden"
+      style={{
+        background: "rgba(255,255,255,0.95)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+      }}
+    >
+      {/* Header row */}
       <button
         type="button"
         onClick={() => setIsExpanded((prev) => !prev)}
-        className="w-full px-4 py-3 flex items-center justify-between bg-[--bg-surface] hover:bg-[--bg-surface-raised] transition text-left"
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-[--bg-surface-raised] transition-colors text-left"
       >
-        <span className="flex items-center text-sm font-semibold text-[--text-primary]">
-          <Layers className="w-4 h-4 mr-2 text-[--color-primary]" />
-          Lapisan Peta (Layers)
+        <span className="flex items-center gap-2 text-sm font-semibold text-[--text-primary]">
+          <Layers className="w-4 h-4 text-[--text-muted]" />
+          Layer Peta
         </span>
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-[--text-secondary]" />
+          <ChevronLeft className="w-4 h-4 text-[--text-muted]" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-[--text-secondary]" />
+          <ChevronRight className="w-4 h-4 text-[--text-muted]" />
         )}
       </button>
 
       {isExpanded && (
-        <div className="p-3 space-y-2.5 border-t border-[--border-default]">
-          {LAYERS.map((layer) => {
-            const checked = activeLayers.has(layer.key);
-            const count = counts[layer.countKey] ?? 0;
+        <div className="border-t border-[--border-default]">
+          <div className="p-2 space-y-0.5">
+            {LAYERS.map((layer) => {
+              const checked = activeLayers.has(layer.key);
+              const count = counts[layer.countKey] ?? 0;
 
-            return (
-              <label
-                key={layer.key}
-                className="flex items-center justify-between cursor-pointer group select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span
-                    className="w-3 h-3 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: layer.colorVar }}
-                  />
-                  <span className="text-xs font-medium text-[--text-primary] group-hover:text-[--color-primary] transition">
-                    {layer.label}
-                  </span>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <span className="px-2 py-0.5 text-[10px] font-semibold bg-[--bg-surface-raised] text-[--text-secondary] rounded-full">
-                    {count}
-                  </span>
-
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onToggle(layer.key)}
-                    className="sr-only"
-                  />
-                  <span
-                    className={`w-8 h-4 flex items-center rounded-full p-0.5 transition-colors ${checked ? "bg-[--color-primary]" : "bg-gray-300"
-                      }`}
-                  >
+              return (
+                <label
+                  key={layer.key}
+                  className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-[--bg-surface-raised] cursor-pointer select-none transition-colors"
+                  style={{
+                    borderLeft: `4px solid ${layer.borderColorVar}`,
+                  }}
+                >
+                  {/* Colored dot + label */}
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
                     <span
-                      className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform ${checked ? "translate-x-4" : "translate-x-0"
-                        }`}
+                      className="w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: layer.colorVar }}
                     />
-                  </span>
-                </div>
-              </label>
-            );
-          })}
+                    <span className="text-sm font-medium text-[--text-primary] truncate">
+                      {layer.label}
+                    </span>
+                  </div>
+
+                  {/* Count badge + toggle switch */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="text-xs bg-[--bg-surface-raised] text-[--text-muted] px-2 py-0.5 rounded-full">
+                      {count}
+                    </span>
+
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => onToggle(layer.key)}
+                      className="sr-only"
+                    />
+                    <span
+                      className={`w-8 h-4 flex items-center rounded-full p-0.5 transition-colors ${
+                        checked ? "bg-[--color-primary]" : "bg-gray-300"
+                      }`}
+                    >
+                      <span
+                        className={`bg-white w-3 h-3 rounded-full shadow-sm transform transition-transform ${
+                          checked ? "translate-x-4" : "translate-x-0"
+                        }`}
+                      />
+                    </span>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+
+          {/* Statistics summary footer */}
+          <div className="border-t border-[--border-default] pt-3 pb-3 mt-1">
+            <p className="text-xs text-[--text-muted] text-center">
+              Total: {total} potensi
+            </p>
+          </div>
         </div>
       )}
     </div>

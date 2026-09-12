@@ -98,23 +98,76 @@ export default async function TentangPage() {
     // use fallbackBoundaryFeature
   }
 
+  const contactItems = [
+    {
+      icon: MapPin,
+      label: "Alamat Kantor",
+      value: profile.kontak.alamat,
+    },
+    {
+      icon: Phone,
+      label: "Telepon",
+      value: profile.kontak.telepon,
+    },
+    {
+      icon: Mail,
+      label: "Email",
+      value: profile.kontak.email,
+    },
+    {
+      icon: Clock,
+      label: "Jam Pelayanan",
+      value: profile.kontak.jam,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[--bg-surface] flex flex-col pt-16">
-      {/* VillageHero */}
-      <div className="w-full h-64 bg-gradient-to-r from-[--color-primary] to-[#144A31] relative flex items-center justify-center text-center px-4">
-        <div className="max-w-4xl mx-auto text-white space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold">
-            {profile.nama_desa}
-          </h1>
-          <p className="text-base md:text-lg opacity-90">
-            {profile.kecamatan}, {profile.kabupaten}, {profile.provinsi}
+    <div className="min-h-screen bg-[--bg-base] flex flex-col pt-16">
+      {/* Hero section — layered gradient with decorative blobs */}
+      <section
+        className="relative text-white overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(to bottom right, var(--color-primary), #0f3d28)",
+        }}
+      >
+        {/* Decorative circle blobs */}
+        <div
+          className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            transform: "translate(50%, -50%)",
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-0 w-64 h-64 rounded-full pointer-events-none"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            transform: "translate(-50%, 50%)",
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-4 py-16">
+          {/* Location label pill */}
+          <div
+            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm mb-4"
+            style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.8)" }}
+          >
+            <MapPin className="h-3.5 w-3.5" />
+            Kec. Rambipuji, Kab. Jember, Jawa Timur
+          </div>
+
+          <h1 className="text-4xl font-semibold mb-3">{profile.nama_desa}</h1>
+          <p className="text-white/80 text-lg max-w-2xl">
+            Selamat datang di portal informasi resmi {profile.nama_desa}.
+            Temukan potensi, layanan, dan informasi desa kami di sini.
           </p>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-10 flex-grow w-full">
-        {/* StatCard Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* StatCards — elevated above hero with negative margin */}
+      <div className="max-w-7xl mx-auto px-4 w-full -mt-6 mb-10 relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
             icon={Users}
             value={`${(profile.jumlah_penduduk ?? 0).toLocaleString("id-ID")} Jiwa`}
@@ -136,118 +189,147 @@ export default async function TentangPage() {
             label="UMKM & Usaha Warga"
           />
         </div>
+      </div>
 
-        {/* Two-column About Section */}
+      {/* About section — 2 columns */}
+      <div className="max-w-7xl mx-auto px-4 mb-12 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          <div className="bg-white p-6 rounded-xl border border-[--border-default] space-y-4">
-            <h2 className="text-xl font-bold text-[--text-primary]">
-              Profil Singkat & Administrasi
+          {/* Left: text */}
+          <div>
+            <p className="text-[--color-primary] text-sm font-semibold tracking-wider uppercase mb-3">
+              Tentang Desa
+            </p>
+            <h2 className="text-2xl font-semibold text-[--text-primary] mb-4">
+              Profil Singkat &amp; Administrasi
             </h2>
-            <p className="text-sm text-[--text-secondary] leading-relaxed">
-              Desa Rambipuji terletak secara strategis di jantung Kecamatan
-              Rambipuji, Kabupaten Jember. Kawasan ini merupakan sentra
-              aktivitas agraris, usaha ekonomi mikro, serta cagar budaya lokal.
-              Sistem Informasi Geografis (WebGIS) ini dihadirkan untuk
-              mendokumentasikan, memetakan, dan menyajikan potensi desa secara
-              spasial, transparan, dan mudah diakses oleh seluruh warga dan
-              masyarakat luas.
-            </p>
+            <div className="text-[--text-secondary] leading-relaxed text-base space-y-3">
+              <p>
+                Desa Rambipuji terletak secara strategis di jantung Kecamatan
+                Rambipuji, Kabupaten Jember. Kawasan ini merupakan sentra
+                aktivitas agraris, usaha ekonomi mikro, serta cagar budaya
+                lokal.
+              </p>
+              <p>
+                Sistem Informasi Geografis (WebGIS) ini dihadirkan untuk
+                mendokumentasikan, memetakan, dan menyajikan potensi desa
+                secara spasial, transparan, dan mudah diakses oleh seluruh
+                warga dan masyarakat luas.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="text-sm font-semibold text-[--text-primary] px-1">
-              Peta Batas Wilayah Administrasi
+          {/* Right: mini map + address */}
+          <div className="space-y-4">
+            <div className="rounded-2xl overflow-hidden shadow-md h-64">
+              <MiniMap feature={boundaryFeature} />
             </div>
-            <MiniMap feature={boundaryFeature} />
-          </div>
-        </div>
-
-        {/* Vision & Mission */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-xl border border-[--border-default] space-y-3">
-            <h3 className="text-lg font-bold text-[--text-primary]">
-              Visi Desa
-            </h3>
-            <p className="text-sm italic text-[--text-secondary] leading-relaxed">
-              &ldquo;{profile.visi}&rdquo;
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl border border-[--border-default] space-y-3">
-            <h3 className="text-lg font-bold text-[--text-primary]">
-              Misi Desa
-            </h3>
-            <ol className="list-decimal list-inside text-sm text-[--text-secondary] space-y-2">
-              {profile.misi.map((item, idx) => (
-                <li key={idx}>{item}</li>
-              ))}
-            </ol>
-          </div>
-        </div>
-
-        {/* Contact Section */}
-        <div className="bg-white p-6 rounded-xl border border-[--border-default] space-y-4">
-          <h3 className="text-lg font-bold text-[--text-primary]">
-            Kontak & Pelayanan Kantor Desa
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-start space-x-3">
-              <MapPin className="w-5 h-5 text-[--color-primary] flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold text-[--text-primary]">
-                  Alamat Kantor
-                </div>
-                <div className="text-[--text-secondary]">
-                  {profile.kontak.alamat}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Phone className="w-5 h-5 text-[--color-primary] flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold text-[--text-primary]">
-                  Telepon
-                </div>
-                <div className="text-[--text-secondary]">
-                  {profile.kontak.telepon}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Mail className="w-5 h-5 text-[--color-primary] flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold text-[--text-primary]">Email</div>
-                <div className="text-[--text-secondary]">
-                  {profile.kontak.email}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3">
-              <Clock className="w-5 h-5 text-[--color-primary] flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold text-[--text-primary]">
-                  Jam Pelayanan
-                </div>
-                <div className="text-[--text-secondary]">
-                  {profile.kontak.jam}
-                </div>
-              </div>
+            <div className="bg-[--bg-surface-raised] rounded-xl p-4 flex items-start gap-3">
+              <MapPin className="h-4 w-4 text-[--color-primary] flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-[--text-secondary]">
+                {profile.kontak.alamat}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Vision & Mission */}
+      <div className="bg-[--bg-surface-raised] py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-2xl font-semibold text-center text-[--text-primary] mb-8">
+            Visi &amp; Misi
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Visi */}
+            <div
+              className="rounded-2xl p-6 text-white"
+              style={{
+                background:
+                  "linear-gradient(to bottom right, var(--color-primary), #145235)",
+              }}
+            >
+              <p className="tracking-widest text-xs text-white/60 mb-3 font-semibold uppercase">
+                VISI
+              </p>
+              <p
+                className="text-6xl leading-none mb-2 font-serif"
+                style={{ color: "rgba(255,255,255,0.2)" }}
+              >
+                &ldquo;
+              </p>
+              <p className="text-lg font-medium italic leading-relaxed">
+                {profile.visi}
+              </p>
+            </div>
+
+            {/* Misi */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-[--border-default]">
+              <p className="tracking-widest text-xs text-[--text-muted] mb-4 font-semibold uppercase">
+                MISI
+              </p>
+              <ol className="space-y-0">
+                {profile.misi.map((item, idx) => (
+                  <li
+                    key={idx}
+                    className="flex gap-3 items-start py-2 border-b border-[--border-default] last:border-0"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-[--color-primary-subtle] text-[--color-primary] text-xs font-semibold flex items-center justify-center flex-shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span className="text-sm text-[--text-secondary] leading-relaxed">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact section */}
+      <div className="max-w-7xl mx-auto px-4 py-12 w-full">
+        <h2 className="text-2xl font-semibold text-[--text-primary] mb-6">
+          Hubungi Kami
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {contactItems.map(({ icon: Icon, label, value }) => (
+            <div
+              key={label}
+              className="bg-white rounded-xl p-5 border border-[--border-default] shadow-sm"
+            >
+              <div className="w-10 h-10 rounded-full bg-[--color-primary-subtle] flex items-center justify-center mb-3">
+                <Icon className="h-5 w-5 text-[--color-primary]" />
+              </div>
+              <p className="text-xs text-[--text-muted] font-medium tracking-wide uppercase mb-1">
+                {label}
+              </p>
+              <p className="text-sm text-[--text-primary] font-medium">
+                {value}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Footer */}
-      <footer className="w-full py-6 border-t border-[--border-default] bg-white text-center">
-        <p className="text-sm font-medium text-[--text-primary]">
-          WebGIS Potensi Desa Rambipuji © 2025
-        </p>
-        <p className="text-xs text-[--text-muted] mt-1">
-          Dibangun dengan Next.js · GeoServer · PostGIS
-        </p>
+      <footer
+        className="py-8 mt-auto"
+        style={{ background: "var(--text-primary)", color: "white" }}
+      >
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-full bg-[--color-primary]" />
+            <span className="font-semibold">WebGIS Desa Rambipuji</span>
+          </div>
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
+            &copy; 2025 Desa Rambipuji, Kec. Rambipuji, Kab. Jember, Jawa
+            Timur
+          </p>
+          <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>
+            Dibangun dengan Next.js &middot; GeoServer &middot; PostGIS
+          </p>
+        </div>
       </footer>
     </div>
   );
