@@ -1,50 +1,37 @@
-import { ArrowRight, MapPin, Mountain } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import type { PotensiFeature } from "../types";
 import CategoryBadge from "./CategoryBadge";
+import ImageCarousel from "./ImageCarousel";
 
 export interface PotensiCardProps {
   feature: PotensiFeature;
 }
 
 export default function PotensiCard({ feature }: PotensiCardProps) {
-  const { id, nama, nama_usaha, foto, kategori, deskripsi } =
+  const { id, nama, nama_usaha, foto, foto_list_urls, kategori, deskripsi } =
     feature.properties;
   const title = nama || nama_usaha || "Tanpa Nama";
   const featureId = id ?? feature.id ?? null;
   const detailHref =
     kategori && featureId ? `/potensi/${kategori}/${featureId}` : null;
 
+  // Build images array — prefer foto_list_urls, fall back to single foto
+  const images: string[] =
+    foto_list_urls && foto_list_urls.length > 0
+      ? foto_list_urls
+      : foto
+      ? [foto]
+      : [];
+
   return (
     <div className="bg-white rounded-xl border border-[--border-default] overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
-      {/* Photo area */}
-      <div className="relative w-full aspect-video overflow-hidden bg-[--color-primary-subtle]">
-        {foto ? (
-          <>
-            <img
-              src={foto}
-              alt={title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-            {/* Gradient overlay at bottom */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%)",
-              }}
-            />
-          </>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-[--color-primary] opacity-50">
-            <Mountain className="h-10 w-10" />
-          </div>
-        )}
-
+      {/* Photo area — carousel (no auto-play on card) with CategoryBadge overlay */}
+      <div className="relative w-full aspect-video overflow-hidden">
+        <ImageCarousel images={images} alt={title} autoPlay={false} />
         {/* CategoryBadge overlaid bottom-left on photo */}
-        <div className="absolute bottom-2 left-2">
+        <div className="absolute bottom-2 left-2 z-10">
           <CategoryBadge kategori={kategori} />
         </div>
       </div>

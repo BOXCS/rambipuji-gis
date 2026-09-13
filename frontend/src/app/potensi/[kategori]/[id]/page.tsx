@@ -1,8 +1,11 @@
 import { ArrowLeft, MapPin, Mountain, Navigation } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import React from "react";
 import CategoryBadge from "../../../../components/CategoryBadge";
+import ImageCarousel from "../../../../components/ImageCarousel";
+import JsonLd from "../../../../components/JsonLd";
 import MiniMap from "../../../../components/MiniMap";
 import { getPotensiDetail } from "../../../../lib/api";
 import type { KategoriSlug, PotensiFeature } from "../../../../types";
@@ -48,6 +51,55 @@ function getCenterLatLng(geometry: PotensiFeature["geometry"]): [number, number]
   return [-8.25, 113.6];
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: { kategori: string; id: string }
+}): Promise<Metadata> {
+  try {
+    const kategori = params.kategori as KategoriSlug
+    const id = Number(params.id)
+    if (!VALID_KATEGORI.includes(kategori) || isNaN(id)) {
+      return { title: "Potensi Tidak Ditemukan" }
+    }
+    const feature = await getPotensiDetail(kategori, id)
+    const nama =
+      feature.properties.nama
+      ?? feature.properties.nama_usaha
+      ?? "Potensi Desa Rambipuji"
+    const deskripsi =
+      feature.properties.deskripsi
+      ?? `${nama} — potensi ${kategori} Desa Rambipuji`
+    const foto =
+      (feature.properties.foto_list_urls?.[0])
+      ?? feature.properties.foto
+      ?? undefined
+
+    const LABEL: Record<string, string> = {
+      pertanian: "Pertanian",
+      umkm: "UMKM",
+      wisata: "Wisata & Budaya",
+      infrastruktur: "Infrastruktur",
+    }
+
+    return {
+      title: nama,
+      description: deskripsi,
+      alternates: {
+        canonical: `/potensi/${kategori}/${id}`
+      },
+      openGraph: {
+        title: `${nama} — ${LABEL[kategori] ?? kategori}`,
+        description: deskripsi,
+        url: `/potensi/${kategori}/${id}`,
+        images: foto ? [{ url: foto, alt: nama }] : [],
+      },
+    }
+  } catch {
+    return { title: "Detail Potensi" }
+  }
+}
+
 export default async function PotensiDetailPage({
   params,
 }: {
@@ -77,6 +129,7 @@ export default async function PotensiDetailPage({
     nama,
     nama_usaha,
     foto,
+    foto_list_urls,
     deskripsi,
     kontak,
     komoditas,
@@ -92,6 +145,14 @@ export default async function PotensiDetailPage({
   const title = nama || nama_usaha || "Tanpa Nama";
   const [lat, lng] = getCenterLatLng(feature.geometry);
   const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
+  // Build images array — prefer foto_list_urls, fall back to single foto
+  const images: string[] =
+    foto_list_urls && foto_list_urls.length > 0
+      ? foto_list_urls
+      : foto
+      ? [foto]
+      : [];
 
   const attributes: { label: string; value: string | number }[] = [];
   if (komoditas) attributes.push({ label: "Komoditas", value: komoditas });
@@ -110,8 +171,52 @@ export default async function PotensiDetailPage({
   if (kondisi) attributes.push({ label: "Kondisi", value: kondisi });
   if (kontak) attributes.push({ label: "Kontak", value: kontak });
 
+  const schemaType = (
+    {
+      pertanian: "LandmarksOrHistoricalBuildings",
+      umkm: "LocalBusiness",
+      wisata: "TouristAttraction",
+      infrastruktur: "CivicStructure",
+    } as Record<string, string>
+  )[kategori] ?? "Place";
+
+  const coords = feature.geometry.type === "Point"
+    ? {
+        lat: feature.geometry.coordinates[1],
+        lng: feature.geometry.coordinates[0],
+      }
+    : null
+
   return (
     <div className="min-h-screen bg-[--bg-surface] pt-16">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": schemaType,
+        "name": nama,
+        "description": feature.properties.deskripsi ?? nama,
+        "url":
+          `${process.env.NEXT_PUBLIC_SITE_URL}` +
+          `/potensi/${kategori}/${numericId}`,
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Rambipuji",
+          "addressRegion": "Jember",
+          "addressCountry": "ID"
+        },
+        ...(coords ? {
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": coords.lat,
+            "longitude": coords.lng,
+          }
+        } : {}),
+        ...(feature.properties.foto
+          ? { "image": feature.properties.foto }
+          : {}),
+        ...(feature.properties.kontak
+          ? { "telephone": feature.properties.kontak }
+          : {}),
+      }} />
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 space-y-6">
         {/* Breadcrumb & Back Link */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-[--text-secondary]">
@@ -138,20 +243,9 @@ export default async function PotensiDetailPage({
           </Link>
         </div>
 
-        {/* Hero Image */}
-        <div className="w-full aspect-video rounded-xl overflow-hidden bg-[--color-neutral-subtle] border border-[--border-default] flex items-center justify-center">
-          {foto ? (
-            <img
-              src={foto}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center text-[--text-muted]">
-              <Mountain className="w-12 h-12 mb-2 opacity-60" />
-              <span className="text-sm">Foto tidak tersedia</span>
-            </div>
-          )}
+        {/* Hero Image / Carousel */}
+        <div className="w-full aspect-video rounded-xl overflow-hidden">
+          <ImageCarousel images={images} alt={title} />
         </div>
 
         {/* Two-column Content Grid */}

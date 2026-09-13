@@ -67,6 +67,7 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
         NEXT_PUBLIC_GEOSERVER_URL: ${NEXT_PUBLIC_GEOSERVER_URL}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
     container_name: rambipuji_frontend
     restart: unless-stopped
     env_file:
@@ -74,6 +75,7 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - NEXT_PUBLIC_GEOSERVER_URL=${NEXT_PUBLIC_GEOSERVER_URL}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
       - NEXT_PUBLIC_TOKEN_EXPIRY_HOURS=24
       - INTERNAL_API_URL=${INTERNAL_API_URL}
       - WATCHPACK_POLLING=true

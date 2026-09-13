@@ -1,58 +1,83 @@
 "use client";
 
-import { AlertCircle, Image as ImageIcon, Upload, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import { AlertCircle, ImageIcon, Plus, Upload, X } from "lucide-react";
+import React, { useRef, useState } from "react";
 
 export interface PhotoUploadProps {
-  value: File | null;
-  onChange: (f: File | null) => void;
-  existingUrl?: string | null;
+  /** New files chosen by the user in this session */
+  value: File[];
+  /** Existing photo URLs (edit page) — shown as thumbnails before new files */
+  existingUrls?: string[];
+  onChange: (files: File[]) => void;
+  /** Called when an existing photo URL should be removed */
+  onRemoveExisting?: (url: string) => void;
 }
 
-const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const MAX_FILES = 10;
+const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+function validateFile(file: File): string | null {
+  if (file.type !== "image/jpeg" && file.type !== "image/png") {
+    return `Format tidak valid: ${file.name}. Hanya JPG/PNG.`;
+  }
+  if (file.size > MAX_SIZE_BYTES) {
+    return `File terlalu besar: ${file.name}. Maks 5MB.`;
+  }
+  return null;
+}
 
 export default function PhotoUpload({
   value,
+  existingUrls = [],
   onChange,
-  existingUrl,
+  onRemoveExisting,
 }: PhotoUploadProps) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (value) {
-      const objectUrl = URL.createObjectURL(value);
-      setPreviewUrl(objectUrl);
-      return () => URL.revokeObjectURL(objectUrl);
-    }
-    if (existingUrl) {
-      setPreviewUrl(existingUrl);
-    } else {
-      setPreviewUrl(null);
-    }
-  }, [value, existingUrl]);
+  const totalCount = existingUrls.length + value.length;
+  const hasAny = totalCount > 0;
 
-  const validateAndSetFile = (file: File) => {
+  const addFiles = (incoming: FileList | null) => {
+    if (!incoming) return;
     setError(null);
-    if (file.type !== "image/jpeg" && file.type !== "image/png") {
-      setError("Format file tidak valid. Hanya menerima gambar JPG atau PNG.");
+
+    const candidates = Array.from(incoming);
+    const errors: string[] = [];
+    const valid: File[] = [];
+
+    for (const file of candidates) {
+      const err = validateFile(file);
+      if (err) {
+        errors.push(err);
+      } else {
+        valid.push(file);
+      }
+    }
+
+    if (errors.length > 0) {
+      setError(errors.join(" · "));
       return;
     }
-    if (file.size > MAX_SIZE_BYTES) {
-      setError("Ukuran file melebihi batas maksimal 5MB.");
+
+    const next = [...value, ...valid];
+    if (next.length + existingUrls.length > MAX_FILES) {
+      setError(`Maksimal ${MAX_FILES} foto. Hapus beberapa foto terlebih dahulu.`);
       return;
     }
-    onChange(file);
+    onChange(next);
+  };
+
+  const removeNewFile = (index: number) => {
+    const next = value.filter((_, i) => i !== index);
+    onChange(next);
+    setError(null);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile) {
-      validateAndSetFile(droppedFile);
-    }
+    addFiles(e.dataTransfer.files);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -61,18 +86,9 @@ export default function PhotoUpload({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) {
-      validateAndSetFile(selected);
-    }
-  };
-
-  const handleClear = () => {
-    setError(null);
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-    onChange(null);
+    addFiles(e.target.files);
+    // Reset input value so the same file can be re-selected after removal
+    if (inputRef.current) inputRef.current.value = "";
   };
 
   return (
@@ -81,23 +97,90 @@ export default function PhotoUpload({
         Foto Potensi
       </label>
 
-      {previewUrl ? (
-        <div className="relative w-full h-44 rounded-xl border border-[--border-default] overflow-hidden bg-[--bg-surface-raised]">
-          <img
-            src={previewUrl}
-            alt="Preview foto"
-            className="w-full h-full object-cover"
-          />
-          <button
-            type="button"
-            onClick={handleClear}
-            className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full transition"
-            title="Hapus foto"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+      {hasAny ? (
+        <>
+          {/* Thumbnail grid */}
+          <div className="grid grid-cols-3 gap-2 mt-1">
+            {/* Existing URL thumbnails */}
+            {existingUrls.map((url, i) => (
+              <div
+                key={`existing-${i}`}
+                className="relative aspect-square rounded-lg overflow-hidden border border-[--border-default] bg-[--bg-surface-raised]"
+              >
+                <img
+                  src={url}
+                  alt={`Foto ${i + 1}`}
+                  className="w-full h-full object-cover"
+                />
+                {i === 0 && (
+                  <span className="absolute bottom-0 left-0 right-0 text-[10px] text-center bg-black/50 text-white py-0.5">
+                    Utama
+                  </span>
+                )}
+                {onRemoveExisting && (
+                  <button
+                    type="button"
+                    onClick={() => onRemoveExisting(url)}
+                    className="absolute top-1 right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs transition"
+                    title="Hapus foto"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            ))}
+
+            {/* New file thumbnails */}
+            {value.map((file, i) => {
+              const objectUrl = URL.createObjectURL(file);
+              const globalIndex = existingUrls.length + i;
+              return (
+                <div
+                  key={`new-${i}`}
+                  className="relative aspect-square rounded-lg overflow-hidden border border-[--border-default] bg-[--bg-surface-raised]"
+                >
+                  <img
+                    src={objectUrl}
+                    alt={`Foto baru ${i + 1}`}
+                    className="w-full h-full object-cover"
+                    onLoad={() => URL.revokeObjectURL(objectUrl)}
+                  />
+                  {globalIndex === 0 && (
+                    <span className="absolute bottom-0 left-0 right-0 text-[10px] text-center bg-black/50 text-white py-0.5">
+                      Utama
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeNewFile(i)}
+                    className="absolute top-1 right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs transition"
+                    title="Hapus foto"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              );
+            })}
+
+            {/* "Tambah foto lagi" cell — only shown when below max */}
+            {totalCount < MAX_FILES && (
+              <button
+                type="button"
+                onClick={() => inputRef.current?.click()}
+                className="aspect-square rounded-lg border-2 border-dashed border-[--border-default] hover:border-[--color-primary] flex flex-col items-center justify-center gap-1 text-[--text-muted] hover:text-[--color-primary] transition cursor-pointer"
+              >
+                <Plus className="w-5 h-5" />
+                <span className="text-[10px] font-medium">Tambah</span>
+              </button>
+            )}
+          </div>
+
+          <p className="text-[11px] text-[--text-muted]">
+            Foto 1 akan menjadi foto utama. Format JPG/PNG, maks 5MB per foto.
+          </p>
+        </>
       ) : (
+        /* Empty — drag & drop zone */
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -111,22 +194,24 @@ export default function PhotoUpload({
             Klik atau seret foto ke sini
           </span>
           <span className="text-[11px] text-[--text-muted] mt-1">
-            Format JPG / PNG, maksimal 5MB
+            Format JPG / PNG, maks 5MB, hingga {MAX_FILES} foto
           </span>
         </div>
       )}
 
+      {/* Hidden file input — multiple */}
       <input
         ref={inputRef}
         type="file"
         accept="image/jpeg,image/png"
+        multiple
         onChange={handleFileChange}
         className="hidden"
       />
 
       {error && (
-        <div className="flex items-center space-x-1.5 text-red-600 text-xs pt-1">
-          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+        <div className="flex items-start gap-1.5 text-red-600 text-xs pt-1">
+          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}

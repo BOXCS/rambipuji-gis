@@ -90,8 +90,8 @@ export default function AdminEditPage() {
   const [inputMode, setInputMode] = useState<"point" | "polygon">("point");
   const [geometry, setGeometry] = useState<GeoJSON.Geometry | null>(null);
 
-  const [fotoFile, setFotoFile] = useState<File | null>(null);
-  const [existingFotoUrl, setExistingFotoUrl] = useState<string | null>(null);
+  const [fotoFiles, setFotoFiles] = useState<File[]>([]);
+  const [existingFotoUrls, setExistingFotoUrls] = useState<string[]>([]);
 
   // Common fields
   const [nama, setNama] = useState<string>("");
@@ -171,7 +171,13 @@ export default function AdminEditPage() {
       if (p.nama_pemilik) setNamaPemilik(p.nama_pemilik);
       setDeskripsi(p.deskripsi || "");
       setKontak(p.kontak || "");
-      setExistingFotoUrl(p.foto || null);
+      setExistingFotoUrls(
+        p.foto_list_urls && p.foto_list_urls.length > 0
+          ? p.foto_list_urls
+          : p.foto
+          ? [p.foto]
+          : []
+      );
 
       // Pre-load geometry
       if (usesGeometryEditor && found.geometry) {
@@ -275,8 +281,13 @@ export default function AdminEditPage() {
 
       formData.set("geom", JSON.stringify(geomPayload));
 
-      if (fotoFile) {
-        formData.set("foto", fotoFile);
+      if (fotoFiles.length > 0) {
+        fotoFiles.forEach((file, index) => {
+          formData.append("foto_list", file);
+          if (index === 0) {
+            formData.set("foto", file);
+          }
+        });
       }
 
       if (kategori === "pertanian") {
@@ -619,9 +630,12 @@ export default function AdminEditPage() {
 
             {/* PhotoUpload */}
             <PhotoUpload
-              value={fotoFile}
-              onChange={setFotoFile}
-              existingUrl={existingFotoUrl}
+              value={fotoFiles}
+              existingUrls={existingFotoUrls}
+              onChange={setFotoFiles}
+              onRemoveExisting={(url) =>
+                setExistingFotoUrls((prev) => prev.filter((u) => u !== url))
+              }
             />
           </div>
 

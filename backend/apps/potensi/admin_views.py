@@ -41,6 +41,25 @@ def _validate_foto_file(file) -> list[str]:
     return errors
 
 
+def _save_foto_list(foto_files: list) -> tuple[list[str], list[str]]:
+    """Save each uploaded photo file to storage; return (saved_paths, error_msgs)."""
+    from django.core.files.storage import default_storage
+    import os
+
+    saved_paths: list[str] = []
+    errors: list[str] = []
+    for foto_file in foto_files:
+        validation_errors = _validate_foto_file(foto_file)
+        if validation_errors:
+            errors.extend([f"{foto_file.name}: {e}" for e in validation_errors])
+            continue
+        # Use original filename, let default_storage handle deduplication
+        filename = os.path.basename(foto_file.name)
+        path = default_storage.save(f"foto/{filename}", foto_file)
+        saved_paths.append(path)
+    return saved_paths, errors
+
+
 class AdminPotensiListCreateView(APIView):
     """GET and POST endpoints for /api/admin/potensi/{kategori}/."""
 
@@ -71,6 +90,7 @@ class AdminPotensiListCreateView(APIView):
 
         model, _, detail_serializer_cls = KATEGORI_MAP[kategori_clean]
 
+        # ── Validate primary foto (single, backward-compat) ──
         foto_file = request.FILES.get("foto")
         if foto_file:
             foto_errors = _validate_foto_file(foto_file)
@@ -80,6 +100,21 @@ class AdminPotensiListCreateView(APIView):
                         "status": "error",
                         "message": "Validasi gagal",
                         "errors": {"foto": foto_errors},
+                    },
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+        # ── Validate & save multiple foto_list files ──
+        foto_list_files = request.FILES.getlist("foto_list")
+        saved_foto_paths: list[str] = []
+        if foto_list_files:
+            saved_foto_paths, foto_list_errors = _save_foto_list(foto_list_files)
+            if foto_list_errors:
+                return Response(
+                    {
+                        "status": "error",
+                        "message": "Validasi foto gagal",
+                        "errors": {"foto_list": foto_list_errors},
                     },
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
@@ -101,6 +136,14 @@ class AdminPotensiListCreateView(APIView):
             instance = serializer.save(foto=foto_file)
         else:
             instance = serializer.save()
+
+        # ── Attach foto_list to instance ──
+        if saved_foto_paths and hasattr(instance, "foto_list"):
+            instance.foto_list = saved_foto_paths
+            # Also set primary foto to first image if not already set
+            if not instance.foto and saved_foto_paths:
+                instance.foto = saved_foto_paths[0]
+            instance.save(update_fields=["foto_list"])
 
         response_serializer = detail_serializer_cls(
             instance, context={"request": request}
@@ -158,6 +201,7 @@ class AdminPotensiDetailUpdateDeleteView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        # ── Validate primary foto ──
         foto_file = request.FILES.get("foto")
         if foto_file:
             foto_errors = _validate_foto_file(foto_file)
@@ -167,6 +211,21 @@ class AdminPotensiDetailUpdateDeleteView(APIView):
                         "status": "error",
                         "message": "Validasi gagal",
                         "errors": {"foto": foto_errors},
+                    },
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+        # ── Validate & save multiple foto_list files ──
+        foto_list_files = request.FILES.getlist("foto_list")
+        saved_foto_paths: list[str] = []
+        if foto_list_files:
+            saved_foto_paths, foto_list_errors = _save_foto_list(foto_list_files)
+            if foto_list_errors:
+                return Response(
+                    {
+                        "status": "error",
+                        "message": "Validasi foto gagal",
+                        "errors": {"foto_list": foto_list_errors},
                     },
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
@@ -188,6 +247,11 @@ class AdminPotensiDetailUpdateDeleteView(APIView):
             serializer.save(foto=foto_file)
         else:
             serializer.save()
+
+        # ── Update foto_list if new files were provided; else leave unchanged ──
+        if saved_foto_paths and hasattr(instance, "foto_list"):
+            instance.foto_list = saved_foto_paths
+            instance.save(update_fields=["foto_list"])
 
         response_serializer = detail_serializer_cls(
             instance, context={"request": request}

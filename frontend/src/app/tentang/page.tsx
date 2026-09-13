@@ -8,7 +8,9 @@ import {
   Store,
   Users,
 } from "lucide-react";
+import type { Metadata } from "next";
 import React from "react";
+import JsonLd from "../../components/JsonLd";
 import MiniMap from "../../components/MiniMap";
 import StatCard from "../../components/StatCard";
 import { getBatasWilayah, getDesaProfile, getStatistik } from "../../lib/api";
@@ -67,6 +69,33 @@ const fallbackBoundaryFeature: PotensiFeature = {
   },
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const profile = await getDesaProfile()
+    return {
+      title: "Tentang Desa",
+      description:
+        `${profile.nama_desa}, ${profile.kecamatan}, ` +
+        `${profile.kabupaten}. Jumlah penduduk ` +
+        `${profile.jumlah_penduduk.toLocaleString("id-ID")} jiwa, ` +
+        `luas wilayah ${profile.luas_wilayah_ha} Ha. ` +
+        `${profile.visi}`,
+      alternates: { canonical: "/tentang" },
+      openGraph: {
+        title: `${profile.nama_desa} — Profil Desa`,
+        description: profile.visi,
+        url: "/tentang",
+      },
+    }
+  } catch {
+    return {
+      title: "Tentang Desa Rambipuji",
+      description: "Profil Desa Rambipuji, Jember.",
+      alternates: { canonical: "/tentang" },
+    }
+  }
+}
+
 export default async function TentangPage() {
   let profile: DesaProfile = fallbackProfile;
   try {
@@ -123,6 +152,17 @@ export default async function TentangPage() {
 
   return (
     <div className="min-h-screen bg-[--bg-base] flex flex-col pt-16">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "City",
+        "name": profile.nama_desa,
+        "description": profile.visi,
+        "containedInPlace": {
+          "@type": "AdministrativeArea",
+          "name": profile.kabupaten
+        },
+        "url": `${process.env.NEXT_PUBLIC_SITE_URL}/tentang`
+      }} />
       {/* Hero section — layered gradient with decorative blobs */}
       <section
         className="relative text-white overflow-hidden"

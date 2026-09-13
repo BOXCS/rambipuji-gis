@@ -13,6 +13,7 @@ export interface PotensiProperties {
   nama_usaha?: string; // umkm
   nama_wilayah?: string; // batas-wilayah
   foto?: string | null; // absolute URL or null
+  foto_list_urls?: string[]; // absolute URLs for all photos
   kategori: KategoriSlug; // added client-side from the endpoint context
   // detail fields (only on detail responses):
   deskripsi?: string;

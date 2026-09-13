@@ -41,6 +41,29 @@ def _build_foto_url(instance, request) -> Optional[str]:
     return str(instance.foto)
 
 
+def _build_foto_list_urls(instance, request) -> list[str]:
+    """Return absolute URLs for all paths stored in instance.foto_list.
+
+    Falls back to an empty list when foto_list is missing or empty.
+    """
+    from django.conf import settings
+    import re
+
+    foto_list = getattr(instance, "foto_list", None) or []
+    public_base = getattr(settings, "PUBLIC_BASE_URL", "").rstrip("/")
+    media_url = getattr(settings, "MEDIA_URL", "/media/")
+    urls: list[str] = []
+    for path in foto_list:
+        if request:
+            raw = request.build_absolute_uri(f"{media_url}{path}")
+            if public_base:
+                raw = re.sub(r"^https?://[^/]+", public_base, raw)
+        else:
+            raw = f"{public_base}{media_url}{path}" if public_base else f"{media_url}{path}"
+        urls.append(raw)
+    return urls
+
+
 # ---------------------------------------------------------------------------
 # PotensiPertanian
 # ---------------------------------------------------------------------------
@@ -68,6 +91,7 @@ class PotensiPertanianDetailSerializer(GeoFeatureModelSerializer):
     """Full serializer for detail and admin endpoints."""
 
     foto = serializers.SerializerMethodField()
+    foto_list_urls = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
@@ -103,6 +127,7 @@ class PotensiPertanianDetailSerializer(GeoFeatureModelSerializer):
             "hasil_panen",
             "musim_tanam",
             "foto",
+            "foto_list_urls",
             "geom",
             "created_at",
             "updated_at",
@@ -111,6 +136,10 @@ class PotensiPertanianDetailSerializer(GeoFeatureModelSerializer):
     def get_foto(self, instance: PotensiPertanian) -> Optional[str]:
         request = self.context.get("request")
         return _build_foto_url(instance, request)
+
+    def get_foto_list_urls(self, instance: PotensiPertanian) -> list[str]:
+        request = self.context.get("request")
+        return _build_foto_list_urls(instance, request)
 
     def get_kategori(self, instance: PotensiPertanian) -> str:
         return "pertanian"
@@ -143,6 +172,7 @@ class PotensiUMKMDetailSerializer(GeoFeatureModelSerializer):
     """Full serializer for detail and admin endpoints."""
 
     foto = serializers.SerializerMethodField()
+    foto_list_urls = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
@@ -170,6 +200,7 @@ class PotensiUMKMDetailSerializer(GeoFeatureModelSerializer):
             "kontak",
             "jam_operasional",
             "foto",
+            "foto_list_urls",
             "deskripsi",
             "geom",
             "created_at",
@@ -179,6 +210,10 @@ class PotensiUMKMDetailSerializer(GeoFeatureModelSerializer):
     def get_foto(self, instance: PotensiUMKM) -> Optional[str]:
         request = self.context.get("request")
         return _build_foto_url(instance, request)
+
+    def get_foto_list_urls(self, instance: PotensiUMKM) -> list[str]:
+        request = self.context.get("request")
+        return _build_foto_list_urls(instance, request)
 
     def get_kategori(self, instance: PotensiUMKM) -> str:
         return "umkm"
@@ -211,6 +246,7 @@ class PotensiWisataDetailSerializer(GeoFeatureModelSerializer):
     """Full serializer for detail and admin endpoints."""
 
     foto = serializers.SerializerMethodField()
+    foto_list_urls = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
@@ -234,6 +270,7 @@ class PotensiWisataDetailSerializer(GeoFeatureModelSerializer):
             "jam_kunjungan",
             "harga_tiket",
             "foto",
+            "foto_list_urls",
             "kontak",
             "geom",
             "created_at",
@@ -243,6 +280,10 @@ class PotensiWisataDetailSerializer(GeoFeatureModelSerializer):
     def get_foto(self, instance: PotensiWisata) -> Optional[str]:
         request = self.context.get("request")
         return _build_foto_url(instance, request)
+
+    def get_foto_list_urls(self, instance: PotensiWisata) -> list[str]:
+        request = self.context.get("request")
+        return _build_foto_list_urls(instance, request)
 
     def get_kategori(self, instance: PotensiWisata) -> str:
         return "wisata"

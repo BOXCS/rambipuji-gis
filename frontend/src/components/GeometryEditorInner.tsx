@@ -19,17 +19,10 @@ interface Props {
   mode: "point" | "polygon" | "both";
 }
 
-function GeomSummary({ geom }: { geom: GeoJSON.Geometry | null }) {
-  if (!geom) return null;
+// ─── Polygon summary (shown only in polygon mode) ────────────────────────────
 
-  if (geom.type === "Point") {
-    const [lng, lat] = geom.coordinates as [number, number];
-    return (
-      <p className="text-xs text-[--text-secondary] font-mono mt-2 px-1">
-        Titik: {lat.toFixed(6)}, {lng.toFixed(6)}
-      </p>
-    );
-  }
+function PolygonSummary({ geom }: { geom: GeoJSON.Geometry | null }) {
+  if (!geom) return null;
 
   if (geom.type === "Polygon") {
     const ring = (geom.coordinates as number[][][])[0] || [];
@@ -41,12 +34,18 @@ function GeomSummary({ geom }: { geom: GeoJSON.Geometry | null }) {
     );
   }
 
-  return (
-    <p className="text-xs text-[--text-secondary] mt-2 px-1">
-      Geometri tersimpan ({geom.type})
-    </p>
-  );
+  if (geom.type !== "Point") {
+    return (
+      <p className="text-xs text-[--text-secondary] mt-2 px-1">
+        Geometri tersimpan ({geom.type})
+      </p>
+    );
+  }
+
+  return null;
 }
+
+// ─── Child: stores the Leaflet map instance in a ref ─────────────────────────
 
 function MapReadyDetector({
   onReady,
@@ -67,25 +66,26 @@ function MapReadyDetector({
   return null;
 }
 
+// ─── Child: click handler for point mode ─────────────────────────────────────
+
 function PointClickHandler({
   enabled,
-  onChange,
+  onPointClick,
 }: {
   enabled: boolean;
-  onChange: (geom: GeoJSON.Geometry) => void;
+  onPointClick: (lat: number, lng: number) => void;
 }) {
   useMapEvents({
     click(e) {
       if (enabled) {
-        onChange({
-          type: "Point",
-          coordinates: [e.latlng.lng, e.latlng.lat],
-        });
+        onPointClick(e.latlng.lat, e.latlng.lng);
       }
     },
   });
   return null;
 }
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function GeometryEditorInner({
   kategori: _kategori,
@@ -98,6 +98,65 @@ export default function GeometryEditorInner({
   onChangeRef.current = onChange;
   const existingGeomRef = useRef(value);
   existingGeomRef.current = value;
+
+  // ── Point-mode manual input state ──
+  const isPoint = mode === "point";
+
+  const pointCoords: [number, number] | null =
+    isPoint && value && value.type === "Point"
+      ? [
+          (value.coordinates as [number, number])[1],
+          (value.coordinates as [number, number])[0],
+        ]
+      : null;
+
+  const [latInput, setLatInput] = useState<string>(
+    pointCoords ? pointCoords[0].toFixed(6) : ""
+  );
+  const [lngInput, setLngInput] = useState<string>(
+    pointCoords ? pointCoords[1].toFixed(6) : ""
+  );
+
+  // Sync inputs when value changes (e.g. edit page load)
+  useEffect(() => {
+    if (isPoint && value && value.type === "Point") {
+      const [lng, lat] = value.coordinates as [number, number];
+      setLatInput(lat.toFixed(6));
+      setLngInput(lng.toFixed(6));
+    }
+  }, [isPoint, value]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Shared handler: called by both map click and input change
+  const handlePointSet = (lat: number, lng: number) => {
+    setLatInput(lat.toFixed(6));
+    setLngInput(lng.toFixed(6));
+    onChangeRef.current({
+      type: "Point",
+      coordinates: [lng, lat],
+    });
+  };
+
+  const handleLatInputChange = (raw: string) => {
+    setLatInput(raw);
+    const lat = parseFloat(raw);
+    const lng = parseFloat(lngInput);
+    if (!isNaN(lat) && lat >= -90 && lat <= 90) {
+      const safeLng = isNaN(lng) ? 0 : lng;
+      onChangeRef.current({ type: "Point", coordinates: [safeLng, lat] });
+      leafletMap?.setView([lat, safeLng], 15);
+    }
+  };
+
+  const handleLngInputChange = (raw: string) => {
+    setLngInput(raw);
+    const lat = parseFloat(latInput);
+    const lng = parseFloat(raw);
+    if (!isNaN(lng) && lng >= -180 && lng <= 180) {
+      const safeLat = isNaN(lat) ? 0 : lat;
+      onChangeRef.current({ type: "Point", coordinates: [lng, safeLat] });
+      leafletMap?.setView([safeLat, lng], 15);
+    }
+  };
 
   // Ensure Leaflet default icons always point to unpkg CDN (preventing 404 image icons)
   useEffect(() => {
@@ -112,6 +171,7 @@ export default function GeometryEditorInner({
     });
   }, []);
 
+  // ── Geoman polygon tooling ──
   useEffect(() => {
     if (!leafletMap) return;
 
@@ -294,14 +354,8 @@ export default function GeometryEditorInner({
     };
   }, [leafletMap, mode]);
 
-  const isPoint = mode === "point";
-  const pointCoords: [number, number] | null =
-    isPoint && value && value.type === "Point"
-      ? [
-          (value.coordinates as [number, number])[1],
-          (value.coordinates as [number, number])[0],
-        ]
-      : null;
+  const inputClass =
+    "w-full border border-[--border-default] rounded-lg px-3 py-2 text-sm text-[--text-primary] bg-white focus:outline-none focus:ring-2 focus:ring-[--color-primary]";
 
   return (
     <div>
@@ -330,7 +384,10 @@ export default function GeometryEditorInner({
           <MapReadyDetector onReady={setLeafletMap} />
 
           {/* When in point mode, clicking map places a Point geometry directly */}
-          <PointClickHandler enabled={isPoint} onChange={onChange} />
+          <PointClickHandler
+            enabled={isPoint}
+            onPointClick={(lat, lng) => handlePointSet(lat, lng)}
+          />
 
           {/* Render clean draggable Marker for Point geometry */}
           {isPoint && pointCoords && (
@@ -341,10 +398,7 @@ export default function GeometryEditorInner({
                 dragend: (e) => {
                   const marker = e.target as L.Marker;
                   const latlng = marker.getLatLng();
-                  onChange({
-                    type: "Point",
-                    coordinates: [latlng.lng, latlng.lat],
-                  });
+                  handlePointSet(latlng.lat, latlng.lng);
                 },
               }}
             />
@@ -352,15 +406,54 @@ export default function GeometryEditorInner({
         </MapContainer>
       </div>
 
+      {/* Instruction text when nothing placed yet */}
       {!value && (
         <p className="text-xs text-[--text-muted] mt-2 text-center">
           {mode === "point"
-            ? "Klik langsung pada peta untuk menentukan lokasi titik spasial"
+            ? "Klik langsung pada peta atau ketik koordinat di bawah untuk menentukan lokasi titik spasial"
             : "Klik tombol polygon (⬠) di pojok kiri atas peta, lalu klik titik-titik area di peta. Double-klik untuk menutup area."}
         </p>
       )}
 
-      <GeomSummary geom={value} />
+      {/* Point mode: editable lat/lng inputs */}
+      {isPoint && (
+        <>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-[--text-secondary] mb-1">
+                Latitude
+              </label>
+              <input
+                type="number"
+                step="0.000001"
+                placeholder="-8.250000"
+                value={latInput}
+                onChange={(e) => handleLatInputChange(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-[--text-secondary] mb-1">
+                Longitude
+              </label>
+              <input
+                type="number"
+                step="0.000001"
+                placeholder="113.600000"
+                value={lngInput}
+                onChange={(e) => handleLngInputChange(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+          </div>
+          <p className="text-xs text-[--text-muted] mt-1.5">
+            Koordinat untuk wilayah Jember sekitar: Lat -8.1 s/d -8.5 · Lng 113.4 s/d 113.9
+          </p>
+        </>
+      )}
+
+      {/* Polygon mode: summary only */}
+      {!isPoint && <PolygonSummary geom={value} />}
     </div>
   );
 }

@@ -48,7 +48,7 @@ export default function AdminTambahPage() {
   const [inputMode, setInputMode] = useState<"point" | "polygon">("point");
   const [geometry, setGeometry] = useState<GeoJSON.Geometry | null>(null);
 
-  const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [fotoFiles, setFotoFiles] = useState<File[]>([]);
 
   // Common fields
   const [nama, setNama] = useState<string>("");
@@ -149,8 +149,14 @@ export default function AdminTambahPage() {
 
       formData.set("geom", JSON.stringify(geomPayload));
 
-      if (fotoFile) {
-        formData.set("foto", fotoFile);
+      if (fotoFiles.length > 0) {
+        fotoFiles.forEach((file, index) => {
+          formData.append("foto_list", file);
+          // Also set primary foto for backward compatibility
+          if (index === 0) {
+            formData.set("foto", file);
+          }
+        });
       }
 
       // Category specific fields
@@ -496,7 +502,10 @@ export default function AdminTambahPage() {
             </div>
 
             {/* PhotoUpload */}
-            <PhotoUpload value={fotoFile} onChange={setFotoFile} />
+            <PhotoUpload
+              value={fotoFiles}
+              onChange={setFotoFiles}
+            />
           </div>
 
           <div className="pt-3 border-t border-[--border-default] flex items-center justify-end space-x-3">
