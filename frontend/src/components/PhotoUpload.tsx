@@ -14,14 +14,18 @@ export interface PhotoUploadProps {
 }
 
 const MAX_FILES = 10;
-const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB (compressed server-side)
 
 function validateFile(file: File): string | null {
-  if (file.type !== "image/jpeg" && file.type !== "image/png") {
-    return `Format tidak valid: ${file.name}. Hanya JPG/PNG.`;
+  if (
+    file.type !== "image/jpeg" &&
+    file.type !== "image/png" &&
+    file.type !== "image/webp"
+  ) {
+    return `Format tidak valid: ${file.name}. Hanya JPG/PNG/WebP.`;
   }
   if (file.size > MAX_SIZE_BYTES) {
-    return `File terlalu besar: ${file.name}. Maks 5MB.`;
+    return `File terlalu besar: ${file.name}. Maks 10MB.`;
   }
   return null;
 }
@@ -176,7 +180,8 @@ export default function PhotoUpload({
           </div>
 
           <p className="text-[11px] text-[--text-muted]">
-            Foto 1 akan menjadi foto utama. Format JPG/PNG, maks 5MB per foto.
+            Foto 1 akan menjadi foto utama. Format JPG/PNG/WebP, maks 10MB per foto.
+            Gambar akan dioptimasi otomatis.
           </p>
         </>
       ) : (
@@ -194,7 +199,8 @@ export default function PhotoUpload({
             Klik atau seret foto ke sini
           </span>
           <span className="text-[11px] text-[--text-muted] mt-1">
-            Format JPG / PNG, maks 5MB, hingga {MAX_FILES} foto
+            Format JPG / PNG / WebP, maks 10MB, hingga {MAX_FILES} foto.
+            Gambar akan dioptimasi otomatis.
           </span>
         </div>
       )}
@@ -203,7 +209,7 @@ export default function PhotoUpload({
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png"
+        accept="image/jpeg,image/png,image/webp"
         multiple
         onChange={handleFileChange}
         className="hidden"

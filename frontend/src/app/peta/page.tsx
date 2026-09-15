@@ -19,7 +19,8 @@ export default function PetaPage() {
   } = useMap();
 
   const { data: batasWilayahData } = usePotensi("batas-wilayah");
-  const { data: potensiData } = usePotensi();
+  // Pass the active layer Set so only currently-visible categories are fetched
+  const { data: potensiData } = usePotensi(activeLayers);
 
   const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(
     null

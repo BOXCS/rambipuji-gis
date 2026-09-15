@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Mountain } from "lucide-react";
+import NextImage from "next/image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface ImageCarouselProps {
@@ -58,16 +59,19 @@ export default function ImageCarousel({
     );
   }
 
-  // ── 1 image — plain img ────────────────────────────────────────────────────
+  // ── 1 image — single image with Next.js Image ──────────────────────────────
   if (total === 1) {
     return (
       <div
-        className={`w-full ${ASPECT_CLASSES[aspectRatio]} rounded-xl overflow-hidden border border-[--border-default] bg-[--bg-surface-raised]`}
+        className={`relative w-full ${ASPECT_CLASSES[aspectRatio]} rounded-xl overflow-hidden border border-[--border-default] bg-[--bg-surface-raised]`}
       >
-        <img
+        <NextImage
           src={images[0]}
           alt={alt}
-          className="w-full h-full object-cover"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover"
+          priority
         />
       </div>
     );
@@ -82,13 +86,16 @@ export default function ImageCarousel({
     >
       {/* Slides */}
       {images.map((src, i) => (
-        <img
+        <NextImage
           key={src + i}
           src={src}
           alt={`${alt} — foto ${i + 1}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className={`object-cover transition-opacity duration-700 ease-in-out ${
             i === current ? "opacity-100" : "opacity-0"
           }`}
+          priority={i === 0}
           aria-hidden={i !== current}
         />
       ))}

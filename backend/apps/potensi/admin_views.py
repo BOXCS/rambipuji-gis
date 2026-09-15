@@ -26,23 +26,24 @@ from rest_framework.views import APIView
 
 from apps.auth_admin.permissions import IsAdminRole
 
+from .services.image_service import optimize_image
 from .services.statistik_service import get_statistik_counts
 from .utils import KATEGORI_MAP
 
 
 def _validate_foto_file(file) -> list[str]:
-    """Validate uploaded image file: jpeg/png and max size 5MB."""
+    """Validate uploaded image file: jpeg/png/webp and max raw size 10MB."""
     errors = []
-    if file.size > 5 * 1024 * 1024:
-        errors.append("Ukuran file foto maksimal 5MB.")
+    if file.size > 10 * 1024 * 1024:
+        errors.append("Ukuran file foto maksimal 10MB. Gambar akan dioptimasi otomatis.")
     content_type = getattr(file, "content_type", "")
-    if content_type not in ("image/jpeg", "image/png"):
-        errors.append("Format foto harus image/jpeg atau image/png.")
+    if content_type not in ("image/jpeg", "image/png", "image/webp"):
+        errors.append("Format foto harus image/jpeg, image/png, atau image/webp.")
     return errors
 
 
 def _save_foto_list(foto_files: list) -> tuple[list[str], list[str]]:
-    """Save each uploaded photo file to storage; return (saved_paths, error_msgs)."""
+    """Validate, optimize, and save each uploaded photo; return (saved_paths, error_msgs)."""
     from django.core.files.storage import default_storage
     import os
 
@@ -53,9 +54,10 @@ def _save_foto_list(foto_files: list) -> tuple[list[str], list[str]]:
         if validation_errors:
             errors.extend([f"{foto_file.name}: {e}" for e in validation_errors])
             continue
-        # Use original filename, let default_storage handle deduplication
-        filename = os.path.basename(foto_file.name)
-        path = default_storage.save(f"foto/{filename}", foto_file)
+        # Resize + compress to JPEG before writing to storage
+        optimized_file = optimize_image(foto_file)
+        filename = os.path.basename(optimized_file.name)
+        path = default_storage.save(f"foto/{filename}", optimized_file)
         saved_paths.append(path)
     return saved_paths, errors
 
@@ -90,7 +92,7 @@ class AdminPotensiListCreateView(APIView):
 
         model, _, detail_serializer_cls = KATEGORI_MAP[kategori_clean]
 
-        # ── Validate primary foto (single, backward-compat) ──
+        # ── Validate & optimize primary foto (single, backward-compat) ──
         foto_file = request.FILES.get("foto")
         if foto_file:
             foto_errors = _validate_foto_file(foto_file)
@@ -103,6 +105,8 @@ class AdminPotensiListCreateView(APIView):
                     },
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
+            # Optimize before saving
+            request.FILES["foto"] = optimize_image(foto_file)
 
         # ── Validate & save multiple foto_list files ──
         foto_list_files = request.FILES.getlist("foto_list")
@@ -201,7 +205,7 @@ class AdminPotensiDetailUpdateDeleteView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # ── Validate primary foto ──
+        # ── Validate & optimize primary foto ──
         foto_file = request.FILES.get("foto")
         if foto_file:
             foto_errors = _validate_foto_file(foto_file)
@@ -214,6 +218,8 @@ class AdminPotensiDetailUpdateDeleteView(APIView):
                     },
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
+            # Optimize before saving
+            request.FILES["foto"] = optimize_image(foto_file)
 
         # ── Validate & save multiple foto_list files ──
         foto_list_files = request.FILES.getlist("foto_list")

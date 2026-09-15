@@ -1,4 +1,5 @@
 import { Mountain, Navigation, X } from "lucide-react";
+import NextImage from "next/image";
 import Link from "next/link";
 import React from "react";
 import type { PotensiFeature } from "../types";
@@ -107,10 +108,13 @@ export default function MarkerPopup({
         {/* Photo area */}
         <div className="relative w-full aspect-video bg-[--color-primary-subtle]">
           {foto ? (
-            <img
+            <NextImage
               src={foto}
               alt={title}
-              className="w-full h-full object-cover"
+              fill
+              sizes="288px"
+              className="object-cover"
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-[--color-primary] opacity-40">
