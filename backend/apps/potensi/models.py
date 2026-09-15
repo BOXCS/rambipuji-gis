@@ -75,6 +75,9 @@ class PotensiInfrastruktur(models.Model):
     kondisi = models.CharField("Kondisi", max_length=255, blank=True)
     kapasitas = models.CharField("Kapasitas", max_length=255, blank=True)
     pengelola = models.CharField("Pengelola", max_length=255, blank=True)
+    kontak = models.CharField("Kontak", max_length=100, blank=True)
+    foto = models.ImageField("Foto", upload_to="foto/", null=True, blank=True)
+    foto_list = models.JSONField("Daftar Foto", default=list, blank=True)
     geom = models.PointField("Titik Lokasi", srid=4326)
     created_at = models.DateTimeField("Dibuat Pada", auto_now_add=True)
     updated_at = models.DateTimeField("Diperbarui Pada", auto_now=True)
@@ -86,6 +89,7 @@ class PotensiInfrastruktur(models.Model):
 
     def __str__(self) -> str:
         return self.nama
+
 
 
 class BatasWilayah(models.Model):

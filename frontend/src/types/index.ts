@@ -29,6 +29,7 @@ export interface PotensiProperties {
   jenis_fasilitas?: string; // infrastruktur
   kondisi?: string; // infrastruktur
   kapasitas?: string; // infrastruktur
+  pengelola?: string; // infrastruktur
   created_at?: string;
   updated_at?: string;
 }

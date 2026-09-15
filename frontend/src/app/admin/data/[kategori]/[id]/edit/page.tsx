@@ -113,6 +113,7 @@ export default function AdminEditPage() {
   const [jenisFasilitas, setJenisFasilitas] = useState<string>("");
   const [kondisi, setKondisi] = useState<string>("");
   const [kapasitas, setKapasitas] = useState<string>("");
+  const [pengelola, setPengelola] = useState<string>("");
 
   const [saving, setSaving] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<{
@@ -207,6 +208,7 @@ export default function AdminEditPage() {
       if (p.jenis_fasilitas) setJenisFasilitas(p.jenis_fasilitas);
       if (p.kondisi) setKondisi(p.kondisi);
       if (p.kapasitas) setKapasitas(p.kapasitas);
+      if (p.pengelola) setPengelola(p.pengelola);
 
       setInitialLoading(false);
     };
@@ -312,6 +314,7 @@ export default function AdminEditPage() {
         formData.set("jenis_fasilitas", jenisFasilitas.trim());
         formData.set("kondisi", kondisi.trim());
         formData.set("kapasitas", kapasitas.trim());
+        formData.set("pengelola", pengelola.trim());
       }
 
       await adminUpdatePotensi(kategori, numericId, formData, token);
@@ -596,6 +599,17 @@ export default function AdminEditPage() {
                     type="text"
                     value={kapasitas}
                     onChange={(e) => setKapasitas(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-[--text-primary]">
+                    Pengelola
+                  </label>
+                  <input
+                    type="text"
+                    value={pengelola}
+                    onChange={(e) => setPengelola(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary]"
                   />
                 </div>

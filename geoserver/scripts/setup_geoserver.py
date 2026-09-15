@@ -197,48 +197,62 @@ def setup_featuretypes() -> None:
         layer_name = cfg["layer_name"]
         title = cfg["title"]
 
+        featuretype_payload = {
+            "featureType": {
+                "name": layer_name,
+                "nativeName": layer_name,
+                "title": title,
+                "srs": "EPSG:4326",
+                "enabled": True,
+                "advertised": True,
+                # Disable scale denominators so markers are visible at ALL zoom levels
+                "minScale": 0,
+                "maxScale": 0,
+                "nativeBoundingBox": {
+                    "minx": 113.5,
+                    "maxx": 113.7,
+                    "miny": -8.4,
+                    "maxy": -8.1,
+                    "crs": "EPSG:4326",
+                },
+                "latLonBoundingBox": {
+                    "minx": 113.5,
+                    "maxx": 113.7,
+                    "miny": -8.4,
+                    "maxy": -8.1,
+                    "crs": "EPSG:4326",
+                },
+            }
+        }
+
         status, _ = rest_request(
             f"workspaces/{WORKSPACE}/datastores/{ds_name}/featuretypes/{layer_name}.json"
         )
         if status == 200:
-            print(f"      FeatureType '{layer_name}' already published.")
+            # Layer already published — update scale limits via PUT
+            print(f"      FeatureType '{layer_name}' already published — updating scale limits...")
+            s, body = rest_request(
+                f"workspaces/{WORKSPACE}/datastores/{ds_name}/featuretypes/{layer_name}",
+                method="PUT",
+                data=json.dumps(featuretype_payload).encode("utf-8"),
+            )
+            if s not in (200, 201):
+                print(f"WARNING: Could not update featureType '{layer_name}' (HTTP {s}): {body.decode()}")
+            else:
+                print(f"      Scale limits cleared for '{layer_name}'.")
             continue
 
         print(f"      Publishing layer '{layer_name}' ({title})...")
-        payload = json.dumps(
-            {
-                "featureType": {
-                    "name": layer_name,
-                    "nativeName": layer_name,
-                    "title": title,
-                    "srs": "EPSG:4326",
-                    "nativeBoundingBox": {
-                        "minx": 113.5,
-                        "maxx": 113.7,
-                        "miny": -8.4,
-                        "maxy": -8.1,
-                        "crs": "EPSG:4326",
-                    },
-                    "latLonBoundingBox": {
-                        "minx": 113.5,
-                        "maxx": 113.7,
-                        "miny": -8.4,
-                        "maxy": -8.1,
-                        "crs": "EPSG:4326",
-                    },
-                }
-            }
-        ).encode("utf-8")
-
         s, body = rest_request(
             f"workspaces/{WORKSPACE}/datastores/{ds_name}/featuretypes",
             method="POST",
-            data=payload,
+            data=json.dumps(featuretype_payload).encode("utf-8"),
         )
         if s not in (200, 201):
             print(f"ERROR: Failed to publish featureType '{layer_name}' (HTTP {s}): {body.decode()}")
             sys.exit(1)
         print(f"      Successfully published '{layer_name}'.")
+
 
 
 def assign_default_styles() -> None:

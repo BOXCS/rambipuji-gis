@@ -294,17 +294,19 @@ class PotensiWisataDetailSerializer(GeoFeatureModelSerializer):
 # ---------------------------------------------------------------------------
 
 class PotensiInfrastrukturListSerializer(GeoFeatureModelSerializer):
-    """Lightweight list/map serializer for public endpoints and Leaflet overlays.
+    """Lightweight list/map serializer for public endpoints and Leaflet overlays."""
 
-    PotensiInfrastruktur has no foto field; list payload includes nama + geom + kategori.
-    """
-
+    foto = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
 
     class Meta:
         model = PotensiInfrastruktur
         geo_field = "geom"
-        fields = ["id", "nama", "kategori", "geom"]
+        fields = ["id", "nama", "kategori", "foto", "geom"]
+
+    def get_foto(self, instance: PotensiInfrastruktur) -> Optional[str]:
+        request = self.context.get("request")
+        return _build_foto_url(instance, request)
 
     def get_kategori(self, instance: PotensiInfrastruktur) -> str:
         return "infrastruktur"
@@ -313,6 +315,8 @@ class PotensiInfrastrukturListSerializer(GeoFeatureModelSerializer):
 class PotensiInfrastrukturDetailSerializer(GeoFeatureModelSerializer):
     """Full serializer for detail and admin endpoints."""
 
+    foto = serializers.SerializerMethodField()
+    foto_list_urls = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
@@ -330,6 +334,9 @@ class PotensiInfrastrukturDetailSerializer(GeoFeatureModelSerializer):
     pengelola = serializers.CharField(
         required=False, allow_null=True, allow_blank=True, default=""
     )
+    kontak = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True, default=""
+    )
 
     class Meta:
         model = PotensiInfrastruktur
@@ -342,10 +349,21 @@ class PotensiInfrastrukturDetailSerializer(GeoFeatureModelSerializer):
             "kondisi",
             "kapasitas",
             "pengelola",
+            "kontak",
+            "foto",
+            "foto_list_urls",
             "geom",
             "created_at",
             "updated_at",
         ]
+
+    def get_foto(self, instance: PotensiInfrastruktur) -> Optional[str]:
+        request = self.context.get("request")
+        return _build_foto_url(instance, request)
+
+    def get_foto_list_urls(self, instance: PotensiInfrastruktur) -> list[str]:
+        request = self.context.get("request")
+        return _build_foto_list_urls(instance, request)
 
     def get_kategori(self, instance: PotensiInfrastruktur) -> str:
         return "infrastruktur"

@@ -70,6 +70,7 @@ export default function AdminTambahPage() {
   const [jenisFasilitas, setJenisFasilitas] = useState<string>("");
   const [kondisi, setKondisi] = useState<string>("");
   const [kapasitas, setKapasitas] = useState<string>("");
+  const [pengelola, setPengelola] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<{
@@ -182,6 +183,7 @@ export default function AdminTambahPage() {
           formData.set("jenis_fasilitas", jenisFasilitas.trim());
         if (kondisi.trim()) formData.set("kondisi", kondisi.trim());
         if (kapasitas.trim()) formData.set("kapasitas", kapasitas.trim());
+        if (pengelola.trim()) formData.set("pengelola", pengelola.trim());
       }
 
       await adminCreatePotensi(kategori, formData, token);
@@ -470,8 +472,21 @@ export default function AdminTambahPage() {
                     className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary]"
                   />
                 </div>
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold text-[--text-primary]">
+                    Pengelola
+                  </label>
+                  <input
+                    type="text"
+                    value={pengelola}
+                    onChange={(e) => setPengelola(e.target.value)}
+                    placeholder="Contoh: Dinas PU, Pemerintah Desa"
+                    className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary]"
+                  />
+                </div>
               </>
             )}
+
 
             {/* Deskripsi */}
             <div className="space-y-1">
