@@ -18,7 +18,6 @@ export function getWMSParams(
     format: "image/png",
     transparent: true,
     version: "1.1.1",
-    tiled: true,
   };
 
   if (bustCache) {
