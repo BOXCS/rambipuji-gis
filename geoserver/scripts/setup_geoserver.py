@@ -282,6 +282,80 @@ def assign_default_styles() -> None:
         print(f"      Default style '{style_name}' assigned to '{WORKSPACE}:{layer_name}'.")
 
 
+def disable_gwc_caching() -> None:
+    """
+    Disable GeoWebCache (GWC) for all potensi layers.
+
+    When GWC is enabled, GeoServer caches WMS tile images and new markers
+    added via the admin panel are not visible until the cache expires.
+    Disabling GWC forces every WMS request to hit PostGIS directly,
+    so new data appears on the map within seconds of being saved.
+
+    The batas_wilayah layer is intentionally excluded — boundary data
+    changes very infrequently, so caching it is fine.
+    """
+    POTENSI_LAYERS = [
+        "potensi_pertanian",
+        "potensi_umkm",
+        "potensi_wisata",
+        "potensi_infrastruktur",
+    ]
+
+    print("[6/6] Disabling GeoWebCache for potensi layers...")
+
+    for layer_name in POTENSI_LAYERS:
+        qualified = f"{WORKSPACE}:{layer_name}"
+
+        # Build GWC layer XML payload with enabled=false
+        payload_xml = (
+            f'<?xml version="1.0" encoding="UTF-8"?>\n'
+            f'<GeoServerLayer>\n'
+            f'  <enabled>false</enabled>\n'
+            f'  <name>{qualified}</name>\n'
+            f'</GeoServerLayer>'
+        ).encode("utf-8")
+
+        # GWC REST endpoint uses /gwc/rest/ not /rest/
+        gwc_url = f"{GEOSERVER_URL}/gwc/rest/layers/{qualified}.xml"
+        req = urllib.request.Request(gwc_url, data=payload_xml, method="PUT")
+        req.add_header("Authorization", get_auth_header())
+        req.add_header("Content-Type", "application/xml")
+
+        try:
+            with urllib.request.urlopen(req) as resp:
+                status_code = resp.status
+        except urllib.error.HTTPError as exc:
+            status_code = exc.code
+        except Exception as exc:
+            print(f"      WARNING: Could not reach GWC for '{layer_name}': {exc}")
+            continue
+
+        if status_code in (200, 201):
+            print(f"      GWC disabled for {layer_name} ✓")
+        else:
+            # GWC layer entry may not exist yet — try masstruncate as fallback
+            print(f"      WARNING: GWC PUT returned {status_code} for '{layer_name}'. Attempting masstruncate...")
+            truncate_url = f"{GEOSERVER_URL}/gwc/rest/masstruncate"
+            truncate_payload = (
+                f"<truncateLayer><layerName>{qualified}</layerName></truncateLayer>"
+            ).encode("utf-8")
+            req2 = urllib.request.Request(truncate_url, data=truncate_payload, method="POST")
+            req2.add_header("Authorization", get_auth_header())
+            req2.add_header("Content-Type", "application/xml")
+            try:
+                with urllib.request.urlopen(req2) as resp2:
+                    t_status = resp2.status
+            except urllib.error.HTTPError as exc:
+                t_status = exc.code
+            except Exception as exc:
+                print(f"      WARNING: masstruncate also failed for '{layer_name}': {exc}")
+                continue
+            if t_status in (200, 201):
+                print(f"      Tile cache cleared for {layer_name} via masstruncate ✓")
+            else:
+                print(f"      WARNING: masstruncate returned {t_status} for '{layer_name}' — manual GWC disable may be required.")
+
+
 def main():
     print("=== GeoServer Idempotent Setup ===")
     setup_workspace()
@@ -289,6 +363,7 @@ def main():
     setup_styles()
     setup_featuretypes()
     assign_default_styles()
+    disable_gwc_caching()
     print("=== GeoServer setup completed successfully! ===")
 
 

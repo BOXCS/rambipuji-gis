@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { RefreshCw } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
 import LayerToggle from "../../components/LayerToggle";
 import MapContainer from "../../components/MapContainer";
 import MarkerPopup from "../../components/MarkerPopup";
@@ -34,6 +35,15 @@ export default function PetaPage() {
     total: 0,
   });
 
+  // Incrementing mapKey forces MapContainer to remount, reloading all WMS tiles
+  const [mapKey, setMapKey] = useState(0);
+
+  const handleRefreshMap = useCallback(() => {
+    clearSelection();
+    setPopupPos(null);
+    setMapKey((prev) => prev + 1);
+  }, [clearSelection]);
+
   useEffect(() => {
     let isMounted = true;
     getStatistik()
@@ -52,8 +62,9 @@ export default function PetaPage() {
 
   return (
     <div className="w-full h-screen overflow-hidden relative bg-[--bg-surface-raised]">
-      {/* Map fills entire viewport */}
+      {/* Map fills entire viewport — key forces remount on refresh */}
       <MapContainer
+        key={mapKey}
         activeLayers={activeLayers}
         onFeatureClick={(feature, point) => {
           selectFeature(feature);
@@ -69,6 +80,7 @@ export default function PetaPage() {
           activeLayers={activeLayers}
           counts={statistik}
           onToggle={toggleLayer}
+          onRefresh={handleRefreshMap}
         />
       </div>
 

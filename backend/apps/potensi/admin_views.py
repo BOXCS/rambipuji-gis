@@ -26,6 +26,7 @@ from rest_framework.views import APIView
 
 from apps.auth_admin.permissions import IsAdminRole
 
+from .services.geoserver_service import clear_layer_cache
 from .services.image_service import optimize_image
 from .services.statistik_service import get_statistik_counts
 from .utils import KATEGORI_MAP
@@ -152,6 +153,10 @@ class AdminPotensiListCreateView(APIView):
         response_serializer = detail_serializer_cls(
             instance, context={"request": request}
         )
+
+        # Clear GWC tile cache so new marker is visible on map immediately
+        clear_layer_cache(kategori_clean)
+
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -262,6 +267,10 @@ class AdminPotensiDetailUpdateDeleteView(APIView):
         response_serializer = detail_serializer_cls(
             instance, context={"request": request}
         )
+
+        # Clear GWC tile cache so updated marker is visible on map immediately
+        clear_layer_cache(kategori_clean)
+
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request: Request, kategori: str, pk: int) -> Response:
@@ -282,6 +291,10 @@ class AdminPotensiDetailUpdateDeleteView(APIView):
             )
 
         instance.delete()
+
+        # Clear GWC tile cache so deleted marker disappears from map immediately
+        clear_layer_cache(kategori_clean)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Layers } from "lucide-react";
+import { ChevronLeft, ChevronRight, Layers, RefreshCw } from "lucide-react";
 import React, { useState } from "react";
 import type { KategoriSlug, StatistikData } from "../types";
 
@@ -6,6 +6,8 @@ export interface LayerToggleProps {
   activeLayers: Set<KategoriSlug>;
   counts: StatistikData;
   onToggle: (k: KategoriSlug) => void;
+  /** Optional callback to force-reload all map WMS tiles */
+  onRefresh?: () => void;
 }
 
 interface LayerItem {
@@ -51,6 +53,7 @@ export default function LayerToggle({
   activeLayers,
   counts,
   onToggle,
+  onRefresh,
 }: LayerToggleProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
@@ -154,6 +157,21 @@ export default function LayerToggle({
               Total: {total} potensi
             </p>
           </div>
+
+          {/* Refresh button — forces WMS tile reload */}
+          {onRefresh && (
+            <div className="px-2 pb-3">
+              <button
+                type="button"
+                id="btn-refresh-peta"
+                onClick={onRefresh}
+                className="flex items-center gap-1.5 text-xs text-[--text-muted] hover:text-[--text-primary] w-full justify-center py-1.5 border border-[--border-default] rounded-lg hover:bg-[--bg-surface-raised] transition-colors"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Refresh Peta
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
