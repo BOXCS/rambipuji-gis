@@ -16,6 +16,11 @@ import StatCard from "../../components/StatCard";
 import { getBatasWilayah, getDesaProfile, getStatistik } from "../../lib/api";
 import type { DesaProfile, PotensiFeature, StatistikData } from "../../types";
 
+// Always fetch fresh data — do not serve a cached HTML render of this page.
+// Without this, Next.js would cache the statistik counts from the first render
+// and admin-added data would not appear until a full re-deploy.
+export const revalidate = 0;
+
 const fallbackProfile: DesaProfile = {
   nama_desa: "Desa Rambipuji",
   kecamatan: "Kecamatan Rambipuji",
@@ -244,16 +249,14 @@ export default async function TentangPage() {
             </h2>
             <div className="text-[--text-secondary] leading-relaxed text-base space-y-3">
               <p>
-                Desa Rambipuji terletak secara strategis di jantung Kecamatan
-                Rambipuji, Kabupaten Jember. Kawasan ini merupakan sentra
-                aktivitas agraris, usaha ekonomi mikro, serta cagar budaya
-                lokal.
+                Desa Rambipuji merupakan desa di Kecamatan Rambipuji, Kabupaten Jember, Jawa Timur,
+                yang memiliki potensi lokal berbasis wisata, sejarah, budaya, dan ekonomi kreatif
+                masyarakat. Desa ini memiliki potensi wisata seperti Gumuk Gong dan Gumuk Dempet,
               </p>
               <p>
-                Sistem Informasi Geografis (WebGIS) ini dihadirkan untuk
-                mendokumentasikan, memetakan, dan menyajikan potensi desa
-                secara spasial, transparan, dan mudah diakses oleh seluruh
-                warga dan masyarakat luas.
+                serta aktivitas ekonomi masyarakat seperti usaha tempe yang berkembang secara turun-temurun
+                Potensi tersebut menjadi dasar pengembangan
+                desa berbasis pariwisata, industri kreatif, dan promosi digital.Versi Narasi Beranda
               </p>
             </div>
           </div>

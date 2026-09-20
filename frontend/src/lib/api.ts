@@ -36,6 +36,10 @@ async function fetchAPI<T>(
   }
 
   const response = await fetch(url, {
+    // Disable Next.js fetch cache so public API responses are always fresh.
+    // Without this, Next.js aggressively caches GET responses in production
+    // and new admin data does not appear until a full re-deploy or revalidation.
+    cache: "no-store",
     ...options,
     headers,
   });

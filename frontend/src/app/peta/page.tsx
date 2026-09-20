@@ -10,6 +10,11 @@ import { usePotensi } from "../../hooks/usePotensi";
 import { getStatistik } from "../../lib/api";
 import type { StatistikData } from "../../types";
 
+// Auto-refresh interval for the GeoJSON layer data (30 seconds).
+// This ensures new markers added via the admin panel appear within 30 s
+// without any manual action by the visitor.
+const POLLING_INTERVAL_MS = 30_000;
+
 export default function PetaPage() {
   const {
     activeLayers,
@@ -20,8 +25,13 @@ export default function PetaPage() {
   } = useMap();
 
   const { data: batasWilayahData } = usePotensi("batas-wilayah");
-  // Pass the active layer Set so only currently-visible categories are fetched
-  const { data: potensiData } = usePotensi(activeLayers);
+
+  // Poll every 30 s so new markers appear automatically.
+  // refetch() is also wired to the "Refresh Peta" button for on-demand reload.
+  const { data: potensiData, refetch } = usePotensi(
+    activeLayers,
+    POLLING_INTERVAL_MS
+  );
 
   const [popupPos, setPopupPos] = useState<{ x: number; y: number } | null>(
     null
@@ -35,14 +45,14 @@ export default function PetaPage() {
     total: 0,
   });
 
-  // Incrementing mapKey forces MapContainer to remount, reloading all WMS tiles
-  const [mapKey, setMapKey] = useState(0);
-
-  const handleRefreshMap = useCallback(() => {
+  // Refresh handler: immediately re-fetch GeoJSON data without remounting the map.
+  // This preserves the current zoom/pan position — far less disruptive than
+  // the previous mapKey remount approach.
+  const handleRefreshMap = useCallback(async () => {
     clearSelection();
     setPopupPos(null);
-    setMapKey((prev) => prev + 1);
-  }, [clearSelection]);
+    await refetch();
+  }, [clearSelection, refetch]);
 
   useEffect(() => {
     let isMounted = true;
@@ -62,9 +72,8 @@ export default function PetaPage() {
 
   return (
     <div className="w-full h-screen overflow-hidden relative bg-[--bg-surface-raised]">
-      {/* Map fills entire viewport — key forces remount on refresh */}
+      {/* Map fills entire viewport */}
       <MapContainer
-        key={mapKey}
         activeLayers={activeLayers}
         onFeatureClick={(feature, point) => {
           selectFeature(feature);
