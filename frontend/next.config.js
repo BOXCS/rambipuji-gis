@@ -7,7 +7,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "rambipuji.research-ai.my.id",
+        hostname: "gis-rambipuji.id",
         pathname: "/media/**",
       },
       {

@@ -35,8 +35,8 @@ jobs:
       - name: Verify Frontend Production Build
         working-directory: ./frontend
         env:
-          NEXT_PUBLIC_API_URL: "https://rambipuji.research-ai.my.id/api"
-          NEXT_PUBLIC_GEOSERVER_URL: "https://rambipuji.research-ai.my.id/geoserver"
+          NEXT_PUBLIC_API_URL: "https://gis-rambipuji.id/api"
+          NEXT_PUBLIC_GEOSERVER_URL: "https://gis-rambipuji.id/geoserver"
         run: npm run build
 
   test-backend:
