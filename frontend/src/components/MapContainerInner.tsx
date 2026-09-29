@@ -1,18 +1,16 @@
 "use client";
 
 /**
- * MapContainerInner — React-Leaflet map with:
+ * MapContainerInner — React-Leaflet map with custom DivIcon pin markers.
  *
- *  - OpenStreetMap base tile
- *  - WMS layer for batas_wilayah (always visible, polygon boundary)
- *  - WMS layers for pertanian + wisata POLYGON areas only
- *    (CQL filter excludes Point geometries so WMS and pins don't overlap)
- *  - Custom DivIcon teardrop pin markers for all POINT features,
- *    rendered per-feature via GeoJSON + pointToLayer
- *  - Click events on pins forwarded to onFeatureClick → MarkerPopup
+ * Loaded exclusively via dynamic(() => import('./MapContainerInner'), { ssr: false })
+ * — never evaluated during server-side rendering. This is why Leaflet and the
+ * createPinIcon / createDotIcon functions are safe to define here.
  *
- * UMKM and Infrastruktur are always Point geometry — they are shown
- * exclusively via pin markers (no WMS layer for them).
+ * Layer strategy:
+ *  - WMS tiles: batas_wilayah (always), pertanian polygon areas, wisata polygon areas
+ *  - GeoJSON pin markers: all POINT features for active categories
+ *  - UMKM + Infrastruktur: pin markers only (always Point geometry)
  */
 
 import L from "leaflet";
@@ -25,8 +23,49 @@ import {
   WMSTileLayer,
 } from "react-leaflet";
 import { LAYER_NAMES, getWMSParams, getWMSUrl } from "../lib/geoserver";
-import { createPinIcon } from "../lib/markers";
+import {
+  CATEGORY_COLORS,
+  getDotSVG,
+  getPinSVG,
+} from "../lib/markers";
 import type { KategoriSlug, PotensiCollection, PotensiFeature } from "../types";
+
+// ─── Leaflet DivIcon factories ───────────────────────────────────────────────
+// Defined here (not in markers.ts) because they require `import L from
+// "leaflet"` which accesses `window` on import. This file is only ever
+// loaded via dynamic(() => import('./MapContainerInner'), { ssr: false }),
+// so Leaflet is never evaluated during server-side rendering.
+
+function createPinIcon(
+  kategori: KategoriSlug,
+  size: "normal" | "large" = "normal"
+): L.DivIcon {
+  const color = CATEGORY_COLORS[kategori] ?? "#64748B";
+  const w = size === "large" ? 36 : 28;
+  const h = size === "large" ? 48 : 38;
+  return L.divIcon({
+    className: "",
+    html: getPinSVG(color, w, h),
+    iconSize: [w, h],
+    iconAnchor: [w / 2, h], // bottom tip points at the coordinate
+    popupAnchor: [0, -h],
+  });
+}
+
+function createDotIcon(kategori: KategoriSlug): L.DivIcon {
+  const color = CATEGORY_COLORS[kategori] ?? "#64748B";
+  return L.divIcon({
+    className: "",
+    html: getDotSVG(color),
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    popupAnchor: [0, -10],
+  });
+}
+
+// Silence unused-variable warning — createDotIcon is available for future use
+void createDotIcon;
+
 
 export interface MapContainerInnerProps {
   activeLayers: Set<KategoriSlug>;

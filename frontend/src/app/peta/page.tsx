@@ -1,5 +1,9 @@
 "use client";
 
+// Force dynamic rendering — this page uses browser-only APIs (Leaflet, window)
+// and cannot be statically pre-rendered during build.
+export const dynamic = "force-dynamic";
+
 import { RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import LayerToggle from "../../components/LayerToggle";
