@@ -2,6 +2,7 @@
 
 import {
   Building2,
+  FileText,
   LayoutDashboard,
   Leaf,
   LogOut,
@@ -69,6 +70,11 @@ export default function AdminLayoutClient({
       label: "Import Shapefile",
       icon: Upload,
     },
+    {
+      href: "/admin/tentang",
+      label: "Profil Desa",
+      icon: FileText,
+    },
   ];
 
   const handleLogout = async () => {
@@ -83,6 +89,7 @@ export default function AdminLayoutClient({
     if (pathname.includes("/data/wisata")) return "Data Wisata";
     if (pathname.includes("/data/infrastruktur")) return "Data Infrastruktur";
     if (pathname === "/admin/import") return "Import Shapefile";
+    if (pathname === "/admin/tentang") return "Profil Desa";
     return "Admin Panel";
   };
 

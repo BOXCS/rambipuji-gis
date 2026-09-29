@@ -7,6 +7,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from .models import (
     BatasWilayah,
+    DesaProfile,
     PotensiInfrastruktur,
     PotensiPertanian,
     PotensiUMKM,
@@ -401,3 +402,69 @@ class BatasWilayahSerializer(GeoFeatureModelSerializer):
 
     def get_kategori(self, instance: BatasWilayah) -> str:
         return "batas-wilayah"
+
+
+# ---------------------------------------------------------------------------
+# DesaProfile (singleton — no geo field)
+# ---------------------------------------------------------------------------
+
+class DesaProfileSerializer(serializers.ModelSerializer):
+    """Read/write serializer for the DesaProfile singleton model.
+
+    foto_hero_url is a computed absolute URL built the same way as
+    _build_foto_url() used by potensi serializers, so the URL respects
+    PUBLIC_BASE_URL for Docker internal→external host rewriting.
+    """
+
+    foto_hero_url = serializers.SerializerMethodField(read_only=True)
+    misi = serializers.ListField(child=serializers.CharField(), required=False)
+
+    class Meta:
+        model = DesaProfile
+        fields = [
+            "id",
+            "nama_desa",
+            "kecamatan",
+            "kabupaten",
+            "provinsi",
+            "kode_pos",
+            "jumlah_penduduk",
+            "jumlah_penduduk_laki",
+            "jumlah_penduduk_perempuan",
+            "jumlah_kk",
+            "luas_wilayah_ha",
+            "jumlah_dusun",
+            "jumlah_rw",
+            "jumlah_rt",
+            "visi",
+            "misi",
+            "sejarah",
+            "deskripsi",
+            "alamat_kantor",
+            "telepon",
+            "email",
+            "website",
+            "jam_pelayanan",
+            "foto_hero_url",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "updated_at", "foto_hero_url"]
+
+    def get_foto_hero_url(self, instance: DesaProfile) -> Optional[str]:
+        if not instance.foto_hero:
+            return None
+        from django.conf import settings
+        import re
+
+        request = self.context.get("request")
+        public_base = getattr(settings, "PUBLIC_BASE_URL", None)
+        if request:
+            url = request.build_absolute_uri(instance.foto_hero.url)
+            if public_base:
+                url = re.sub(r"^https?://[^/]+", public_base.rstrip("/"), url)
+            return url
+        if public_base and hasattr(instance.foto_hero, "url"):
+            return f"{public_base.rstrip('/')}{instance.foto_hero.url}"
+        if hasattr(instance.foto_hero, "url"):
+            return instance.foto_hero.url
+        return str(instance.foto_hero)

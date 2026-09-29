@@ -132,26 +132,34 @@ export default async function TentangPage() {
     // use fallbackBoundaryFeature
   }
 
+  // Resolve contact fields — support both new flat fields and legacy kontak object
+  const resolvedContact = {
+    alamat: profile.alamat_kantor ?? profile.kontak?.alamat ?? "",
+    telepon: profile.telepon ?? profile.kontak?.telepon ?? "",
+    email: profile.email ?? profile.kontak?.email ?? "",
+    jam: profile.jam_pelayanan ?? profile.kontak?.jam ?? "",
+  };
+
   const contactItems = [
     {
       icon: MapPin,
       label: "Alamat Kantor",
-      value: profile.kontak.alamat,
+      value: resolvedContact.alamat,
     },
     {
       icon: Phone,
       label: "Telepon",
-      value: profile.kontak.telepon,
+      value: resolvedContact.telepon,
     },
     {
       icon: Mail,
       label: "Email",
-      value: profile.kontak.email,
+      value: resolvedContact.email,
     },
     {
       icon: Clock,
       label: "Jam Pelayanan",
-      value: profile.kontak.jam,
+      value: resolvedContact.jam,
     },
   ];
 
@@ -204,8 +212,9 @@ export default async function TentangPage() {
 
           <h1 className="text-4xl font-semibold mb-3">{profile.nama_desa}</h1>
           <p className="text-white/80 text-lg max-w-2xl">
-            Selamat datang di portal informasi resmi {profile.nama_desa}.
-            Temukan potensi, layanan, dan informasi desa kami di sini.
+            {profile.deskripsi ||
+              `Selamat datang di portal informasi resmi ${profile.nama_desa}. ` +
+              "Temukan potensi, layanan, dan informasi desa kami di sini."}
           </p>
         </div>
       </section>
@@ -231,7 +240,7 @@ export default async function TentangPage() {
           <StatCard
             icon={Store}
             value={stats.umkm}
-            label="UMKM & Usaha Warga"
+            label="UMKM &amp; Usaha Warga"
           />
         </div>
       </div>
@@ -248,16 +257,24 @@ export default async function TentangPage() {
               Profil Singkat &amp; Administrasi
             </h2>
             <div className="text-[--text-secondary] leading-relaxed text-base space-y-3">
-              <p>
-                Desa Rambipuji merupakan desa di Kecamatan Rambipuji, Kabupaten Jember, Jawa Timur,
-                yang memiliki potensi lokal berbasis wisata, sejarah, budaya, dan ekonomi kreatif
-                masyarakat. Desa ini memiliki potensi wisata seperti Gumuk Gong dan Gumuk Dempet,
-              </p>
-              <p>
-                serta aktivitas ekonomi masyarakat seperti usaha tempe yang berkembang secara turun-temurun
-                Potensi tersebut menjadi dasar pengembangan
-                desa berbasis pariwisata, industri kreatif, dan promosi digital.Versi Narasi Beranda
-              </p>
+              {profile.sejarah ? (
+                profile.sejarah.split("\n\n").map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))
+              ) : (
+                <>
+                  <p>
+                    Desa Rambipuji merupakan desa di Kecamatan Rambipuji, Kabupaten Jember, Jawa Timur,
+                    yang memiliki potensi lokal berbasis wisata, sejarah, budaya, dan ekonomi kreatif
+                    masyarakat. Desa ini memiliki potensi wisata seperti Gumuk Gong dan Gumuk Dempet,
+                  </p>
+                  <p>
+                    serta aktivitas ekonomi masyarakat seperti usaha tempe yang berkembang secara turun-temurun.
+                    Potensi tersebut menjadi dasar pengembangan desa berbasis pariwisata, industri kreatif,
+                    dan promosi digital.
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
@@ -269,7 +286,7 @@ export default async function TentangPage() {
             <div className="bg-[--bg-surface-raised] rounded-xl p-4 flex items-start gap-3">
               <MapPin className="h-4 w-4 text-[--color-primary] flex-shrink-0 mt-0.5" />
               <p className="text-sm text-[--text-secondary]">
-                {profile.kontak.alamat}
+                {resolvedContact.alamat}
               </p>
             </div>
           </div>

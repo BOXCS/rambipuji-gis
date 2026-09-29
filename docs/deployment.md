@@ -10,7 +10,7 @@ Server menggunakan **CyberPanel + OpenLiteSpeed** sebagai shared hosting VPS:
 
 - OpenLiteSpeed menguasai port **80** dan **443** di host untuk semua virtual host domain.
 - Docker container project **TIDAK BISA** bind port 80 langsung — container Nginx di-expose ke port **8890**, lalu domain publik diarahkan via **reverse proxy OpenLiteSpeed** ke `127.0.0.1:8890`.
-- Domain produksi: `rambipuji.research-ai.my.id`
+- Domain produksi: `gis-rambipuji.id`
 
 ---
 
@@ -19,7 +19,7 @@ Server menggunakan **CyberPanel + OpenLiteSpeed** sebagai shared hosting VPS:
 - Peladen Linux VPS (Ubuntu 22.04 LTS / Debian 12 disarankan)
 - RAM minimal 4 GB (GeoServer dan PostGIS membutuhkan alokasi memori yang memadai)
 - Docker Engine & Docker Compose v2 terpasang
-- OpenLiteSpeed virtual host sudah dikonfigurasi untuk forward `rambipuji.research-ai.my.id` → `127.0.0.1:8890`
+- OpenLiteSpeed virtual host sudah dikonfigurasi untuk forward `gis-rambipuji.id` → `127.0.0.1:8890`
 
 ---
 
@@ -55,10 +55,10 @@ Pastikan variabel penting berikut telah diatur dengan sandi yang kuat:
 | `DJANGO_SUPERUSER_USERNAME` | Username superadmin Django |
 | `DJANGO_SUPERUSER_PASSWORD` | Sandi superadmin Django |
 | `DJANGO_SUPERUSER_EMAIL` | Email superadmin Django |
-| `NEXT_PUBLIC_API_URL` | URL publik API, misal `https://rambipuji.research-ai.my.id/api` |
-| `NEXT_PUBLIC_GEOSERVER_URL` | URL publik GeoServer, misal `https://rambipuji.research-ai.my.id/geoserver` |
+| `NEXT_PUBLIC_API_URL` | URL publik API, misal `https://gis-rambipuji.id/api` |
+| `NEXT_PUBLIC_GEOSERVER_URL` | URL publik GeoServer, misal `https://gis-rambipuji.id/geoserver` |
 | `INTERNAL_API_URL` | URL internal Docker, **selalu** `http://backend:8000/api` |
-| `PUBLIC_BASE_URL` | URL domain publik, misal `https://rambipuji.research-ai.my.id` |
+| `PUBLIC_BASE_URL` | URL domain publik, misal `https://gis-rambipuji.id` |
 
 ---
 
@@ -140,7 +140,7 @@ Verifikasi semua endpoint kritis (API publik, GeoServer WMS, auth login, admin C
 
 ```bash
 # Dari host VPS:
-python scripts/smoke_test.py https://rambipuji.research-ai.my.id
+python scripts/smoke_test.py https://gis-rambipuji.id
 
 # Atau dari dalam container backend (scripts/ ter-mount di /app/scripts):
 docker compose -p rambipuji exec backend python /app/scripts/smoke_test.py http://nginx:80
@@ -155,7 +155,7 @@ Target: **10/10 PASS**.
 Buka antarmuka WebGIS melalui browser:
 
 ```
-https://rambipuji.research-ai.my.id/
+https://gis-rambipuji.id/
 ```
 
 ---
@@ -230,7 +230,7 @@ Proyek ini dilengkapi dengan skrip otomatisasi deployment ([`scripts/deploy-prod
 
 1. Di repositori GitHub Anda (`https://github.com/BOXCS/rambipuji-gis`), masuk ke **Settings → Secrets and variables → Actions**.
 2. Klik **New repository secret** dan tambahkan variabel rahasia berikut:
-   - **`VPS_HOST`**: Alamat IP atau domain server VPS (misal: `rambipuji.research-ai.my.id`).
+   - **`VPS_HOST`**: Alamat IP atau domain server VPS (misal: `gis-rambipuji.id`).
    - **`VPS_USER`**: Username SSH di VPS (misal: `rambi8357` atau `root`).
    - **`VPS_SSH_KEY`**: Private key SSH (`~/.ssh/id_rsa` atau ED25519) dari komputer yang punya akses ke VPS.
    - **`VPS_PORT`**: Port SSH (opsional, default `22`).

@@ -280,3 +280,42 @@ export async function adminImportShapefile(
   });
   return response.data;
 }
+
+export async function adminGetDesaProfile(
+  token: string
+): Promise<DesaProfile> {
+  const response = await fetchAPI<{ status: string; data: DesaProfile }>(
+    "admin/desa/",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+}
+
+export async function adminUpdateDesaProfile(
+  formData: FormData,
+  token: string
+): Promise<DesaProfile> {
+  const baseUrl = getBaseUrl();
+  const url = `${baseUrl.replace(/\/+$/, "")}/admin/desa/`;
+  const res = await fetch(url, {
+    method: "PATCH",
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      // Do NOT set Content-Type here — browser sets it with boundary for FormData
+    },
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(
+      (err as { message?: string }).message ?? `HTTP ${res.status}`
+    );
+  }
+  const data = await res.json();
+  return (data as { data: DesaProfile }).data;
+}

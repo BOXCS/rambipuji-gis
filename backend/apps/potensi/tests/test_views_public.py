@@ -317,24 +317,29 @@ class TestDesaProfileView:
     def test_desa_has_expected_profile_keys(self, client, db):
         response = client.get(URL_DESA)
         data = response.data["data"]
+        # New DB-backed shape: flat contact fields instead of nested kontak dict
         expected_keys = [
             "nama_desa", "kecamatan", "kabupaten", "provinsi",
             "jumlah_penduduk", "luas_wilayah_ha", "jumlah_dusun",
-            "visi", "misi", "kontak",
+            "visi", "misi",
+            # Flat contact fields (replaces old nested kontak)
+            "alamat_kantor", "telepon", "email", "jam_pelayanan",
         ]
         for key in expected_keys:
             assert key in data, f"Missing key: {key}"
 
     def test_desa_nama_is_rambipuji(self, client, db):
         response = client.get(URL_DESA)
-        assert response.data["data"]["nama_desa"] == "Rambipuji"
+        # DB default is "Desa Rambipuji" (can be edited by village staff)
+        assert "Rambipuji" in response.data["data"]["nama_desa"]
 
     def test_desa_misi_is_list(self, client, db):
         response = client.get(URL_DESA)
         assert isinstance(response.data["data"]["misi"], list)
 
-    def test_desa_kontak_has_required_keys(self, client, db):
+    def test_desa_contact_fields_present(self, client, db):
+        """Verify flat contact fields exist in API response (replaces old kontak test)."""
         response = client.get(URL_DESA)
-        kontak = response.data["data"]["kontak"]
-        for key in ["alamat", "telepon", "email", "jam"]:
-            assert key in kontak, f"Missing kontak key: {key}"
+        data = response.data["data"]
+        for key in ["alamat_kantor", "telepon", "email", "jam_pelayanan"]:
+            assert key in data, f"Missing flat contact field: {key}"

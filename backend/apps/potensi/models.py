@@ -115,3 +115,98 @@ class BatasWilayah(models.Model):
 
     def __str__(self) -> str:
         return self.nama_wilayah
+
+
+class DesaProfile(models.Model):
+    """Singleton model — only one instance (pk=1) is ever created.
+
+    Use ``DesaProfile.get_instance()`` to retrieve or lazily create it.
+    Village staff edit all fields via the admin panel; the public API
+    serves the latest values from this table.
+    """
+
+    # ── Identity ─────────────────────────────────────────────────────────────
+    nama_desa = models.CharField("Nama Desa", max_length=255)
+    kecamatan = models.CharField("Kecamatan", max_length=255)
+    kabupaten = models.CharField("Kabupaten", max_length=255)
+    provinsi = models.CharField("Provinsi", max_length=255)
+    kode_pos = models.CharField("Kode Pos", max_length=10, blank=True, default="")
+
+    # ── Demographics ─────────────────────────────────────────────────────────
+    jumlah_penduduk = models.PositiveIntegerField("Jumlah Penduduk", default=0)
+    jumlah_penduduk_laki = models.PositiveIntegerField(
+        "Penduduk Laki-laki", default=0
+    )
+    jumlah_penduduk_perempuan = models.PositiveIntegerField(
+        "Penduduk Perempuan", default=0
+    )
+    jumlah_kk = models.PositiveIntegerField("Jumlah KK", default=0)
+    luas_wilayah_ha = models.DecimalField(
+        "Luas Wilayah (Ha)", max_digits=10, decimal_places=2, default=0
+    )
+    jumlah_dusun = models.PositiveSmallIntegerField("Jumlah Dusun", default=0)
+    jumlah_rw = models.PositiveSmallIntegerField("Jumlah RW", default=0)
+    jumlah_rt = models.PositiveSmallIntegerField("Jumlah RT", default=0)
+
+    # ── Vision & Mission ─────────────────────────────────────────────────────
+    visi = models.TextField("Visi", blank=True, default="")
+    misi = models.JSONField("Misi", default=list, blank=True)  # list[str]
+
+    # ── History & Description ────────────────────────────────────────────────
+    sejarah = models.TextField("Sejarah Desa", blank=True, default="")
+    deskripsi = models.TextField("Deskripsi Singkat", blank=True, default="")
+
+    # ── Contact ──────────────────────────────────────────────────────────────
+    alamat_kantor = models.TextField("Alamat Kantor", blank=True, default="")
+    telepon = models.CharField("Telepon", max_length=50, blank=True, default="")
+    email = models.EmailField("Email", blank=True, default="")
+    website = models.URLField("Website", blank=True, default="")
+    jam_pelayanan = models.CharField(
+        "Jam Pelayanan", max_length=255, blank=True, default=""
+    )
+
+    # ── Hero Image ───────────────────────────────────────────────────────────
+    foto_hero = models.ImageField(
+        "Foto Hero", upload_to="desa/", null=True, blank=True
+    )
+
+    # ── Metadata ─────────────────────────────────────────────────────────────
+    updated_at = models.DateTimeField("Diperbarui Pada", auto_now=True)
+
+    class Meta:
+        db_table = "desa_profile"
+        verbose_name = "Profil Desa"
+        verbose_name_plural = "Profil Desa"
+
+    def __str__(self) -> str:
+        return self.nama_desa
+
+    @classmethod
+    def get_instance(cls) -> "DesaProfile":
+        """Always return the single profile row, creating it with safe defaults
+        if it does not yet exist (e.g. on a fresh database)."""
+        instance, _ = cls.objects.get_or_create(
+            pk=1,
+            defaults={
+                "nama_desa": "Desa Rambipuji",
+                "kecamatan": "Rambipuji",
+                "kabupaten": "Jember",
+                "provinsi": "Jawa Timur",
+                "visi": (
+                    "Terwujudnya Desa Rambipuji yang maju, sejahtera, dan berdaya saing "
+                    "berbasis potensi lokal dan tata kelola pemerintahan yang baik."
+                ),
+                "misi": [
+                    "Meningkatkan kualitas pelayanan publik dan tata kelola pemerintahan desa.",
+                    "Mengembangkan potensi pertanian, UMKM, pariwisata, dan infrastruktur desa.",
+                    "Meningkatkan kualitas sumber daya manusia melalui pendidikan dan kesehatan.",
+                    "Memperkuat partisipasi masyarakat dalam pembangunan desa.",
+                    "Memanfaatkan teknologi untuk transparansi dan akselerasi pembangunan.",
+                ],
+                "alamat_kantor": (
+                    "Jl. Rambipuji No. 1, Desa Rambipuji, Kecamatan Rambipuji, Jember 68152"
+                ),
+                "jam_pelayanan": "Senin – Jumat, 08.00 – 15.00 WIB",
+            },
+        )
+        return instance

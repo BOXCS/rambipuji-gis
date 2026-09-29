@@ -60,20 +60,38 @@ export interface StatistikResponse {
 }
 
 export interface DesaProfile {
+  id?: number;
   nama_desa: string;
   kecamatan: string;
   kabupaten: string;
   provinsi: string;
+  kode_pos?: string;
   jumlah_penduduk: number;
+  jumlah_penduduk_laki?: number;
+  jumlah_penduduk_perempuan?: number;
+  jumlah_kk?: number;
   luas_wilayah_ha: number;
   jumlah_dusun: number;
+  jumlah_rw?: number;
+  jumlah_rt?: number;
   visi: string;
   misi: string[];
-  kontak: {
-    alamat: string;
-    telepon: string;
-    email: string;
-    jam: string;
+  sejarah?: string;
+  deskripsi?: string;
+  // Flat contact fields (new DB-backed shape)
+  alamat_kantor?: string;
+  telepon?: string;
+  email?: string;
+  website?: string;
+  jam_pelayanan?: string;
+  foto_hero_url?: string | null;
+  updated_at?: string;
+  // Legacy nested contact (kept for backward-compat with fallback object)
+  kontak?: {
+    alamat?: string;
+    telepon?: string;
+    email?: string;
+    jam?: string;
   };
 }
 

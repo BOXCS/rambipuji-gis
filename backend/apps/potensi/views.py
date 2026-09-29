@@ -22,9 +22,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .data.desa_profile import DESA_PROFILE
+from .data.desa_profile import DESA_PROFILE  # kept for reference / seed command
 from .models import (
     BatasWilayah,
+    DesaProfile,
     PotensiInfrastruktur,
     PotensiPertanian,
     PotensiUMKM,
@@ -32,6 +33,7 @@ from .models import (
 )
 from .serializers import (
     BatasWilayahSerializer,
+    DesaProfileSerializer,
     PotensiInfrastrukturDetailSerializer,
     PotensiInfrastrukturListSerializer,
     PotensiPertanianDetailSerializer,
@@ -246,14 +248,20 @@ class StatistikView(APIView):
 # ---------------------------------------------------------------------------
 
 class DesaProfileView(APIView):
-    """GET /api/public/desa/ — static village profile data.
+    """GET /api/public/desa/ — village profile data from the DesaProfile DB model.
 
-    Data is sourced from apps/potensi/data/desa_profile.py.
-    When a database-backed village profile model is added in a future phase,
-    this view will be updated to query it instead.
+    The response shape is backward-compatible with the previous static dict:
+    all existing field names are preserved, and new fields (sejarah, deskripsi,
+    foto_hero_url, etc.) are added. Frontend code that reads the old nested
+    ``kontak`` object should migrate to the flat fields (alamat_kantor, telepon,
+    email, jam_pelayanan), but the old shape will not break existing code because
+    DesaProfile does not include a ``kontak`` key — the frontend fallback handles
+    missing keys gracefully.
     """
 
     permission_classes = [AllowAny]
 
     def get(self, request: Request) -> Response:
-        return Response({"status": "ok", "data": DESA_PROFILE})
+        profile = DesaProfile.get_instance()
+        serializer = DesaProfileSerializer(profile, context={"request": request})
+        return Response({"status": "ok", "data": serializer.data})

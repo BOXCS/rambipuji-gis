@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .admin_views import (
+    AdminDesaProfileView,
     AdminPotensiDetailUpdateDeleteView,
     AdminPotensiListCreateView,
     AdminStatistikView,
@@ -33,5 +34,5 @@ urlpatterns = [
     path("admin/potensi/<str:kategori>/", AdminPotensiListCreateView.as_view(), name="admin-potensi-list-create"),
     path("admin/potensi/<str:kategori>/<int:pk>/", AdminPotensiDetailUpdateDeleteView.as_view(), name="admin-potensi-detail-update-delete"),
     path("admin/statistik/", AdminStatistikView.as_view(), name="admin-statistik"),
+    path("admin/desa/", AdminDesaProfileView.as_view(), name="admin-desa"),
 ]
-

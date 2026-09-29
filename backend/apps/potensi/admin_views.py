@@ -26,6 +26,8 @@ from rest_framework.views import APIView
 
 from apps.auth_admin.permissions import IsAdminRole
 
+from .models import DesaProfile
+from .serializers import DesaProfileSerializer
 from .services.geoserver_service import clear_layer_cache
 from .services.image_service import optimize_image
 from .services.statistik_service import get_statistik_counts
@@ -310,3 +312,70 @@ class AdminStatistikView(APIView):
                 "data": get_statistik_counts(),
             }
         )
+
+
+class AdminDesaProfileView(APIView):
+    """
+    GET  /api/admin/desa/ — Retrieve the village profile singleton.
+    PATCH /api/admin/desa/ — Partial update of any profile fields.
+
+    Both endpoints require JWT authentication and admin role.
+    PATCH accepts multipart/form-data so foto_hero can be uploaded.
+    The misi field may be sent as a JSON-encoded string (FormData) or
+    as a list; both are handled transparently.
+    """
+
+    permission_classes = [IsAuthenticated, IsAdminRole]
+
+    def get(self, request: Request) -> Response:
+        profile = DesaProfile.get_instance()
+        serializer = DesaProfileSerializer(profile, context={"request": request})
+        return Response({"status": "ok", "data": serializer.data})
+
+    def patch(self, request: Request) -> Response:
+        import json
+
+        profile = DesaProfile.get_instance()
+
+        # ── Handle foto_hero upload — optimise before saving ─────────────────
+        foto_hero_file = request.FILES.get("foto_hero")
+        if foto_hero_file:
+            foto_errors = _validate_foto_file(foto_hero_file)
+            if foto_errors:
+                return Response(
+                    {
+                        "status": "error",
+                        "message": "Validasi foto gagal",
+                        "errors": {"foto_hero": foto_errors},
+                    },
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+            profile.foto_hero = optimize_image(foto_hero_file)
+
+        # ── Normalise misi field — FormData sends it as a JSON string ─────────
+        misi_raw = request.data.get("misi")
+        if misi_raw is not None:
+            if isinstance(misi_raw, str):
+                try:
+                    profile.misi = json.loads(misi_raw)
+                except (json.JSONDecodeError, ValueError):
+                    profile.misi = [misi_raw]
+            elif isinstance(misi_raw, list):
+                profile.misi = misi_raw
+
+        serializer = DesaProfileSerializer(
+            profile,
+            data=request.data,
+            partial=True,
+            context={"request": request},
+        )
+        if not serializer.is_valid():
+            return Response(
+                {"status": "error", "errors": serializer.errors},
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            )
+
+        # foto_hero and misi already set on instance; save the rest via serializer
+        serializer.save()
+
+        return Response({"status": "ok", "data": serializer.data})
