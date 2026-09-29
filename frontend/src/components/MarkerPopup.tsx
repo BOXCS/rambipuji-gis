@@ -87,14 +87,15 @@ export default function MarkerPopup({
   const POPUP_WIDTH = 288;
   const POPUP_HEIGHT = 220; // approximate rendered height
   const ARROW_HEIGHT = 10;
-  const OFFSET_Y = 12; // gap between popup bottom + arrow tip and marker
+  const PIN_HEIGHT = 38;    // height of the teardrop pin icon (normal size)
+  const OFFSET_Y = 4;       // small gap between popup arrow and pin tip
 
   const windowWidth =
     typeof window !== "undefined" ? window.innerWidth : 1200;
 
   const rawLeft = position ? position.x - POPUP_WIDTH / 2 : 0;
   const rawTop = position
-    ? position.y - POPUP_HEIGHT - ARROW_HEIGHT - OFFSET_Y
+    ? position.y - POPUP_HEIGHT - ARROW_HEIGHT - PIN_HEIGHT - OFFSET_Y
     : 0;
 
   const clampedLeft = position

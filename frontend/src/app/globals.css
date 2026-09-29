@@ -105,3 +105,11 @@ body {
     letter-spacing: 0.02em;
   }
 }
+
+/* ── Map pin hover effect ─────────────────────────────────────────────────── */
+/* Applied to .map-pin-wrapper set in src/lib/markers.ts.                      */
+/* Leaflet injects DivIcon HTML into the DOM directly, so Tailwind classes     */
+/* cannot target it — a global CSS rule is required here.                      */
+.map-pin-wrapper:hover {
+  transform: scale(1.2);
+}

@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight, Layers, RefreshCw } from "lucide-react";
 import React, { useState } from "react";
+import { miniPinSvg } from "../lib/markers";
 import type { KategoriSlug, StatistikData } from "../types";
 
 export interface LayerToggleProps {
@@ -111,11 +112,13 @@ export default function LayerToggle({
                     borderLeft: `4px solid ${layer.borderColorVar}`,
                   }}
                 >
-                  {/* Colored dot + label */}
+                  {/* Mini pin icon matching the map marker shape */}
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     <span
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: layer.colorVar }}
+                      className="flex-shrink-0"
+                      style={{ width: 12, height: 16 }}
+                      // eslint-disable-next-line react/no-danger
+                      dangerouslySetInnerHTML={{ __html: miniPinSvg(layer.key) }}
                     />
                     <span className="text-sm font-medium text-[--text-primary] truncate">
                       {layer.label}
