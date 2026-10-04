@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Home, Search } from "lucide-react";
+import { ChevronRight, ExternalLink, Home, Search } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import EmptyState from "../../components/EmptyState";
 import FilterTabs from "../../components/FilterTabs";
@@ -124,6 +124,31 @@ export default function PotensiPage() {
 
       {/* Main content grid */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 pb-12">
+        {/* Featured Banner UMKM Masyarakat (Link ke Website Bu Maya TI) */}
+        {(activeTab === "semua" || activeTab === "umkm") && (
+          <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-xs font-medium text-white">
+                <span>Portal Resmi UMKM Warga</span>
+              </div>
+              <h2 className="text-xl font-bold tracking-tight">
+                UMKM Masyarakat Desa Rambipuji
+              </h2>
+              <p className="text-sm text-white/90 max-w-2xl">
+                Jelajahi ekosistem & direktori lengkap UMKM warga Desa Rambipuji secara komprehensif melalui website mitra tim Bu Maya TI.
+              </p>
+            </div>
+            <a
+              href="https://desarambipuji-jember.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-emerald-800 hover:bg-emerald-50 text-sm font-semibold rounded-xl shadow transition whitespace-nowrap flex-shrink-0"
+            >
+              <span>Kunjungi Portal UMKM</span>
+              <ExternalLink className="w-4 h-4 text-emerald-800" />
+            </a>
+          </div>
+        )}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((n) => (

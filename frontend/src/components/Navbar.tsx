@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Menu, User, X } from "lucide-react";
+import { ExternalLink, LogOut, Menu, User, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
@@ -14,9 +14,10 @@ export default function Navbar() {
   const isAdminRoute = pathname.startsWith("/admin");
   const isPetaRoute = pathname === "/peta" || pathname === "/";
 
-  const navLinks = [
+  const navLinks: Array<{ href: string; label: string; isExternal?: boolean }> = [
     { href: "/peta", label: "Peta" },
     { href: "/potensi", label: "Potensi" },
+    { href: "https://desarambipuji-jember.com/", label: "UMKM Masyarakat", isExternal: true },
     { href: "/tentang", label: "Tentang" },
   ];
 
@@ -43,8 +44,24 @@ export default function Navbar() {
           <nav className="hidden md:flex items-center space-x-6 h-full">
             {navLinks.map((link) => {
               const active =
-                pathname === link.href ||
-                (link.href === "/potensi" && pathname.startsWith("/potensi/"));
+                !link.isExternal &&
+                (pathname === link.href ||
+                  (link.href === "/potensi" && pathname.startsWith("/potensi/")));
+
+              if (link.isExternal) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-16 inline-flex items-center gap-1.5 px-1 text-sm font-medium text-[--text-secondary] hover:text-[--text-primary] border-b-2 border-transparent transition"
+                  >
+                    <span>{link.label}</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                  </a>
+                );
+              }
 
               return (
                 <Link
@@ -115,8 +132,25 @@ export default function Navbar() {
           <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => {
               const active =
-                pathname === link.href ||
-                (link.href === "/potensi" && pathname.startsWith("/potensi/"));
+                !link.isExternal &&
+                (pathname === link.href ||
+                  (link.href === "/potensi" && pathname.startsWith("/potensi/")));
+
+              if (link.isExternal) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsMobileNavOpen(false)}
+                    className="px-3 py-2.5 rounded-lg text-sm font-medium text-[--text-secondary] hover:bg-gray-50 flex items-center justify-between transition"
+                  >
+                    <span>{link.label}</span>
+                    <ExternalLink className="w-4 h-4 text-gray-400" />
+                  </a>
+                );
+              }
 
               return (
                 <Link
