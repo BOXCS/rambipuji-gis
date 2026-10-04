@@ -17,7 +17,7 @@ export default function Navbar() {
   const navLinks: Array<{ href: string; label: string; isExternal?: boolean }> = [
     { href: "/peta", label: "Peta" },
     { href: "/potensi", label: "Potensi" },
-    { href: "https://desarambipuji-jember.com/", label: "UMKM Masyarakat", isExternal: true },
+    { href: "https://katalog-preview-by-relva-studio-plum.vercel.app/", label: "UMKM Masyarakat", isExternal: true },
     { href: "/tentang", label: "Tentang" },
   ];
 
