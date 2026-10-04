@@ -450,6 +450,38 @@ class DesaProfileSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "updated_at", "foto_hero_url"]
 
+    def to_internal_value(self, data):
+        import json
+
+        data_dict = data.copy() if hasattr(data, "copy") else dict(data)
+        if "misi" in data_dict:
+            if hasattr(data, "getlist"):
+                raw_misi_list = data.getlist("misi")
+            elif isinstance(data_dict.get("misi"), list):
+                raw_misi_list = data_dict["misi"]
+            else:
+                raw_misi_list = [data_dict["misi"]]
+
+            parsed_list = []
+            for item in raw_misi_list:
+                if isinstance(item, str) and item.strip().startswith("[") and item.strip().endswith("]"):
+                    try:
+                        inner = json.loads(item.strip())
+                        if isinstance(inner, list):
+                            parsed_list.extend([str(x).strip() for x in inner if str(x).strip()])
+                            continue
+                    except json.JSONDecodeError:
+                        pass
+                if item and str(item).strip():
+                    parsed_list.append(str(item).strip())
+
+            if hasattr(data_dict, "setlist"):
+                data_dict.setlist("misi", parsed_list)
+            else:
+                data_dict["misi"] = parsed_list
+
+        return super().to_internal_value(data_dict)
+
     def get_foto_hero_url(self, instance: DesaProfile) -> Optional[str]:
         if not instance.foto_hero:
             return None

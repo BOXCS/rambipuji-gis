@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink, LogOut, Menu, User, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
@@ -30,9 +31,13 @@ export default function Navbar() {
     >
       <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/peta" className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded bg-[--color-primary] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-            R
-          </div>
+          <Image
+            src="/logo-kabupaten-jember.png"
+            alt="Logo Kabupaten Jember"
+            width={32}
+            height={32}
+            className="w-8 h-8 object-contain flex-shrink-0"
+          />
           <span className="font-semibold text-[--color-primary] text-sm sm:text-base md:text-lg truncate">
             WebGIS Desa Rambipuji
           </span>

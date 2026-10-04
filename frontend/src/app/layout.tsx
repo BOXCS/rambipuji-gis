@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Footer from "../components/Footer";
 import NavbarWrapper from "../components/NavbarWrapper";
 import "./globals.css";
 
@@ -16,6 +17,10 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL
       ?? "https://rambipuji.desa.id"
   ),
+  icons: {
+    icon: "/logo-kabupaten-jember.png",
+    apple: "/logo-kabupaten-jember.png",
+  },
   title: {
     default: "WebGIS Potensi Desa Rambipuji",
     template: "%s | WebGIS Desa Rambipuji",
@@ -111,6 +116,7 @@ export default function RootLayout({
         }} />
         <NavbarWrapper />
         {children}
+        <Footer />
       </body>
     </html>
   );

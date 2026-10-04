@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
@@ -54,9 +55,13 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white rounded-2xl border border-[--border-default] shadow-floating p-8 space-y-6">
         {/* Logo & Heading */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 mx-auto rounded-xl bg-[--color-primary] flex items-center justify-center text-white font-bold text-xl">
-            R
-          </div>
+          <Image
+            src="/logo-kabupaten-jember.png"
+            alt="Logo Kabupaten Jember"
+            width={48}
+            height={48}
+            className="w-12 h-12 mx-auto object-contain"
+          />
           <h1 className="text-xl font-bold text-[--text-primary]">
             WebGIS Desa Rambipuji
           </h1>

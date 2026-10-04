@@ -13,6 +13,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -116,9 +117,13 @@ export default function AdminLayoutClient({
         {/* Top Branding */}
         <div className="h-16 px-4 flex items-center justify-between border-b border-[--border-default]">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded bg-[--color-primary] flex items-center justify-center text-white font-bold text-sm">
-              R
-            </div>
+            <Image
+              src="/logo-kabupaten-jember.png"
+              alt="Logo Kabupaten Jember"
+              width={32}
+              height={32}
+              className="w-8 h-8 object-contain flex-shrink-0"
+            />
             <span className="font-bold text-[--text-primary] text-sm">
               Admin Panel
             </span>

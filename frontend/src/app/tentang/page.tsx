@@ -9,6 +9,7 @@ import {
   Users,
 } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import React from "react";
 import JsonLd from "../../components/JsonLd";
 import MiniMap from "../../components/MiniMap";
@@ -132,6 +133,36 @@ export default async function TentangPage() {
     // use fallbackBoundaryFeature
   }
 
+  // Resolve misi items safely
+  const resolvedMisi: string[] = [];
+  if (Array.isArray(profile.misi)) {
+    profile.misi.forEach((item) => {
+      if (typeof item === "string" && item.trim().startsWith("[")) {
+        try {
+          const parsed = JSON.parse(item);
+          if (Array.isArray(parsed)) {
+            resolvedMisi.push(...parsed.map(String));
+            return;
+          }
+        } catch {
+          // ignore parse error
+        }
+      }
+      resolvedMisi.push(String(item));
+    });
+  } else if (typeof profile.misi === "string") {
+    try {
+      const parsed = JSON.parse(profile.misi);
+      if (Array.isArray(parsed)) {
+        resolvedMisi.push(...parsed.map(String));
+      } else {
+        resolvedMisi.push(profile.misi);
+      }
+    } catch {
+      resolvedMisi.push(profile.misi);
+    }
+  }
+
   // Resolve contact fields — support both new flat fields and legacy kontak object
   const resolvedContact = {
     alamat: profile.alamat_kantor ?? profile.kontak?.alamat ?? "",
@@ -200,22 +231,31 @@ export default async function TentangPage() {
           }}
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 py-16">
-          {/* Location label pill */}
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm mb-4"
-            style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.8)" }}
-          >
-            <MapPin className="h-3.5 w-3.5" />
-            Kec. Rambipuji, Kab. Jember, Jawa Timur
-          </div>
+        <div className="relative max-w-7xl mx-auto px-4 py-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div>
+            {/* Location label pill */}
+            <div
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm mb-4"
+              style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.8)" }}
+            >
+              <MapPin className="h-3.5 w-3.5" />
+              Kec. Rambipuji, Kab. Jember, Jawa Timur
+            </div>
 
-          <h1 className="text-4xl font-semibold mb-3">{profile.nama_desa}</h1>
-          <p className="text-white/80 text-lg max-w-2xl">
-            {profile.deskripsi ||
-              `Selamat datang di portal informasi resmi ${profile.nama_desa}. ` +
-              "Temukan potensi, layanan, dan informasi desa kami di sini."}
-          </p>
+            <h1 className="text-4xl font-semibold mb-3">{profile.nama_desa}</h1>
+            <p className="text-white/80 text-lg max-w-2xl">
+              {profile.deskripsi ||
+                `Selamat datang di portal informasi resmi ${profile.nama_desa}. ` +
+                "Temukan potensi, layanan, dan informasi desa kami di sini."}
+            </p>
+          </div>
+          <Image
+            src="/logo-kabupaten-jember.png"
+            alt="Logo Kabupaten Jember"
+            width={96}
+            height={96}
+            className="w-20 h-20 sm:w-24 sm:h-24 object-contain flex-shrink-0 bg-white/10 p-2.5 rounded-2xl backdrop-blur-sm"
+          />
         </div>
       </section>
 
@@ -328,7 +368,7 @@ export default async function TentangPage() {
                 MISI
               </p>
               <ol className="space-y-0">
-                {profile.misi.map((item, idx) => (
+                {resolvedMisi.map((item, idx) => (
                   <li
                     key={idx}
                     className="flex gap-3 items-start py-2 border-b border-[--border-default] last:border-0"

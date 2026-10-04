@@ -84,6 +84,40 @@ const DEFAULT_FORM: FormState = {
 };
 
 function profileToForm(p: DesaProfile): FormState {
+  let misiList: string[] = [];
+
+  if (Array.isArray(p.misi)) {
+    p.misi.forEach((item) => {
+      if (typeof item === "string" && item.trim().startsWith("[")) {
+        try {
+          const parsed = JSON.parse(item);
+          if (Array.isArray(parsed)) {
+            misiList.push(...parsed.map(String));
+            return;
+          }
+        } catch {
+          // ignore parse error
+        }
+      }
+      misiList.push(String(item));
+    });
+  } else if (typeof p.misi === "string") {
+    try {
+      const parsed = JSON.parse(p.misi);
+      if (Array.isArray(parsed)) {
+        misiList = parsed.map(String);
+      } else {
+        misiList = [p.misi];
+      }
+    } catch {
+      misiList = [p.misi];
+    }
+  }
+
+  if (misiList.length === 0) {
+    misiList = [""];
+  }
+
   return {
     nama_desa: p.nama_desa ?? "",
     kecamatan: p.kecamatan ?? "",
@@ -99,7 +133,7 @@ function profileToForm(p: DesaProfile): FormState {
     jumlah_rw: String(p.jumlah_rw ?? 0),
     jumlah_rt: String(p.jumlah_rt ?? 0),
     visi: p.visi ?? "",
-    misi: Array.isArray(p.misi) && p.misi.length > 0 ? p.misi : [""],
+    misi: misiList,
     sejarah: p.sejarah ?? "",
     deskripsi: p.deskripsi ?? "",
     alamat_kantor: p.alamat_kantor ?? p.kontak?.alamat ?? "",
@@ -241,8 +275,12 @@ export default function AdminTentangPage() {
     // Append all text fields
     (Object.keys(form) as (keyof FormState)[]).forEach((key) => {
       if (key === "misi") {
-        // Send misi as JSON string so backend can decode it
-        fd.append("misi", JSON.stringify(form.misi.filter((m) => m.trim())));
+        const activeMisi = form.misi.filter((m) => m.trim());
+        if (activeMisi.length === 0) {
+          fd.append("misi", "");
+        } else {
+          activeMisi.forEach((m) => fd.append("misi", m));
+        }
       } else {
         fd.append(key, form[key] as string);
       }
@@ -384,6 +422,7 @@ export default function AdminTentangPage() {
                   name={name}
                   type="number"
                   min="0"
+                  step={name === "luas_wilayah_ha" ? "any" : "1"}
                   value={form[name as keyof FormState] as string}
                   onChange={handleChange}
                   className={inputCls}
