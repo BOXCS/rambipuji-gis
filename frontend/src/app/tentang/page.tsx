@@ -411,26 +411,6 @@ export default async function TentangPage() {
           ))}
         </div>
       </div>
-
-      {/* Footer */}
-      <footer
-        className="py-8 mt-auto"
-        style={{ background: "var(--text-primary)", color: "white" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-full bg-[--color-primary]" />
-            <span className="font-semibold">WebGIS Desa Rambipuji</span>
-          </div>
-          <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
-            &copy; 2025 Desa Rambipuji, Kec. Rambipuji, Kab. Jember, Jawa
-            Timur
-          </p>
-          <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>
-            Dibangun dengan Next.js &middot; GeoServer &middot; PostGIS
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
