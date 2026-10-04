@@ -411,6 +411,62 @@ export default async function TentangPage() {
           ))}
         </div>
       </div>
+
+      {/* Pihak Yang Berkontribusi Section */}
+      <div className="bg-white border-t border-[--border-default] py-12 w-full">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-semibold text-[--text-primary] mb-2">
+            Pihak Yang Berkontribusi
+          </h2>
+          <p className="text-sm text-[--text-secondary] max-w-xl mx-auto mb-8">
+            Pengembangan WebGIS dan Sistem Informasi Desa Rambipuji didukung oleh kolaborasi dan pendanaan PNBP.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+            {/* Logo Polije */}
+            <div className="flex flex-col items-center gap-3 bg-[--bg-surface-raised] p-6 rounded-2xl border border-[--border-default] hover:shadow-md transition w-64">
+              <div className="h-20 flex items-center justify-center">
+                <Image
+                  src="/logo Polije.png"
+                  alt="Politeknik Negeri Jember"
+                  width={80}
+                  height={80}
+                  className="h-16 w-auto object-contain"
+                />
+              </div>
+              <div className="text-center">
+                <span className="block font-semibold text-sm text-[--text-primary]">
+                  Politeknik Negeri Jember
+                </span>
+                <span className="block text-xs text-[--text-muted] mt-0.5">
+                  Pendanaan PNBP Polije 2026
+                </span>
+              </div>
+            </div>
+
+            {/* Logo Pemkab Jember / Desa Rambipuji */}
+            <div className="flex flex-col items-center gap-3 bg-[--bg-surface-raised] p-6 rounded-2xl border border-[--border-default] hover:shadow-md transition w-64">
+              <div className="h-20 flex items-center justify-center">
+                <Image
+                  src="/logo-kabupaten-jember.png"
+                  alt="Pemerintah Desa Rambipuji"
+                  width={80}
+                  height={80}
+                  className="h-16 w-auto object-contain"
+                />
+              </div>
+              <div className="text-center">
+                <span className="block font-semibold text-sm text-[--text-primary]">
+                  Pemerintah Desa Rambipuji
+                </span>
+                <span className="block text-xs text-[--text-muted] mt-0.5">
+                  Kec. Rambipuji, Kab. Jember
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

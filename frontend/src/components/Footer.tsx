@@ -47,10 +47,17 @@ export default function Footer() {
   return (
     <footer className="w-full bg-white border-t border-[--border-default] py-6 px-4 mt-auto">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[--text-secondary]">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <Image
             src="/logo-kabupaten-jember.png"
             alt="Logo Kabupaten Jember"
+            width={24}
+            height={24}
+            className="w-6 h-6 object-contain flex-shrink-0"
+          />
+          <Image
+            src="/logo Polije.png"
+            alt="Logo Politeknik Negeri Jember"
             width={24}
             height={24}
             className="w-6 h-6 object-contain flex-shrink-0"

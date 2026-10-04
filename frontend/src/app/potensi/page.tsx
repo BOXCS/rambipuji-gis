@@ -1,7 +1,9 @@
 "use client";
 
-import { ChevronRight, ExternalLink, Home, Search } from "lucide-react";
+import { ChevronRight, ExternalLink, Home, MapPin, Search } from "lucide-react";
+import Image from "next/image";
 import React, { useMemo, useState } from "react";
+import CategoryBadge from "../../components/CategoryBadge";
 import EmptyState from "../../components/EmptyState";
 import FilterTabs from "../../components/FilterTabs";
 import PotensiCard from "../../components/PotensiCard";
@@ -178,39 +180,57 @@ export default function PotensiPage() {
             )}
           </div>
         ) : (
-          <div className="space-y-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredFeatures.map((feature) => (
-                <PotensiCard
-                  key={`${feature.properties.kategori}-${feature.properties.id ?? feature.id}`}
-                  feature={feature}
-                />
-              ))}
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredFeatures.map((feature) => (
+              <PotensiCard
+                key={`${feature.properties.kategori}-${feature.properties.id ?? feature.id}`}
+                feature={feature}
+              />
+            ))}
 
-            {/* Banner Link UMKM Masyarakat (Di Bawah Potensi Spasial) */}
+            {/* Kartu Portal Katalog UMKM di Bagian Akhir List Potensi */}
             {(activeTab === "semua" || activeTab === "umkm") && (
-              <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-xs font-medium text-white">
-                    <span>Portal Katalog UMKM Warga</span>
+              <div className="bg-white rounded-xl border border-[--border-default] overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
+                {/* Photo area */}
+                <div className="relative w-full aspect-video overflow-hidden bg-gray-100">
+                  <Image
+                    src="/katalog UMKM.png"
+                    alt="Portal Katalog UMKM Masyarakat Desa Rambipuji"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 400px"
+                  />
+                  <div className="absolute bottom-2 left-2 z-10">
+                    <CategoryBadge kategori="umkm" />
                   </div>
-                  <h2 className="text-xl font-bold tracking-tight">
+                </div>
+
+                {/* Card body */}
+                <div className="p-4 flex flex-col flex-grow">
+                  <h3 className="font-semibold text-base text-[--text-primary] line-clamp-1">
                     UMKM Masyarakat Desa Rambipuji
-                  </h2>
-                  <p className="text-sm text-white/90 max-w-2xl">
+                  </h3>
+                  <p className="text-sm text-[--text-secondary] line-clamp-2 mt-1 flex-grow">
                     Jelajahi ekosistem & direktori lengkap UMKM warga Desa Rambipuji secara komprehensif melalui portal katalog UMKM masyarakat.
                   </p>
+
+                  <div className="flex items-center gap-1 mt-2">
+                    <MapPin className="h-3.5 w-3.5 text-[--text-muted] flex-shrink-0" />
+                    <span className="text-xs text-[--text-muted]">Desa Rambipuji · Portal Eksternal</span>
+                  </div>
+
+                  <div className="border-t border-[--border-default] mt-3 pt-3">
+                    <a
+                      href="https://katalog-preview-by-relva-studio-plum.vercel.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-1.5 text-sm font-medium py-2 rounded-lg border border-[--color-primary] text-[--color-primary] hover:bg-[--color-primary-subtle] transition-colors duration-150"
+                    >
+                      Lihat Detail
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
                 </div>
-                <a
-                  href="https://katalog-preview-by-relva-studio-plum.vercel.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-emerald-800 hover:bg-emerald-50 text-sm font-semibold rounded-xl shadow transition whitespace-nowrap flex-shrink-0"
-                >
-                  <span>Kunjungi Portal UMKM</span>
-                  <ExternalLink className="w-4 h-4 text-emerald-800" />
-                </a>
               </div>
             )}
           </div>
