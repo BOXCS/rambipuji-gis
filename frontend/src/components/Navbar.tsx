@@ -17,17 +17,16 @@ export default function Navbar() {
   const navLinks: Array<{ href: string; label: string; isExternal?: boolean }> = [
     { href: "/peta", label: "Peta" },
     { href: "/potensi", label: "Potensi" },
-    { href: "https://katalog-preview-by-relva-studio-plum.vercel.app/", label: "UMKM Masyarakat", isExternal: true },
+    // { href: "https://katalog-preview-by-relva-studio-plum.vercel.app/", label: "UMKM Masyarakat", isExternal: true },
     { href: "/tentang", label: "Tentang" },
   ];
 
   return (
     <header
-      className={`w-full h-16 border-b border-[--border-default] z-50 flex items-center px-4 md:px-8 transition-colors ${
-        isPetaRoute
+      className={`w-full h-16 border-b border-[--border-default] z-50 flex items-center px-4 md:px-8 transition-colors ${isPetaRoute
           ? "absolute top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-sm"
           : "bg-white"
-      }`}
+        }`}
     >
       <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/peta" className="flex items-center space-x-2.5">
@@ -67,11 +66,10 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`h-16 inline-flex items-center px-1 text-sm font-medium transition ${
-                    active
+                  className={`h-16 inline-flex items-center px-1 text-sm font-medium transition ${active
                       ? "border-b-2 border-[--color-primary] text-[--color-primary] font-semibold"
                       : "text-[--text-secondary] hover:text-[--text-primary] border-b-2 border-transparent"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -157,11 +155,10 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileNavOpen(false)}
-                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition ${
-                    active
+                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition ${active
                       ? "bg-[--color-primary-subtle] text-[--color-primary] font-semibold"
                       : "text-[--text-secondary] hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>
