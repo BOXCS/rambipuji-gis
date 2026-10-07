@@ -144,6 +144,149 @@ function profileToForm(p: DesaProfile): FormState {
   };
 }
 
+// ─── Bullet Textarea Helper ──────────────────────────────────────────────────
+
+function BulletTextarea({
+  id,
+  name,
+  label,
+  value,
+  rows,
+  onChange,
+  placeholder,
+}: {
+  id: string;
+  name: string;
+  label: string;
+  value: string;
+  rows: number;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+}) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== "Enter") return;
+
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const val = textarea.value;
+
+    const lastNewlineBeforeCursor = val.lastIndexOf("\n", start - 1);
+    const currentLineStart = lastNewlineBeforeCursor === -1 ? 0 : lastNewlineBeforeCursor + 1;
+    const currentLine = val.substring(currentLineStart, start);
+
+    const bulletMatch = currentLine.match(/^(\s*[-•*]\s*)/);
+
+    if (bulletMatch) {
+      e.preventDefault();
+      const prefix = bulletMatch[1];
+      const textAfterPrefix = currentLine.substring(prefix.length).trim();
+
+      if (textAfterPrefix === "") {
+        // Empty bullet line — remove bullet prefix from current line
+        const newVal = val.substring(0, currentLineStart) + val.substring(start);
+        const event = {
+          target: { name, value: newVal },
+        } as React.ChangeEvent<HTMLTextAreaElement>;
+        onChange(event);
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.selectionStart = currentLineStart;
+            textareaRef.current.selectionEnd = currentLineStart;
+          }
+        }, 0);
+      } else {
+        // Non-empty bullet line — auto insert bullet on next line
+        const bulletToInsert = `\n${prefix.includes("•") ? "• " : prefix.includes("*") ? "* " : "- "}`;
+        const newVal = val.substring(0, start) + bulletToInsert + val.substring(end);
+        const event = {
+          target: { name, value: newVal },
+        } as React.ChangeEvent<HTMLTextAreaElement>;
+        onChange(event);
+        setTimeout(() => {
+          if (textareaRef.current) {
+            const newPos = start + bulletToInsert.length;
+            textareaRef.current.selectionStart = newPos;
+            textareaRef.current.selectionEnd = newPos;
+          }
+        }, 0);
+      }
+    }
+  };
+
+  const handleInsertBullet = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const val = textarea.value;
+    const lastNewlineBeforeCursor = val.lastIndexOf("\n", start - 1);
+    const currentLineStart = lastNewlineBeforeCursor === -1 ? 0 : lastNewlineBeforeCursor + 1;
+    const currentLine = val.substring(currentLineStart);
+
+    let newVal: string;
+    let newCursorPos: number;
+
+    if (/^\s*[-•*]\s*/.test(currentLine)) {
+      newVal = val.substring(0, currentLineStart) + currentLine.replace(/^\s*[-•*]\s*/, "");
+      newCursorPos = Math.max(currentLineStart, start - 2);
+    } else {
+      const prefix = "- ";
+      newVal = val.substring(0, currentLineStart) + prefix + val.substring(currentLineStart);
+      newCursorPos = start + prefix.length;
+    }
+
+    const event = {
+      target: { name, value: newVal },
+    } as React.ChangeEvent<HTMLTextAreaElement>;
+    onChange(event);
+
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.selectionStart = newCursorPos;
+        textareaRef.current.selectionEnd = newCursorPos;
+      }
+    }, 0);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <label htmlFor={id} className="block text-xs font-medium text-[--text-secondary]">
+          {label}
+        </label>
+        <button
+          type="button"
+          onClick={handleInsertBullet}
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-[--color-primary-subtle] text-[--color-primary] hover:bg-[--color-primary] hover:text-white transition-colors"
+          title="Klik untuk membuat poin / bullet list"
+        >
+          <span>• Tambah Poin (-)</span>
+        </button>
+      </div>
+      <textarea
+        ref={textareaRef}
+        id={id}
+        name={name}
+        rows={rows}
+        value={value}
+        onChange={onChange}
+        onKeyDown={handleKeyDown}
+        className={`${inputCls} font-sans leading-relaxed`}
+        placeholder={placeholder}
+      />
+      <p className="text-[11px] text-[--text-muted] mt-1">
+        Tips: Ketik <code className="bg-gray-100 px-1 py-0.5 rounded text-gray-700 font-mono">- </code> lalu tekan Enter untuk membuat baris poin otomatis.
+      </p>
+    </div>
+  );
+}
+
 // ─── Section wrapper ─────────────────────────────────────────────────────────
 
 function Section({
@@ -490,29 +633,25 @@ export default function AdminTentangPage() {
 
         {/* ── Section 4: Tentang Desa ───────────────────────────────────── */}
         <Section title="Tentang Desa">
-          <div className="space-y-4">
-            <Field label="Deskripsi Singkat (tampil di hero halaman Tentang)" id="deskripsi">
-              <textarea
-                id="deskripsi"
-                name="deskripsi"
-                rows={3}
-                value={form.deskripsi}
-                onChange={handleChange}
-                className={inputCls}
-                placeholder="Desa Rambipuji adalah..."
-              />
-            </Field>
-            <Field label="Sejarah Desa (tampil di bagian Tentang)" id="sejarah">
-              <textarea
-                id="sejarah"
-                name="sejarah"
-                rows={5}
-                value={form.sejarah}
-                onChange={handleChange}
-                className={inputCls}
-                placeholder="Desa Rambipuji berdiri pada..."
-              />
-            </Field>
+          <div className="space-y-6">
+            <BulletTextarea
+              id="deskripsi"
+              name="deskripsi"
+              label="Deskripsi Singkat (tampil di hero halaman Tentang)"
+              rows={3}
+              value={form.deskripsi}
+              onChange={handleChange}
+              placeholder="Ketik deskripsi singkat desa... Gunakan '-' untuk baris poin otomatis."
+            />
+            <BulletTextarea
+              id="sejarah"
+              name="sejarah"
+              label="Sejarah Desa (tampil di bagian Tentang)"
+              rows={6}
+              value={form.sejarah}
+              onChange={handleChange}
+              placeholder="Ketik sejarah & profil desa... Gunakan '-' untuk baris poin otomatis."
+            />
           </div>
         </Section>
 

@@ -9,13 +9,61 @@ export interface PotensiCardProps {
   feature: PotensiFeature;
 }
 
+function getCardDescription(properties: Record<string, any>): string {
+  const {
+    deskripsi,
+    kategori,
+    komoditas,
+    luas_ha,
+    hasil_panen,
+    nama_pemilik,
+    jenis_produk,
+    jam_operasional,
+    jam_kunjungan,
+    harga_tiket,
+    jenis_fasilitas,
+    kondisi,
+    pengelola,
+  } = properties;
+
+  if (deskripsi && String(deskripsi).trim() !== "") {
+    return String(deskripsi).trim();
+  }
+
+  const parts: string[] = [];
+  if (kategori === "pertanian") {
+    if (komoditas) parts.push(`Komoditas: ${komoditas}`);
+    if (luas_ha) parts.push(`Luas: ${luas_ha} Ha`);
+    if (hasil_panen) parts.push(`Hasil: ${hasil_panen}`);
+    if (nama_pemilik) parts.push(`Pemilik: ${nama_pemilik}`);
+  } else if (kategori === "umkm") {
+    if (jenis_produk) parts.push(`Produk: ${jenis_produk}`);
+    if (nama_pemilik) parts.push(`Pemilik: ${nama_pemilik}`);
+    if (jam_operasional) parts.push(`Jam: ${jam_operasional}`);
+  } else if (kategori === "wisata") {
+    if (jam_kunjungan) parts.push(`Jam Kunjungan: ${jam_kunjungan}`);
+    if (harga_tiket) parts.push(`Tiket: ${harga_tiket}`);
+  } else if (kategori === "infrastruktur") {
+    if (jenis_fasilitas) parts.push(`Fasilitas: ${jenis_fasilitas}`);
+    if (kondisi) parts.push(`Kondisi: ${kondisi}`);
+    if (pengelola) parts.push(`Pengelola: ${pengelola}`);
+  }
+
+  if (parts.length > 0) {
+    return parts.join(" • ");
+  }
+
+  return "Potensi unggulan Desa Rambipuji, Kabupaten Jember.";
+}
+
 export default function PotensiCard({ feature }: PotensiCardProps) {
-  const { id, nama, nama_usaha, foto, foto_list_urls, kategori, deskripsi } =
+  const { id, nama, nama_usaha, foto, foto_list_urls, kategori } =
     feature.properties;
   const title = nama || nama_usaha || "Tanpa Nama";
   const featureId = id ?? feature.id ?? null;
   const detailHref =
     kategori && featureId ? `/potensi/${kategori}/${featureId}` : null;
+  const cardDescription = getCardDescription(feature.properties);
 
   // Build images array — prefer foto_list_urls, fall back to single foto
   const images: string[] =
@@ -41,9 +89,11 @@ export default function PotensiCard({ feature }: PotensiCardProps) {
         <h3 className="font-semibold text-base text-[--text-primary] line-clamp-1">
           {title}
         </h3>
-        <p className="text-sm text-[--text-secondary] line-clamp-2 mt-1 flex-grow">
-          {deskripsi ||
-            "Informasi potensi desa di kawasan Rambipuji, Kabupaten Jember."}
+        <p
+          className="text-sm text-[--text-secondary] line-clamp-2 mt-1 flex-grow"
+          title={cardDescription}
+        >
+          {cardDescription}
         </p>
 
         {/* Location row */}

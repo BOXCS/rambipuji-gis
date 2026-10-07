@@ -11,11 +11,67 @@ import {
 import type { Metadata } from "next";
 import Image from "next/image";
 import React from "react";
+import HeroCarousel, { HeroCarouselImage } from "../../components/HeroCarousel";
 import JsonLd from "../../components/JsonLd";
 import MiniMap from "../../components/MiniMap";
 import StatCard from "../../components/StatCard";
-import { getBatasWilayah, getDesaProfile, getStatistik } from "../../lib/api";
-import type { DesaProfile, PotensiFeature, StatistikData } from "../../types";
+import { getBatasWilayah, getDesaProfile, getPotensiAll, getStatistik } from "../../lib/api";
+import type { DesaProfile, PotensiCollection, PotensiFeature, StatistikData } from "../../types";
+
+function FormattedText({
+  text,
+  fallback,
+}: {
+  text?: string;
+  fallback: React.ReactNode;
+}) {
+  if (!text || text.trim() === "") {
+    return <>{fallback}</>;
+  }
+
+  const lines = text.split("\n");
+  const blocks: React.ReactNode[] = [];
+  let currentListItems: string[] = [];
+
+  const flushList = () => {
+    if (currentListItems.length > 0) {
+      blocks.push(
+        <ul key={`ul-${blocks.length}`} className="space-y-2 my-2 pl-1">
+          {currentListItems.map((item, idx) => (
+            <li key={idx} className="flex items-start gap-2.5">
+              <span className="w-5 h-5 rounded-full bg-[--color-primary-subtle] text-[--color-primary] font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
+                •
+              </span>
+              <span className="leading-relaxed">{item}</span>
+            </li>
+          ))}
+        </ul>
+      );
+      currentListItems = [];
+    }
+  };
+
+  lines.forEach((line, i) => {
+    const trimmed = line.trim();
+    if (/^[-•*]\s*/.test(trimmed)) {
+      const itemText = trimmed.replace(/^[-•*]\s*/, "");
+      if (itemText) currentListItems.push(itemText);
+    } else {
+      flushList();
+      if (trimmed !== "") {
+        blocks.push(
+          <p key={`p-${i}`} className="leading-relaxed mb-3 last:mb-0">
+            {trimmed}
+          </p>
+        );
+      }
+    }
+  });
+
+  flushList();
+
+  return <div>{blocks}</div>;
+}
 
 // Always fetch fresh data — do not serve a cached HTML render of this page.
 // Without this, Next.js would cache the statistik counts from the first render
@@ -133,6 +189,50 @@ export default async function TentangPage() {
     // use fallbackBoundaryFeature
   }
 
+  let potensiData: PotensiCollection | null = null;
+  try {
+    potensiData = await getPotensiAll();
+  } catch {
+    // ignore
+  }
+
+  // Build hero carousel images from profile hero photo + all potensi photos in Rambipuji
+  const heroImages: HeroCarouselImage[] = [];
+
+  if (profile.foto_hero_url) {
+    heroImages.push({
+      url: profile.foto_hero_url,
+      title: `Profil ${profile.nama_desa}`,
+    });
+  }
+
+  if (potensiData && potensiData.features) {
+    potensiData.features.forEach((feat) => {
+      const p = feat.properties;
+      const title = p.nama || p.nama_usaha || "Potensi Desa";
+      const cat = p.kategori || "";
+
+      if (p.foto_list_urls && p.foto_list_urls.length > 0) {
+        p.foto_list_urls.forEach((u: string) => {
+          if (u && !heroImages.some((i) => i.url === u)) {
+            heroImages.push({ url: u, title, category: cat });
+          }
+        });
+      } else if (p.foto && typeof p.foto === "string") {
+        if (!heroImages.some((i) => i.url === p.foto)) {
+          heroImages.push({ url: p.foto, title, category: cat });
+        }
+      }
+    });
+  }
+
+  if (heroImages.length === 0) {
+    heroImages.push({
+      url: "/logo-kabupaten-jember.png",
+      title: "Desa Rambipuji",
+    });
+  }
+
   // Resolve misi items safely
   const resolvedMisi: string[] = [];
   if (Array.isArray(profile.misi)) {
@@ -207,57 +307,41 @@ export default async function TentangPage() {
         },
         "url": `${process.env.NEXT_PUBLIC_SITE_URL}/tentang`
       }} />
-      {/* Hero section — layered gradient with decorative blobs */}
-      <section
-        className="relative text-white overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(to bottom right, var(--color-primary), #0f3d28)",
-        }}
-      >
-        {/* Decorative circle blobs */}
-        <div
-          className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
-          style={{
-            background: "rgba(255,255,255,0.05)",
-            transform: "translate(50%, -50%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-64 h-64 rounded-full pointer-events-none"
-          style={{
-            background: "rgba(255,255,255,0.05)",
-            transform: "translate(-50%, 50%)",
-          }}
-        />
 
-        <div className="relative max-w-7xl mx-auto px-4 py-16 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      {/* Hero section — Auto-playing Background Photo Carousel featuring all Potensi in Rambipuji */}
+      <HeroCarousel images={heroImages}>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
             {/* Location label pill */}
             <div
-              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm mb-4"
-              style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.8)" }}
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm mb-4 backdrop-blur-md"
+              style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.9)" }}
             >
               <MapPin className="h-3.5 w-3.5" />
               Kec. Rambipuji, Kab. Jember, Jawa Timur
             </div>
 
-            <h1 className="text-4xl font-semibold mb-3">{profile.nama_desa}</h1>
-            <p className="text-white/80 text-lg max-w-2xl">
-              {profile.deskripsi ||
-                `Selamat datang di portal informasi resmi ${profile.nama_desa}. ` +
-                "Temukan potensi, layanan, dan informasi desa kami di sini."}
-            </p>
+            <h1 className="text-4xl font-semibold mb-3 tracking-tight">{profile.nama_desa}</h1>
+            <div className="text-white/90 text-lg max-w-2xl">
+              <FormattedText
+                text={profile.deskripsi}
+                fallback={
+                  <p>
+                    Selamat datang di portal informasi resmi {profile.nama_desa}. Temukan potensi, layanan, dan informasi desa kami di sini.
+                  </p>
+                }
+              />
+            </div>
           </div>
           <Image
             src="/logo-kabupaten-jember.png"
             alt="Logo Kabupaten Jember"
             width={96}
             height={96}
-            className="w-20 h-20 sm:w-24 sm:h-24 object-contain flex-shrink-0 bg-white/10 p-2.5 rounded-2xl backdrop-blur-sm"
+            className="w-20 h-20 sm:w-24 sm:h-24 object-contain flex-shrink-0 bg-white/10 p-2.5 rounded-2xl backdrop-blur-md border border-white/20"
           />
         </div>
-      </section>
+      </HeroCarousel>
 
       {/* StatCards — elevated above hero with negative margin */}
       <div className="max-w-7xl mx-auto px-4 w-full -mt-6 mb-10 relative z-10">
@@ -288,7 +372,7 @@ export default async function TentangPage() {
       {/* About section — 2 columns */}
       <div className="max-w-7xl mx-auto px-4 mb-12 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Left: text */}
+          {/* Left: text with formatted paragraphs & bullet lists */}
           <div>
             <p className="text-[--color-primary] text-sm font-semibold tracking-wider uppercase mb-3">
               Tentang Desa
@@ -296,34 +380,50 @@ export default async function TentangPage() {
             <h2 className="text-2xl font-semibold text-[--text-primary] mb-4">
               Profil Singkat &amp; Administrasi
             </h2>
-            <div className="text-[--text-secondary] leading-relaxed text-base space-y-3">
-              {profile.sejarah ? (
-                profile.sejarah.split("\n\n").map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))
-              ) : (
-                <>
-                  <p>
-                    Desa Rambipuji merupakan desa di Kecamatan Rambipuji, Kabupaten Jember, Jawa Timur,
-                    yang memiliki potensi lokal berbasis wisata, sejarah, budaya, dan ekonomi kreatif
-                    masyarakat. Desa ini memiliki potensi wisata seperti Gumuk Gong dan Gumuk Dempet,
-                  </p>
-                  <p>
-                    serta aktivitas ekonomi masyarakat seperti usaha tempe yang berkembang secara turun-temurun.
-                    Potensi tersebut menjadi dasar pengembangan desa berbasis pariwisata, industri kreatif,
-                    dan promosi digital.
-                  </p>
-                </>
-              )}
+            <div className="text-[--text-secondary] leading-relaxed text-base">
+              <FormattedText
+                text={profile.sejarah}
+                fallback={
+                  <>
+                    <p className="mb-3">
+                      Desa Rambipuji merupakan desa di Kecamatan Rambipuji, Kabupaten Jember, Jawa Timur,
+                      yang memiliki potensi lokal berbasis wisata, sejarah, budaya, dan ekonomi kreatif
+                      masyarakat. Desa ini memiliki potensi wisata seperti Gumuk Gong dan Gumuk Dempet,
+                    </p>
+                    <p>
+                      serta aktivitas ekonomi masyarakat seperti usaha tempe yang berkembang secara turun-temurun.
+                      Potensi tersebut menjadi dasar pengembangan desa berbasis pariwisata, industri kreatif,
+                      dan promosi digital.
+                    </p>
+                  </>
+                }
+              />
             </div>
           </div>
 
-          {/* Right: mini map + address */}
+          {/* Right: Foto Hero unggulan + mini map + address */}
           <div className="space-y-4">
+            {profile.foto_hero_url && (
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-md border border-[--border-default] group">
+                <Image
+                  src={profile.foto_hero_url}
+                  alt={`Dokumentasi ${profile.nama_desa}`}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, 600px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
+                  <span className="text-xs font-medium text-white/90 drop-shadow">
+                    Dokumentasi Resmi {profile.nama_desa}
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div className="rounded-2xl overflow-hidden shadow-md h-64">
               <MiniMap feature={boundaryFeature} />
             </div>
-            <div className="bg-[--bg-surface-raised] rounded-xl p-4 flex items-start gap-3">
+            <div className="bg-[--bg-surface-raised] rounded-xl p-4 flex items-start gap-3 border border-[--border-default]">
               <MapPin className="h-4 w-4 text-[--color-primary] flex-shrink-0 mt-0.5" />
               <p className="text-sm text-[--text-secondary]">
                 {resolvedContact.alamat}
