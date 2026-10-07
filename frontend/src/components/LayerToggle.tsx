@@ -21,11 +21,11 @@ interface LayerItem {
 
 const LAYERS: LayerItem[] = [
   {
-    key: "pertanian",
-    label: "Pertanian & Perkebunan",
-    colorVar: "var(--cat-pertanian)",
-    borderColorVar: "var(--cat-pertanian)",
-    countKey: "pertanian",
+    key: "wisata",
+    label: "Wisata & Budaya",
+    colorVar: "var(--cat-wisata)",
+    borderColorVar: "var(--cat-wisata)",
+    countKey: "wisata",
   },
   {
     key: "umkm",
@@ -35,18 +35,18 @@ const LAYERS: LayerItem[] = [
     countKey: "umkm",
   },
   {
-    key: "wisata",
-    label: "Wisata & Budaya",
-    colorVar: "var(--cat-wisata)",
-    borderColorVar: "var(--cat-wisata)",
-    countKey: "wisata",
-  },
-  {
     key: "infrastruktur",
     label: "Infrastruktur & Fasilitas",
     colorVar: "var(--cat-infrastruktur)",
     borderColorVar: "var(--cat-infrastruktur)",
     countKey: "infrastruktur",
+  },
+  {
+    key: "pertanian",
+    label: "Pertanian & Perkebunan",
+    colorVar: "var(--cat-pertanian)",
+    borderColorVar: "var(--cat-pertanian)",
+    countKey: "pertanian",
   },
 ];
 

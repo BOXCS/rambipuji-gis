@@ -196,6 +196,22 @@ export default async function TentangPage() {
     // ignore
   }
 
+  // Find Balai Desa Rambipuji location point from infrastructure tag
+  let balaiDesaFeature: PotensiFeature | null = null;
+  if (potensiData && potensiData.features) {
+    balaiDesaFeature =
+      potensiData.features.find((f) => {
+        const name = (f.properties.nama || f.properties.nama_usaha || "").toLowerCase();
+        const cat = f.properties.kategori;
+        return (
+          cat === "infrastruktur" &&
+          (name.includes("balai desa") || name.includes("kantor desa") || name.includes("balai") || name.includes("kantor"))
+        );
+      }) ||
+      potensiData.features.find((f) => f.properties.kategori === "infrastruktur") ||
+      null;
+  }
+
   // Build hero carousel images from profile hero photo + all potensi photos in Rambipuji
   const heroImages: HeroCarouselImage[] = [];
 
@@ -421,7 +437,7 @@ export default async function TentangPage() {
             )}
 
             <div className="rounded-2xl overflow-hidden shadow-md h-64">
-              <MiniMap feature={boundaryFeature} />
+              <MiniMap feature={balaiDesaFeature} boundaryFeature={boundaryFeature} />
             </div>
             <div className="bg-[--bg-surface-raised] rounded-xl p-4 flex items-start gap-3 border border-[--border-default]">
               <MapPin className="h-4 w-4 text-[--color-primary] flex-shrink-0 mt-0.5" />

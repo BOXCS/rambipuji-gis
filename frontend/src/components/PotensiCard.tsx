@@ -9,7 +9,7 @@ export interface PotensiCardProps {
   feature: PotensiFeature;
 }
 
-function getCardDescription(properties: Record<string, any>): string {
+function getCardDescription(properties: Record<string, any>, title: string): string {
   const {
     deskripsi,
     kategori,
@@ -53,7 +53,8 @@ function getCardDescription(properties: Record<string, any>): string {
     return parts.join(" • ");
   }
 
-  return "Potensi unggulan Desa Rambipuji, Kabupaten Jember.";
+  const catLabel = kategori ? String(kategori).toLowerCase() : "desa";
+  return `${title} merupakan salah satu sektor potensi ${catLabel} yang berada di kawasan Desa Rambipuji, Kabupaten Jember.`;
 }
 
 export default function PotensiCard({ feature }: PotensiCardProps) {
@@ -63,7 +64,7 @@ export default function PotensiCard({ feature }: PotensiCardProps) {
   const featureId = id ?? feature.id ?? null;
   const detailHref =
     kategori && featureId ? `/potensi/${kategori}/${featureId}` : null;
-  const cardDescription = getCardDescription(feature.properties);
+  const cardDescription = getCardDescription(feature.properties, title);
 
   // Build images array — prefer foto_list_urls, fall back to single foto
   const images: string[] =

@@ -3,48 +3,51 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import React, { useEffect } from "react";
-import { GeoJSON, MapContainer, Marker, TileLayer } from "react-leaflet";
+import { GeoJSON, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import type { PotensiFeature } from "../types";
 
 export interface MiniMapInnerProps {
-  feature: PotensiFeature;
+  feature?: PotensiFeature | null;
+  boundaryFeature?: PotensiFeature | null;
 }
 
-function getCenterLatLng(geometry: PotensiFeature["geometry"]): [number, number] {
+function getCenterLatLng(geometry?: PotensiFeature["geometry"] | null): [number, number] {
+  if (!geometry) return [-8.2562, 113.6148];
+
   if (geometry.type === "Point") {
     const [lng, lat] = geometry.coordinates;
-    return [lat, lng];
+    return [lat, lng] as [number, number];
   }
 
   if (geometry.type === "Polygon") {
     const ring = geometry.coordinates[0] || [];
-    if (ring.length === 0) return [-8.25, 113.6];
+    if (ring.length === 0) return [-8.2562, 113.6148];
     let sumLat = 0;
     let sumLng = 0;
     for (const coord of ring) {
       sumLng += coord[0];
       sumLat += coord[1];
     }
-    return [sumLat / ring.length, sumLng / ring.length];
+    return [sumLat / ring.length, sumLng / ring.length] as [number, number];
   }
 
   if (geometry.type === "MultiPolygon") {
     const poly = geometry.coordinates[0] || [];
     const ring = poly[0] || [];
-    if (ring.length === 0) return [-8.25, 113.6];
+    if (ring.length === 0) return [-8.2562, 113.6148];
     let sumLat = 0;
     let sumLng = 0;
     for (const coord of ring) {
       sumLng += coord[0];
       sumLat += coord[1];
     }
-    return [sumLat / ring.length, sumLng / ring.length];
+    return [sumLat / ring.length, sumLng / ring.length] as [number, number];
   }
 
-  return [-8.25, 113.6];
+  return [-8.2562, 113.6148];
 }
 
-export default function MiniMapInner({ feature }: MiniMapInnerProps) {
+export default function MiniMapInner({ feature, boundaryFeature }: MiniMapInnerProps) {
   useEffect(() => {
     delete (
       L.Icon.Default.prototype as unknown as Record<string, unknown>
@@ -57,34 +60,47 @@ export default function MiniMapInner({ feature }: MiniMapInnerProps) {
     });
   }, []);
 
-  const center = getCenterLatLng(feature.geometry);
-  const isPoint = feature.geometry.type === "Point";
+  const pointLocation: [number, number] = feature ? getCenterLatLng(feature.geometry) : [-8.2562, 113.6148];
+  const pointTitle = feature?.properties?.nama || feature?.properties?.nama_usaha || "Balai Desa Rambipuji";
 
   return (
-    <div className="w-full h-48 rounded-xl overflow-hidden border border-[--border-default]">
+    <div className="w-full h-64 rounded-xl overflow-hidden border border-[--border-default] relative">
       <MapContainer
-        center={center}
-        zoom={15}
-        dragging={false}
-        zoomControl={false}
+        center={pointLocation}
+        zoom={16}
+        dragging={true}
+        zoomControl={true}
         scrollWheelZoom={false}
         doubleClickZoom={false}
         attributionControl={false}
         className="w-full h-full"
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {isPoint ? (
-          <Marker position={center} />
-        ) : (
+
+        {/* Boundary overlay if present */}
+        {boundaryFeature && (
           <GeoJSON
-            data={feature as GeoJSON.Feature}
+            data={boundaryFeature as GeoJSON.Feature}
             style={() => ({
               color: "var(--color-primary)",
-              weight: 2,
-              fillOpacity: 0.2,
+              weight: 1.5,
+              fillOpacity: 0.08,
+              dashArray: "4,4",
             })}
           />
         )}
+
+        {/* Balai Desa Rambipuji point marker */}
+        <Marker position={pointLocation}>
+          <Popup>
+            <div className="font-semibold text-xs text-[--text-primary]">
+              {pointTitle}
+            </div>
+            <div className="text-[10px] text-[--text-muted]">
+              Fasilitas &amp; Infrastruktur Desa Rambipuji
+            </div>
+          </Popup>
+        </Marker>
       </MapContainer>
     </div>
   );

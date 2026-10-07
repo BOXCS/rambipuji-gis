@@ -14,10 +14,10 @@ interface TabOption {
 
 const TAB_OPTIONS: TabOption[] = [
   { key: "semua", label: "Semua", colorVar: "var(--color-primary)" },
-  { key: "pertanian", label: "Pertanian", colorVar: "var(--cat-pertanian)" },
-  { key: "umkm", label: "UMKM", colorVar: "var(--cat-umkm)" },
   { key: "wisata", label: "Wisata", colorVar: "var(--cat-wisata)" },
+  { key: "umkm", label: "UMKM", colorVar: "var(--cat-umkm)" },
   { key: "infrastruktur", label: "Infrastruktur", colorVar: "var(--cat-infrastruktur)" },
+  { key: "pertanian", label: "Pertanian", colorVar: "var(--cat-pertanian)" },
 ];
 
 export default function FilterTabs({ active, onChange }: FilterTabsProps) {

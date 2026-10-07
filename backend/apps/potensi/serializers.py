@@ -73,16 +73,33 @@ class PotensiPertanianListSerializer(GeoFeatureModelSerializer):
     """Lightweight list/map serializer for public endpoints and Leaflet overlays."""
 
     foto = serializers.SerializerMethodField()
+    foto_list_urls = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
 
     class Meta:
         model = PotensiPertanian
         geo_field = "geom"
-        fields = ["id", "nama", "kategori", "foto", "geom"]
+        fields = [
+            "id",
+            "nama",
+            "kategori",
+            "foto",
+            "foto_list_urls",
+            "deskripsi",
+            "komoditas",
+            "luas_ha",
+            "hasil_panen",
+            "nama_pemilik",
+            "geom",
+        ]
 
     def get_foto(self, instance: PotensiPertanian) -> Optional[str]:
         request = self.context.get("request")
         return _build_foto_url(instance, request)
+
+    def get_foto_list_urls(self, instance: PotensiPertanian) -> list[str]:
+        request = self.context.get("request")
+        return _build_foto_list_urls(instance, request)
 
     def get_kategori(self, instance: PotensiPertanian) -> str:
         return "pertanian"
@@ -154,16 +171,32 @@ class PotensiUMKMListSerializer(GeoFeatureModelSerializer):
     """Lightweight list/map serializer for public endpoints and Leaflet overlays."""
 
     foto = serializers.SerializerMethodField()
+    foto_list_urls = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
 
     class Meta:
         model = PotensiUMKM
         geo_field = "geom"
-        fields = ["id", "nama_usaha", "kategori", "foto", "geom"]
+        fields = [
+            "id",
+            "nama_usaha",
+            "kategori",
+            "foto",
+            "foto_list_urls",
+            "deskripsi",
+            "jenis_produk",
+            "nama_pemilik",
+            "jam_operasional",
+            "geom",
+        ]
 
     def get_foto(self, instance: PotensiUMKM) -> Optional[str]:
         request = self.context.get("request")
         return _build_foto_url(instance, request)
+
+    def get_foto_list_urls(self, instance: PotensiUMKM) -> list[str]:
+        request = self.context.get("request")
+        return _build_foto_list_urls(instance, request)
 
     def get_kategori(self, instance: PotensiUMKM) -> str:
         return "umkm"
@@ -228,16 +261,31 @@ class PotensiWisataListSerializer(GeoFeatureModelSerializer):
     """Lightweight list/map serializer for public endpoints and Leaflet overlays."""
 
     foto = serializers.SerializerMethodField()
+    foto_list_urls = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
 
     class Meta:
         model = PotensiWisata
         geo_field = "geom"
-        fields = ["id", "nama", "kategori", "foto", "geom"]
+        fields = [
+            "id",
+            "nama",
+            "kategori",
+            "foto",
+            "foto_list_urls",
+            "deskripsi",
+            "jam_kunjungan",
+            "harga_tiket",
+            "geom",
+        ]
 
     def get_foto(self, instance: PotensiWisata) -> Optional[str]:
         request = self.context.get("request")
         return _build_foto_url(instance, request)
+
+    def get_foto_list_urls(self, instance: PotensiWisata) -> list[str]:
+        request = self.context.get("request")
+        return _build_foto_list_urls(instance, request)
 
     def get_kategori(self, instance: PotensiWisata) -> str:
         return "wisata"
@@ -298,16 +346,32 @@ class PotensiInfrastrukturListSerializer(GeoFeatureModelSerializer):
     """Lightweight list/map serializer for public endpoints and Leaflet overlays."""
 
     foto = serializers.SerializerMethodField()
+    foto_list_urls = serializers.SerializerMethodField()
     kategori = serializers.SerializerMethodField()
 
     class Meta:
         model = PotensiInfrastruktur
         geo_field = "geom"
-        fields = ["id", "nama", "kategori", "foto", "geom"]
+        fields = [
+            "id",
+            "nama",
+            "kategori",
+            "foto",
+            "foto_list_urls",
+            "deskripsi",
+            "jenis_fasilitas",
+            "kondisi",
+            "pengelola",
+            "geom",
+        ]
 
     def get_foto(self, instance: PotensiInfrastruktur) -> Optional[str]:
         request = self.context.get("request")
         return _build_foto_url(instance, request)
+
+    def get_foto_list_urls(self, instance: PotensiInfrastruktur) -> list[str]:
+        request = self.context.get("request")
+        return _build_foto_list_urls(instance, request)
 
     def get_kategori(self, instance: PotensiInfrastruktur) -> str:
         return "infrastruktur"
