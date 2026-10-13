@@ -75,43 +75,52 @@ export default function PotensiCard({ feature }: PotensiCardProps) {
       : [];
 
   return (
-    <div className="bg-white rounded-xl border border-[--border-default] overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
-      {/* Photo area — carousel (no auto-play on card) with CategoryBadge overlay */}
-      <div className="relative w-full aspect-video overflow-hidden">
-        <ImageCarousel images={images} alt={title} autoPlay={false} />
-        {/* CategoryBadge overlaid bottom-left on photo */}
-        <div className="absolute bottom-2 left-2 z-10">
+    <div className="group bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full">
+      {/* Photo area — carousel with CategoryBadge overlay and photo gradient */}
+      <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
+        <ImageCarousel
+          images={images}
+          alt={title}
+          autoPlay={false}
+          aspectRatio="card"
+          zoomOnHover={true}
+        />
+        {/* Soft gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
+
+        {/* CategoryBadge overlaid top-3 left-3 */}
+        <div className="absolute top-3 left-3 z-10 shadow-sm backdrop-blur-md">
           <CategoryBadge kategori={kategori} />
+        </div>
+
+        {/* Location pill bottom-3 left-3 */}
+        <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 text-white text-xs font-medium drop-shadow-md">
+          <MapPin className="h-3.5 w-3.5 text-emerald-400" />
+          <span>Desa Rambipuji</span>
         </div>
       </div>
 
       {/* Card body */}
-      <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-semibold text-base text-[--text-primary] line-clamp-1">
+      <div className="p-5 flex flex-col flex-grow">
+        <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-emerald-700 transition-colors line-clamp-1">
           {title}
         </h3>
         <p
-          className="text-sm text-[--text-secondary] line-clamp-2 mt-1 flex-grow"
+          className="text-xs sm:text-sm text-slate-600 line-clamp-2 mt-2 flex-grow leading-relaxed"
           title={cardDescription}
         >
           {cardDescription}
         </p>
 
-        {/* Location row */}
-        <div className="flex items-center gap-1 mt-2">
-          <MapPin className="h-3.5 w-3.5 text-[--text-muted] flex-shrink-0" />
-          <span className="text-xs text-[--text-muted]">Desa Rambipuji</span>
-        </div>
-
-        {/* "Lihat Detail" button — only shown when href is valid */}
+        {/* "Lihat Detail" button */}
         {detailHref && (
-          <div className="border-t border-[--border-default] mt-3 pt-3">
+          <div className="border-t border-slate-100 mt-4 pt-3.5">
             <Link
               href={detailHref}
-              className="w-full flex items-center justify-center gap-1.5 text-sm font-medium py-2 rounded-lg border border-[--color-primary] text-[--color-primary] hover:bg-[--color-primary-subtle] transition-colors duration-150"
+              className="w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-emerald-700 text-slate-700 hover:text-white border border-slate-200/80 hover:border-emerald-700 transition-all duration-200 group/btn"
             >
-              Lihat Detail
-              <ArrowRight className="h-4 w-4" />
+              <span>Eksplorasi Detail</span>
+              <ArrowRight className="h-4 w-4 transform group-hover/btn:translate-x-1 transition-transform duration-200" />
             </Link>
           </div>
         )}

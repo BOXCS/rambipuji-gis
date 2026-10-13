@@ -50,11 +50,62 @@
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
 }
 
-/* Stitch Typography Scale Utilities */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Visual-First & Tourism Utilities ─────────────────────────────────────── */
 @layer utilities {
+  .text-shadow-hero {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7), 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+  .text-shadow-subtle {
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  .glass-pill {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .glass-card-dark {
+    background: rgba(10, 31, 20, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .gradient-hero-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(7, 24, 15, 0.3) 0%,
+      rgba(7, 24, 15, 0.65) 50%,
+      rgba(5, 17, 11, 0.95) 100%
+    );
+  }
+
+  .gradient-editorial {
+    background: linear-gradient(135deg, #0d3824 0%, #175839 50%, #0a291a 100%);
+  }
+
+  .gradient-gold-accent {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  /* Stitch Typography Scale Utilities */
   .display-lg {
     font-size: 48px;
     font-weight: 700;
@@ -106,10 +157,22 @@ body {
   }
 }
 
+/* ── Micro-animations ─────────────────────────────────────────────────────── */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.img-zoom-hover {
+  transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.group:hover .img-zoom-hover {
+  transform: scale(1.08);
+}
+
 /* ── Map pin hover effect ─────────────────────────────────────────────────── */
-/* Applied to .map-pin-wrapper set in src/lib/markers.ts.                      */
-/* Leaflet injects DivIcon HTML into the DOM directly, so Tailwind classes     */
-/* cannot target it — a global CSS rule is required here.                      */
 .map-pin-wrapper:hover {
   transform: scale(1.2);
 }

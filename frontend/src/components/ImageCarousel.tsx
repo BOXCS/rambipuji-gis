@@ -4,16 +4,19 @@ import { ChevronLeft, ChevronRight, Mountain } from "lucide-react";
 import NextImage from "next/image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-interface ImageCarouselProps {
+export interface ImageCarouselProps {
   images: string[];
   alt: string;
   autoPlay?: boolean;
-  aspectRatio?: "video" | "square";
+  aspectRatio?: "video" | "square" | "card";
+  className?: string;
+  zoomOnHover?: boolean;
 }
 
-const ASPECT_CLASSES: Record<"video" | "square", string> = {
+const ASPECT_CLASSES: Record<"video" | "square" | "card", string> = {
   video: "aspect-video",
   square: "aspect-square",
+  card: "aspect-[16/10]",
 };
 
 export default function ImageCarousel({
@@ -21,6 +24,8 @@ export default function ImageCarousel({
   alt,
   autoPlay = true,
   aspectRatio = "video",
+  className = "",
+  zoomOnHover = false,
 }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -47,14 +52,16 @@ export default function ImageCarousel({
     };
   }, [autoPlay, paused, total, goNext]);
 
+  const zoomClass = zoomOnHover ? "transition-transform duration-700 ease-out group-hover:scale-105" : "";
+
   // ── 0 images — placeholder ─────────────────────────────────────────────────
   if (total === 0) {
     return (
       <div
-        className={`w-full ${ASPECT_CLASSES[aspectRatio]} bg-[--bg-surface-raised] border border-[--border-default] rounded-xl flex flex-col items-center justify-center text-[--text-muted]`}
+        className={`w-full ${ASPECT_CLASSES[aspectRatio]} bg-slate-100 rounded-2xl flex flex-col items-center justify-center text-slate-400 ${className}`}
       >
         <Mountain className="w-12 h-12 mb-2 opacity-50" />
-        <span className="text-sm">Foto tidak tersedia</span>
+        <span className="text-xs font-medium">Foto tidak tersedia</span>
       </div>
     );
   }
@@ -63,14 +70,14 @@ export default function ImageCarousel({
   if (total === 1) {
     return (
       <div
-        className={`relative w-full ${ASPECT_CLASSES[aspectRatio]} rounded-xl overflow-hidden border border-[--border-default] bg-[--bg-surface-raised]`}
+        className={`relative w-full ${ASPECT_CLASSES[aspectRatio]} overflow-hidden bg-slate-100 ${className}`}
       >
         <NextImage
           src={images[0]}
           alt={alt}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover"
+          className={`object-cover ${zoomClass}`}
           priority
         />
       </div>
@@ -80,7 +87,7 @@ export default function ImageCarousel({
   // ── 2+ images — crossfade carousel ────────────────────────────────────────
   return (
     <div
-      className={`relative w-full ${ASPECT_CLASSES[aspectRatio]} rounded-xl overflow-hidden border border-[--border-default] bg-[--bg-surface-raised] group`}
+      className={`relative w-full ${ASPECT_CLASSES[aspectRatio]} overflow-hidden bg-slate-100 group ${className}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -92,7 +99,7 @@ export default function ImageCarousel({
           alt={`${alt} — foto ${i + 1}`}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className={`object-cover transition-opacity duration-700 ease-in-out ${
+          className={`object-cover transition-opacity duration-700 ease-in-out ${zoomClass} ${
             i === current ? "opacity-100" : "opacity-0"
           }`}
           priority={i === 0}

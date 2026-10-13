@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -12,9 +13,20 @@ export interface HeroCarouselImage {
 export interface HeroCarouselProps {
   images: HeroCarouselImage[];
   children: React.ReactNode;
+  fullScreen?: boolean;
+  heightClass?: string;
+  overlayGradient?: string;
+  showScrollPrompt?: boolean;
 }
 
-export default function HeroCarousel({ images, children }: HeroCarouselProps) {
+export default function HeroCarousel({
+  images,
+  children,
+  fullScreen = false,
+  heightClass,
+  overlayGradient,
+  showScrollPrompt = false,
+}: HeroCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   useEffect(() => {
@@ -22,21 +34,35 @@ export default function HeroCarousel({ images, children }: HeroCarouselProps) {
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 4500); // switch slide every 4.5 seconds
+    }, 5000); // switch slide every 5 seconds
 
     return () => clearInterval(interval);
   }, [images]);
 
   const currentImg = images[currentIndex];
 
+  const defaultOverlay = fullScreen
+    ? "linear-gradient(180deg, rgba(6, 24, 15, 0.45) 0%, rgba(6, 24, 15, 0.65) 50%, rgba(5, 17, 11, 0.94) 100%)"
+    : "linear-gradient(to bottom right, rgba(16, 70, 43, 0.88), rgba(15, 61, 40, 0.94))";
+
   return (
-    <section className="relative text-white overflow-hidden min-h-[380px] flex items-center">
-      {/* Background carousel images with crossfade opacity */}
+    <section
+      className={`relative text-white overflow-hidden flex items-center ${
+        heightClass
+          ? heightClass
+          : fullScreen
+          ? "min-h-screen h-screen"
+          : "min-h-[420px] pt-16"
+      }`}
+    >
+      {/* Background carousel images with crossfade opacity & subtle scale */}
       {images.map((img, idx) => (
         <div
           key={`${img.url}-${idx}`}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            idx === currentIndex ? "opacity-100 scale-100" : "opacity-0 scale-105 pointer-events-none"
+          className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+            idx === currentIndex
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-105 pointer-events-none"
           }`}
           style={{ transitionProperty: "opacity, transform" }}
         >
@@ -51,18 +77,21 @@ export default function HeroCarousel({ images, children }: HeroCarouselProps) {
         </div>
       ))}
 
-      {/* Dark green gradient overlay to guarantee text legibility */}
+      {/* Gradient overlay to guarantee text legibility & rich mood */}
       <div
         className="absolute inset-0 z-10"
         style={{
-          background:
-            "linear-gradient(to bottom right, rgba(16, 70, 43, 0.88), rgba(15, 61, 40, 0.94))",
+          background: overlayGradient || defaultOverlay,
         }}
       />
 
       {/* Hero content container */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 py-12 flex flex-col justify-between">
-        <div>{children}</div>
+      <div
+        className={`relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-16 flex flex-col justify-between ${
+          fullScreen ? "h-full pt-24 pb-12" : ""
+        }`}
+      >
+        <div className="my-auto">{children}</div>
 
         {/* Floating slide indicators & current slide title */}
         {images.length > 1 && (
@@ -93,6 +122,13 @@ export default function HeroCarousel({ images, children }: HeroCarouselProps) {
           </div>
         )}
       </div>
+
+      {showScrollPrompt && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 text-white/70 animate-bounce pointer-events-none">
+          <span className="text-[10px] uppercase tracking-widest font-sans">Jelajahi</span>
+          <ChevronDown className="w-4 h-4" />
+        </div>
+      )}
     </section>
   );
 }

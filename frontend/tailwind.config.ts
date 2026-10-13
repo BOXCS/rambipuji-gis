@@ -9,8 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
-        mono: ["var(--font-inter)", "monospace"],
+        sans: ["var(--font-sans)", "sans-serif"],
+        serif: ["var(--font-serif)", "serif"],
+        mono: ["var(--font-sans)", "monospace"],
       },
       colors: {
         primary: "var(--color-primary)",
@@ -33,6 +34,28 @@ const config: Config = {
       },
       boxShadow: {
         floating: "0px 4px 12px rgba(0, 0, 0, 0.05)",
+        glass: "0 8px 32px 0 rgba(0, 0, 0, 0.12)",
+        glow: "0 0 25px -5px rgba(29, 106, 71, 0.35)",
+        "card-hover": "0 20px 40px -15px rgba(0, 0, 0, 0.18)",
+      },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
+        pulseGlow: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.6" },
+        },
+        kenburns: {
+          "0%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1.08)" },
+        },
+      },
+      animation: {
+        float: "float 4s ease-in-out infinite",
+        pulseGlow: "pulseGlow 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        kenburns: "kenburns 15s ease-out infinite alternate",
       },
       spacing: {
         "space-xs": "4px",

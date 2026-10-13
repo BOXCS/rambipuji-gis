@@ -1,15 +1,19 @@
 import {
+  ArrowRight,
   Building2,
   Clock,
   Mail,
+  Map,
   MapPin,
   Phone,
   Ruler,
+  Sparkles,
   Store,
   Users,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import HeroCarousel, { HeroCarouselImage } from "../../components/HeroCarousel";
 import JsonLd from "../../components/JsonLd";
@@ -311,7 +315,7 @@ export default async function TentangPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[--bg-base] flex flex-col pt-16">
+    <div className="min-h-screen bg-[--bg-base] flex flex-col">
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "City",
@@ -324,84 +328,140 @@ export default async function TentangPage() {
         "url": `${process.env.NEXT_PUBLIC_SITE_URL}/tentang`
       }} />
 
-      {/* Hero section — Auto-playing Background Photo Carousel featuring all Potensi in Rambipuji */}
-      <HeroCarousel images={heroImages}>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div>
-            {/* Location label pill */}
-            <div
-              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm mb-4 backdrop-blur-md"
-              style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.9)" }}
-            >
-              <MapPin className="h-3.5 w-3.5" />
-              Kec. Rambipuji, Kab. Jember, Jawa Timur
-            </div>
-
-            <h1 className="text-4xl font-semibold mb-3 tracking-tight">{profile.nama_desa}</h1>
-            <div className="text-white/90 text-lg max-w-2xl">
-              <FormattedText
-                text={profile.deskripsi}
-                fallback={
-                  <p>
-                    Selamat datang di portal informasi resmi {profile.nama_desa}. Temukan potensi, layanan, dan informasi desa kami di sini.
-                  </p>
-                }
-              />
-            </div>
+      {/* ── 1. Hero Section — Fullscreen Immersive Tourism Showcase ────────── */}
+      <HeroCarousel
+        images={heroImages}
+        fullScreen={true}
+        showScrollPrompt={true}
+        overlayGradient="linear-gradient(180deg, rgba(6, 26, 16, 0.45) 0%, rgba(6, 26, 16, 0.70) 55%, rgba(4, 18, 11, 0.96) 100%)"
+      >
+        <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider uppercase glass-pill text-white/95 shadow-lg mb-6">
+            <Sparkles className="w-4 h-4 text-emerald-300" />
+            <span>Kecamatan Rambipuji · Kabupaten Jember · Jawa Timur</span>
           </div>
-          <Image
-            src="/logo-kabupaten-jember.png"
-            alt="Logo Kabupaten Jember"
-            width={96}
-            height={96}
-            className="w-20 h-20 sm:w-24 sm:h-24 object-contain flex-shrink-0 bg-white/10 p-2.5 rounded-2xl backdrop-blur-md border border-white/20"
-          />
+
+          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-6 text-shadow-hero">
+            Profil &amp; Pesona Budaya
+            <span className="block mt-2 font-serif italic text-emerald-300 font-normal">
+              {profile.nama_desa}
+            </span>
+          </h1>
+
+          <div className="text-base sm:text-lg md:text-xl text-white/85 max-w-2xl mx-auto font-sans leading-relaxed mb-8 text-shadow-subtle">
+            <FormattedText
+              text={profile.deskripsi}
+              fallback={
+                <p>
+                  Selamat datang di portal informasi resmi {profile.nama_desa}. Menjelajahi dinamika masyarakat, sejarah gumuk kuno, dan geliat industri kreatif tempe.
+                </p>
+              }
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href="#sejarah"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-lg hover:-translate-y-0.5 transition-all"
+            >
+              Telusuri Sejarah &amp; Rekam Jejak
+              <ArrowRight className="w-4 h-4" />
+            </a>
+            <Link
+              href="/peta"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full glass-pill hover:bg-white/20 text-white font-semibold text-sm shadow-md transition-all"
+            >
+              <Map className="w-4 h-4 text-emerald-300" />
+              Buka Peta GIS
+            </Link>
+          </div>
         </div>
       </HeroCarousel>
 
-      {/* StatCards — elevated above hero with negative margin */}
-      <div className="max-w-7xl mx-auto px-4 w-full -mt-6 mb-10 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard
-            icon={Users}
-            value={`${(profile.jumlah_penduduk ?? 0).toLocaleString("id-ID")} Jiwa`}
-            label="Jumlah Penduduk"
-          />
-          <StatCard
-            icon={Ruler}
-            value={`${profile.luas_wilayah_ha ?? 0} Ha`}
-            label="Luas Wilayah"
-          />
-          <StatCard
-            icon={Building2}
-            value={profile.jumlah_dusun ?? 0}
-            label="Jumlah Dusun"
-          />
-          <StatCard
-            icon={Store}
-            value={stats.umkm}
-            label="UMKM &amp; Usaha Warga"
-          />
+      {/* ── 2. StatCards — Floating Over Hero Bottom ───────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 w-full -mt-12 md:-mt-16 mb-20 relative z-30">
+        <div className="bg-white/95 backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-card-hover border border-white/60 p-4 sm:p-6 md:p-8 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
+          <div className="flex items-center gap-4 p-2 sm:p-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <Users className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="font-serif font-bold text-2xl md:text-3xl text-[--text-primary]">
+                {(profile.jumlah_penduduk ?? 0).toLocaleString("id-ID")}
+              </div>
+              <div className="text-xs font-medium text-[--text-muted] uppercase tracking-wider">
+                Jiwa Penduduk
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 p-2 sm:p-3 pt-4 lg:pt-2">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <Ruler className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="font-serif font-bold text-2xl md:text-3xl text-[--text-primary]">
+                {profile.luas_wilayah_ha ?? 0}
+                <span className="text-base font-sans font-medium text-gray-500 ml-1">
+                  Ha
+                </span>
+              </div>
+              <div className="text-xs font-medium text-[--text-muted] uppercase tracking-wider">
+                Luas Wilayah
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 p-2 sm:p-3 pt-4 lg:pt-2">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <Building2 className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="font-serif font-bold text-2xl md:text-3xl text-[--text-primary]">
+                {profile.jumlah_dusun ?? 0}
+              </div>
+              <div className="text-xs font-medium text-[--text-muted] uppercase tracking-wider">
+                Wilayah Dusun
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 p-2 sm:p-3 pt-4 lg:pt-2">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <Store className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="font-serif font-bold text-2xl md:text-3xl text-[--text-primary]">
+                {stats.umkm}
+              </div>
+              <div className="text-xs font-medium text-[--text-muted] uppercase tracking-wider">
+                UMKM Terdata
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* About section — 2 columns */}
-      <div className="max-w-7xl mx-auto px-4 mb-12 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Left: text with formatted paragraphs & bullet lists */}
-          <div>
-            <p className="text-[--color-primary] text-sm font-semibold tracking-wider uppercase mb-3">
-              Tentang Desa
-            </p>
-            <h2 className="text-2xl font-semibold text-[--text-primary] mb-4">
-              Profil Singkat &amp; Administrasi
+      {/* ── 3. Sejarah & Rekam Jejak Budaya (Asymmetrical Magazine Layout) ─── */}
+      <section id="sejarah" className="max-w-7xl mx-auto px-4 md:px-8 mb-24 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          {/* Left: Text editorial with rich typography */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase bg-[--color-primary-subtle] text-[--color-primary]">
+              <Sparkles className="w-3.5 h-3.5" />
+              Rekam Jejak &amp; Sejarah
+            </div>
+
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[--text-primary] leading-tight">
+              Warisan Tradisi &amp; Identitas Desa Rambipuji
             </h2>
-            <div className="text-[--text-secondary] leading-relaxed text-base">
+
+            <div className="text-[--text-secondary] leading-relaxed text-base sm:text-lg space-y-4">
               <FormattedText
                 text={profile.sejarah}
                 fallback={
                   <>
-                    <p className="mb-3">
+                    <p>
                       Desa Rambipuji merupakan desa di Kecamatan Rambipuji, Kabupaten Jember, Jawa Timur,
                       yang memiliki potensi lokal berbasis wisata, sejarah, budaya, dan ekonomi kreatif
                       masyarakat. Desa ini memiliki potensi wisata seperti Gumuk Gong dan Gumuk Dempet,
@@ -417,172 +477,195 @@ export default async function TentangPage() {
             </div>
           </div>
 
-          {/* Right: Foto Hero unggulan + mini map + address */}
-          <div className="space-y-4">
+          {/* Right: Foto Hero Unggulan + Pusat Administrasi Balai Desa Map */}
+          <div className="lg:col-span-5 space-y-6">
             {profile.foto_hero_url && (
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-md border border-[--border-default] group">
+              <div className="relative w-full aspect-[16/10] rounded-3xl overflow-hidden shadow-xl border-4 border-white group">
                 <Image
                   src={profile.foto_hero_url}
                   alt={`Dokumentasi ${profile.nama_desa}`}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 1024px) 100vw, 500px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
-                  <span className="text-xs font-medium text-white/90 drop-shadow">
-                    Dokumentasi Resmi {profile.nama_desa}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+                  <span className="text-xs font-semibold text-white/95 drop-shadow uppercase tracking-wider">
+                    Dokumentasi Resmi · {profile.nama_desa}
                   </span>
                 </div>
               </div>
             )}
 
-            <div className="rounded-2xl overflow-hidden shadow-md h-64">
-              <MiniMap feature={balaiDesaFeature} boundaryFeature={boundaryFeature} />
-            </div>
-            <div className="bg-[--bg-surface-raised] rounded-xl p-4 flex items-start gap-3 border border-[--border-default]">
-              <MapPin className="h-4 w-4 text-[--color-primary] flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-[--text-secondary]">
-                {resolvedContact.alamat}
-              </p>
+            {/* Balai Desa MiniMap Card */}
+            <div className="bg-white rounded-3xl p-5 border border-[--border-default] shadow-lg space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+                <div className="flex items-center gap-2 text-sm font-bold text-[--text-primary]">
+                  <MapPin className="w-4 h-4 text-emerald-600" />
+                  <span>Pusat Administrasi &amp; Balai Desa</span>
+                </div>
+                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                  Infrastruktur
+                </span>
+              </div>
+
+              <div className="rounded-2xl overflow-hidden shadow-inner h-60">
+                <MiniMap feature={balaiDesaFeature} boundaryFeature={boundaryFeature} />
+              </div>
+
+              <div className="bg-gray-50 rounded-xl p-3 flex items-start gap-2.5 text-xs text-[--text-secondary]">
+                <MapPin className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <p className="leading-snug">{resolvedContact.alamat}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Vision & Mission */}
-      <div className="bg-[--bg-surface-raised] py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-semibold text-center text-[--text-primary] mb-8">
-            Visi &amp; Misi
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* ── 4. Visi & Misi — Dark Emerald Editorial Section ────────────────── */}
+      <section className="bg-slate-950 text-white py-24 relative overflow-hidden">
+        {/* Glow backdrop */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-emerald-700/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase bg-emerald-900/80 text-emerald-300 border border-emerald-700/60">
+              Arah &amp; Komitmen
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+              Visi &amp; Misi Pembangunan
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             {/* Visi */}
-            <div
-              className="rounded-2xl p-6 text-white"
-              style={{
-                background:
-                  "linear-gradient(to bottom right, var(--color-primary), #145235)",
-              }}
-            >
-              <p className="tracking-widest text-xs text-white/60 mb-3 font-semibold uppercase">
-                VISI
-              </p>
-              <p
-                className="text-6xl leading-none mb-2 font-serif"
-                style={{ color: "rgba(255,255,255,0.2)" }}
-              >
-                &ldquo;
-              </p>
-              <p className="text-lg font-medium italic leading-relaxed">
-                {profile.visi}
-              </p>
+            <div className="lg:col-span-5 rounded-3xl p-8 sm:p-10 text-white relative overflow-hidden shadow-2xl gradient-editorial flex flex-col justify-between">
+              <div>
+                <p className="tracking-widest text-xs text-emerald-300 font-semibold uppercase mb-4">
+                  VISI DESA
+                </p>
+                <p
+                  className="text-7xl leading-none mb-3 font-serif opacity-30 select-none text-emerald-200"
+                >
+                  &ldquo;
+                </p>
+                <p className="font-serif text-2xl sm:text-3xl font-normal italic leading-relaxed text-emerald-50">
+                  {profile.visi}
+                </p>
+              </div>
+              <div className="pt-8 border-t border-white/10 mt-6 text-xs text-emerald-200/80 uppercase tracking-widest">
+                Pemerintah Desa Rambipuji
+              </div>
             </div>
 
             {/* Misi */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-[--border-default]">
-              <p className="tracking-widest text-xs text-[--text-muted] mb-4 font-semibold uppercase">
-                MISI
-              </p>
-              <ol className="space-y-0">
-                {resolvedMisi.map((item, idx) => (
-                  <li
-                    key={idx}
-                    className="flex gap-3 items-start py-2 border-b border-[--border-default] last:border-0"
-                  >
-                    <span className="w-6 h-6 rounded-full bg-[--color-primary-subtle] text-[--color-primary] text-xs font-semibold flex items-center justify-center flex-shrink-0 mt-0.5">
-                      {idx + 1}
-                    </span>
-                    <span className="text-sm text-[--text-secondary] leading-relaxed">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ol>
+            <div className="lg:col-span-7 bg-white/5 backdrop-blur-md rounded-3xl p-8 sm:p-10 border border-white/10 shadow-2xl flex flex-col justify-between">
+              <div>
+                <p className="tracking-widest text-xs text-amber-400 font-semibold uppercase mb-6">
+                  MISI STRATEGIS DESA
+                </p>
+                <ol className="space-y-4">
+                  {resolvedMisi.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="flex gap-4 items-start p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/15 transition-colors"
+                    >
+                      <span className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-300 font-serif font-bold text-sm flex items-center justify-center flex-shrink-0 mt-0.5 border border-emerald-500/40">
+                        {idx + 1}
+                      </span>
+                      <span className="text-sm sm:text-base text-gray-200 leading-relaxed font-sans">
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Contact section */}
-      <div className="max-w-7xl mx-auto px-4 py-12 w-full">
-        <h2 className="text-2xl font-semibold text-[--text-primary] mb-6">
-          Hubungi Kami
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* ── 5. Kontak & Informasi Pelayanan Warga ───────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-24 w-full">
+        <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase bg-[--color-primary-subtle] text-[--color-primary]">
+            Pelayanan Warga
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[--text-primary]">
+            Hubungi Kantor Desa Rambipuji
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {contactItems.map(({ icon: Icon, label, value }) => (
             <div
               key={label}
-              className="bg-white rounded-xl p-5 border border-[--border-default] shadow-sm"
+              className="bg-white rounded-3xl p-6 border border-[--border-default] shadow-md hover:shadow-xl hover:-translate-y-1 transition-all group"
             >
-              <div className="w-10 h-10 rounded-full bg-[--color-primary-subtle] flex items-center justify-center mb-3">
-                <Icon className="h-5 w-5 text-[--color-primary]" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+                <Icon className="h-6 w-6" />
               </div>
-              <p className="text-xs text-[--text-muted] font-medium tracking-wide uppercase mb-1">
+              <p className="text-xs text-[--text-muted] font-semibold tracking-wider uppercase mb-1">
                 {label}
               </p>
-              <p className="text-sm text-[--text-primary] font-medium">
-                {value}
+              <p className="text-sm sm:text-base text-[--text-primary] font-medium leading-snug">
+                {value || "-"}
               </p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Pihak Yang Berkontribusi Section */}
-      <div className="bg-white border-t border-[--border-default] py-12 w-full">
+      {/* ── 6. Pihak Yang Berkontribusi ─────────────────────────────────────── */}
+      <section className="bg-white border-t border-[--border-default] py-16 w-full">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-2xl font-semibold text-[--text-primary] mb-2">
+          <h3 className="font-serif text-xl sm:text-2xl font-bold text-[--text-primary] mb-2">
             Pihak Yang Berkontribusi
-          </h2>
-          <p className="text-sm text-[--text-secondary] max-w-xl mx-auto mb-8">
-            Pengembangan WebGIS dan Sistem Informasi Desa Rambipuji didukung oleh kolaborasi dan pendanaan PNBP.
+          </h3>
+          <p className="text-xs sm:text-sm text-[--text-secondary] max-w-xl mx-auto mb-8">
+            Pengembangan WebGIS dan digitalisasi Sistem Informasi Desa Rambipuji
+            didukung oleh kolaborasi sivitas akademika Politeknik Negeri Jember dan
+            Pemerintah Desa Rambipuji.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-            {/* Logo Polije */}
-            <div className="flex flex-col items-center gap-3 bg-[--bg-surface-raised] p-6 rounded-2xl border border-[--border-default] hover:shadow-md transition w-64">
-              <div className="h-20 flex items-center justify-center">
-                <Image
-                  src="/logo Polije.png"
-                  alt="Politeknik Negeri Jember"
-                  width={80}
-                  height={80}
-                  className="h-16 w-auto object-contain"
-                />
-              </div>
-              <div className="text-center">
-                <span className="block font-semibold text-sm text-[--text-primary]">
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo Polije.png"
+                alt="Logo Politeknik Negeri Jember"
+                width={70}
+                height={70}
+                className="object-contain w-14 h-14 sm:w-16 sm:h-16"
+              />
+              <div className="text-left">
+                <span className="block font-bold text-xs sm:text-sm text-[--text-primary]">
                   Politeknik Negeri Jember
                 </span>
-                <span className="block text-xs text-[--text-muted] mt-0.5">
+                <span className="text-[11px] text-[--text-muted]">
                   Pendanaan PNBP Polije 2026
                 </span>
               </div>
             </div>
 
-            {/* Logo Pemkab Jember / Desa Rambipuji */}
-            <div className="flex flex-col items-center gap-3 bg-[--bg-surface-raised] p-6 rounded-2xl border border-[--border-default] hover:shadow-md transition w-64">
-              <div className="h-20 flex items-center justify-center">
-                <Image
-                  src="/logo-kabupaten-jember.png"
-                  alt="Pemerintah Desa Rambipuji"
-                  width={80}
-                  height={80}
-                  className="h-16 w-auto object-contain"
-                />
-              </div>
-              <div className="text-center">
-                <span className="block font-semibold text-sm text-[--text-primary]">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo-kabupaten-jember.png"
+                alt="Logo Kabupaten Jember"
+                width={70}
+                height={70}
+                className="object-contain w-14 h-14 sm:w-16 sm:h-16"
+              />
+              <div className="text-left">
+                <span className="block font-bold text-xs sm:text-sm text-[--text-primary]">
                   Pemerintah Desa Rambipuji
                 </span>
-                <span className="block text-xs text-[--text-muted] mt-0.5">
-                  Kec. Rambipuji, Kab. Jember
+                <span className="text-[11px] text-[--text-muted]">
+                  Kabupaten Jember, Jawa Timur
                 </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
