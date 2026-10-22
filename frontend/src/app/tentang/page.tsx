@@ -2,6 +2,7 @@ import {
   ArrowRight,
   Building2,
   Clock,
+  Compass,
   Mail,
   Map,
   MapPin,
@@ -337,25 +338,20 @@ export default async function TentangPage() {
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider uppercase glass-pill text-white/95 shadow-lg mb-6">
             <Sparkles className="w-4 h-4 text-emerald-300" />
-            <span>Kecamatan Rambipuji · Kabupaten Jember · Jawa Timur</span>
+            <span>KECAMATAN RAMBIPUJI · KABUPATEN JEMBER · JAWA TIMUR</span>
           </div>
 
           <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-6 text-shadow-hero">
-            Profil &amp; Pesona Budaya
-            <span className="block mt-2 font-serif italic text-emerald-300 font-normal">
-              {profile.nama_desa}
-            </span>
+            Rambipuji: Warisan Lokal di Tengah Dinamika Perkotaan
           </h1>
 
-          <div className="text-base sm:text-lg md:text-xl text-white/85 max-w-2xl mx-auto font-sans leading-relaxed mb-8 text-shadow-subtle">
-            <FormattedText
-              text={profile.deskripsi}
-              fallback={
-                <p>
-                  Selamat datang di portal informasi resmi {profile.nama_desa}. Menjelajahi dinamika masyarakat, sejarah gumuk kuno, dan geliat industri kreatif tempe.
-                </p>
-              }
-            />
+          <div className="text-base sm:text-lg md:text-xl text-white/85 max-w-3xl mx-auto font-sans leading-relaxed mb-8 text-shadow-subtle space-y-4">
+            <p>
+              Desa Rambipuji merupakan kawasan berkarakter perkotaan di sebelah barat Kota Jember yang berkembang melalui aktivitas perdagangan, jasa, permukiman, dan kehidupan sosial masyarakat. Di tengah perkembangan tersebut, Rambipuji tetap menyimpan kekayaan sejarah, budaya, dan potensi ekonomi lokal yang menjadi bagian dari identitas wilayahnya.
+            </p>
+            <p className="text-white/80 text-sm sm:text-base">
+              Lanskap Gumuk Gong dan Gumuk Dempet, wisata religi Makam Mbah Puji dan Mbah Plecutan, Taman Edukasi Kampung Dinoyo, serta sentra produksi tempe yang berkembang secara turun-temurun mencerminkan keberagaman potensi desa. Perpaduan warisan lokal dan dinamika perkotaan inilah yang menjadikan Rambipuji memiliki karakter serta daya tarik tersendiri.
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -363,15 +359,14 @@ export default async function TentangPage() {
               href="#sejarah"
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-lg hover:-translate-y-0.5 transition-all"
             >
-              Telusuri Sejarah &amp; Rekam Jejak
-              <ArrowRight className="w-4 h-4" />
+              Telusuri Sejarah &amp; Rekam Jejak &rarr;
             </a>
             <Link
               href="/peta"
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full glass-pill hover:bg-white/20 text-white font-semibold text-sm shadow-md transition-all"
             >
               <Map className="w-4 h-4 text-emerald-300" />
-              Buka Peta GIS
+              Jelajahi Peta Potensi &rarr;
             </Link>
           </div>
         </div>
@@ -448,52 +443,81 @@ export default async function TentangPage() {
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase bg-[--color-primary-subtle] text-[--color-primary]">
               <Sparkles className="w-3.5 h-3.5" />
-              Rekam Jejak &amp; Sejarah
+              REKAM JEJAK &amp; SEJARAH
             </div>
 
             <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[--text-primary] leading-tight">
-              Warisan Tradisi &amp; Identitas Desa Rambipuji
+              Jejak Sejarah dan Identitas Desa Rambipuji
             </h2>
 
             <div className="text-[--text-secondary] leading-relaxed text-base sm:text-lg space-y-4">
-              <FormattedText
-                text={profile.sejarah}
-                fallback={
-                  <>
-                    <p>
-                      Desa Rambipuji merupakan desa di Kecamatan Rambipuji, Kabupaten Jember, Jawa Timur,
-                      yang memiliki potensi lokal berbasis wisata, sejarah, budaya, dan ekonomi kreatif
-                      masyarakat. Desa ini memiliki potensi wisata seperti Gumuk Gong dan Gumuk Dempet,
-                    </p>
-                    <p>
-                      serta aktivitas ekonomi masyarakat seperti usaha tempe yang berkembang secara turun-temurun.
-                      Potensi tersebut menjadi dasar pengembangan desa berbasis pariwisata, industri kreatif,
-                      dan promosi digital.
-                    </p>
-                  </>
-                }
-              />
+              <p>
+                Sejarah Desa Rambipuji tidak terlepas dari perkembangan masyarakat Jawa dan Madura di Kabupaten Jember. Berdasarkan profil resmi Pemerintah Desa Rambipuji, nama desa ini dikaitkan dengan tokoh lokal yang dikenal sebagai <strong>Sembah Puji</strong>. Dalam catatan sejarah desa, <strong>Broto Sentono</strong> disebut sebagai lurah pertama yang dikenal memiliki sifat dermawan, arif, dan bijaksana.
+              </p>
+              <p>
+                Warisan sejarah tersebut menjadi bagian penting dari identitas masyarakat Rambipuji. Keberadaan Makam Mbah Puji dan Mbah Plecutan juga memperkaya cerita lokal yang hingga kini menjadi bagian dari ingatan dan tradisi masyarakat.
+              </p>
+              <p>
+                Secara geografis, Desa Rambipuji terletak di Kecamatan Rambipuji, Kabupaten Jember, Jawa Timur, dan menjadi bagian dari kawasan pusat aktivitas Kecamatan Rambipuji. Profil resmi desa mencatat ketinggian wilayah sekitar <strong>145 meter di atas permukaan laut</strong>.
+              </p>
+              <p>
+                Seiring perkembangan wilayah, Rambipuji memiliki karakter kawasan perkotaan yang ditandai dengan aktivitas perdagangan, jasa, permukiman, serta pelayanan publik. Di tengah dinamika tersebut, desa ini tetap mempertahankan kekayaan lokal berupa lanskap gumuk, wisata sejarah dan religi, wisata edukasi lingkungan, serta industri kreatif masyarakat.
+              </p>
+              <p>
+                Perpaduan antara perkembangan perkotaan dan warisan lokal inilah yang membentuk identitas Desa Rambipuji saat ini.
+              </p>
+            </div>
+
+            {/* Batas Wilayah Administratif */}
+            <div className="mt-8 p-6 rounded-3xl bg-emerald-50/70 border border-emerald-100 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Compass className="w-5 h-5 text-emerald-700" />
+                <h3 className="font-serif text-lg font-bold text-[--text-primary]">
+                  Batas Wilayah Administratif
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="bg-white p-3.5 rounded-2xl border border-emerald-100 shadow-sm">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald-700">Utara</span>
+                  <strong className="block text-[--text-primary] text-sm mt-1">Desa Rambigundam</strong>
+                </div>
+                <div className="bg-white p-3.5 rounded-2xl border border-emerald-100 shadow-sm">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald-700">Selatan</span>
+                  <strong className="block text-[--text-primary] text-sm mt-1">Desa Kaliwining</strong>
+                </div>
+                <div className="bg-white p-3.5 rounded-2xl border border-emerald-100 shadow-sm">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald-700">Timur</span>
+                  <strong className="block text-[--text-primary] text-sm mt-1">Desa Jubung</strong>
+                </div>
+                <div className="bg-white p-3.5 rounded-2xl border border-emerald-100 shadow-sm">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald-700">Barat</span>
+                  <strong className="block text-[--text-primary] text-sm mt-1">Desa Rowotamtu</strong>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Right: Foto Hero Unggulan + Pusat Administrasi Balai Desa Map */}
+          {/* Right: Slot Gambar Alternatif (Kawasan Alun-Alun / Balai Desa / Sejarah) + Pusat Administrasi Balai Desa Map */}
           <div className="lg:col-span-5 space-y-6">
-            {profile.foto_hero_url && (
-              <div className="relative w-full aspect-[16/10] rounded-3xl overflow-hidden shadow-xl border-4 border-white group">
-                <Image
-                  src={profile.foto_hero_url}
-                  alt={`Dokumentasi ${profile.nama_desa}`}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  sizes="(max-width: 1024px) 100vw, 500px"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
-                  <span className="text-xs font-semibold text-white/95 drop-shadow uppercase tracking-wider">
-                    Dokumentasi Resmi · {profile.nama_desa}
+            <div className="relative w-full aspect-[16/10] rounded-3xl overflow-hidden shadow-xl border-4 border-white group bg-slate-100">
+              <Image
+                src={profile.foto_hero_url || "/katalog UMKM.png"}
+                alt="Dokumentasi Balai Desa dan Kawasan Alun-Alun Rambipuji"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                sizes="(max-width: 1024px) 100vw, 500px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-6">
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-300 block mb-1">
+                    Dokumentasi Kawasan Desa
+                  </span>
+                  <span className="text-sm font-semibold text-white drop-shadow">
+                    Gedung Balai Desa &amp; Kawasan Alun-Alun Rambipuji
                   </span>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Balai Desa MiniMap Card */}
             <div className="bg-white rounded-3xl p-5 border border-[--border-default] shadow-lg space-y-3">
@@ -587,7 +611,7 @@ export default async function TentangPage() {
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-24 w-full">
         <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase bg-[--color-primary-subtle] text-[--color-primary]">
-            Pelayanan Warga
+            INFORMASI &amp; KONTAK DESA
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[--text-primary]">
             Hubungi Kantor Desa Rambipuji
@@ -614,16 +638,14 @@ export default async function TentangPage() {
         </div>
       </section>
 
-      {/* ── 6. Pihak Yang Berkontribusi ─────────────────────────────────────── */}
+      {/* ── 6. Kolaborasi Pengembangan WebGIS ───────────────────────────────── */}
       <section className="bg-white border-t border-[--border-default] py-16 w-full">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h3 className="font-serif text-xl sm:text-2xl font-bold text-[--text-primary] mb-2">
-            Pihak Yang Berkontribusi
+            Kolaborasi Pengembangan WebGIS
           </h3>
           <p className="text-xs sm:text-sm text-[--text-secondary] max-w-xl mx-auto mb-8">
-            Pengembangan WebGIS dan digitalisasi Sistem Informasi Desa Rambipuji
-            didukung oleh kolaborasi sivitas akademika Politeknik Negeri Jember dan
-            Pemerintah Desa Rambipuji.
+            Digitalisasi potensi wisata dan industri kreatif Desa Rambipuji melalui kolaborasi Politeknik Negeri Jember dan Pemerintah Desa Rambipuji.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14">
@@ -640,7 +662,7 @@ export default async function TentangPage() {
                   Politeknik Negeri Jember
                 </span>
                 <span className="text-[11px] text-[--text-muted]">
-                  Pendanaan PNBP Skema Desa Binaan Tahun 2026
+                  Pelaksana Program PkM · Pendanaan PNBP 2026
                 </span>
               </div>
             </div>
@@ -648,7 +670,7 @@ export default async function TentangPage() {
             <div className="flex items-center gap-3">
               <Image
                 src="/logo-kabupaten-jember.png"
-                alt="Logo Kabupaten Jember"
+                alt="Logo Pemerintah Desa Rambipuji"
                 width={70}
                 height={70}
                 className="object-contain w-14 h-14 sm:w-16 sm:h-16"
@@ -658,7 +680,7 @@ export default async function TentangPage() {
                   Pemerintah Desa Rambipuji
                 </span>
                 <span className="text-[11px] text-[--text-muted]">
-                  Kabupaten Jember, Jawa Timur
+                  Mitra Program · Pengelolaan Potensi Desa
                 </span>
               </div>
             </div>
