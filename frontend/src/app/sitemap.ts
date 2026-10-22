@@ -7,7 +7,7 @@ const BASE_URL =
   ?? "https://rambipuji.desa.id"
 
 const KATEGORI_LIST: KategoriSlug[] = [
-  "pertanian", "umkm", "wisata", "infrastruktur"
+  "umkm", "wisata", "infrastruktur"
 ]
 
 export default async function sitemap():

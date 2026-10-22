@@ -3,7 +3,7 @@ import type { KategoriSlug, PotensiFeature } from "../types";
 
 export function useMap() {
   const [activeLayers, setActiveLayers] = useState<Set<KategoriSlug>>(
-    () => new Set<KategoriSlug>(["pertanian", "umkm", "wisata", "infrastruktur"])
+    () => new Set<KategoriSlug>(["wisata", "umkm", "infrastruktur"])
   );
 
   const [selectedFeature, setSelectedFeature] =

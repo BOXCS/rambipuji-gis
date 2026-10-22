@@ -41,13 +41,6 @@ const LAYERS: LayerItem[] = [
     borderColorVar: "var(--cat-infrastruktur)",
     countKey: "infrastruktur",
   },
-  {
-    key: "pertanian",
-    label: "Pertanian & Perkebunan",
-    colorVar: "var(--cat-pertanian)",
-    borderColorVar: "var(--cat-pertanian)",
-    countKey: "pertanian",
-  },
 ];
 
 export default function LayerToggle({
@@ -66,7 +59,6 @@ export default function LayerToggle({
   }, []);
 
   const total =
-    (counts.pertanian ?? 0) +
     (counts.umkm ?? 0) +
     (counts.wisata ?? 0) +
     (counts.infrastruktur ?? 0);

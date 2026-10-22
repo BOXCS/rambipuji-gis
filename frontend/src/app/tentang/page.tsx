@@ -93,7 +93,6 @@ const fallbackProfile: DesaProfile = {
   visi: "Terwujudnya Desa Rambipuji yang Mandiri, Sejahtera, dan Berdaya Saing melalui Pemanfaatan Teknologi Informasi dan Pengelolaan Potensi Lokal.",
   misi: [
     "Meningkatkan kualitas pelayanan publik berbasis digital.",
-    "Mengoptimalkan potensi pertanian dan perkebunan desa.",
     "Mendorong pertumbuhan UMKM dan ekonomi kreatif warga.",
     "Melestarikan dan mempromosikan destinasi wisata serta budaya lokal.",
     "Membangun infrastruktur desa yang berkelanjutan dan ramah lingkungan.",
@@ -641,7 +640,7 @@ export default async function TentangPage() {
                   Politeknik Negeri Jember
                 </span>
                 <span className="text-[11px] text-[--text-muted]">
-                  Pendanaan PNBP Polije 2026
+                  Pendanaan PNBP Skema Desa Binaan Tahun 2026
                 </span>
               </div>
             </div>

@@ -3,9 +3,8 @@ import { getPotensiAll, getPotensiByKategori } from "../lib/api";
 import type { KategoriSlug, PotensiCollection } from "../types";
 
 const ALL_KATEGORI: KategoriSlug[] = [
-  "pertanian",
-  "umkm",
   "wisata",
+  "umkm",
   "infrastruktur",
 ];
 

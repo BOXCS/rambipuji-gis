@@ -8,7 +8,7 @@
  * createPinIcon / createDotIcon functions are safe to define here.
  *
  * Layer strategy:
- *  - WMS tiles: batas_wilayah (always), pertanian polygon areas, wisata polygon areas
+ *  - WMS tiles: batas_wilayah (always), wisata polygon areas
  *  - GeoJSON pin markers: all POINT features for active categories
  *  - UMKM + Infrastruktur: pin markers only (always Point geometry)
  */
@@ -186,18 +186,6 @@ export default function MapContainerInner({
               });
             });
           }}
-        />
-      )}
-
-      {/* ── Pertanian WMS — polygon areas only (CQL excludes points) ────── */}
-      {activeLayers.has("pertanian") && (
-        <WMSTileLayer
-          key="pertanian_polygon_wms"
-          url={getWMSUrl()}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          {...({...getWMSParams(LAYER_NAMES["pertanian"]), CQL_FILTER: POLYGON_CQL} as any)}
-          opacity={0.5}
-          zIndex={2}
         />
       )}
 

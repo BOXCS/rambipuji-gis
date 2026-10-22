@@ -20,7 +20,7 @@ export default function AdminImportPage() {
   const { token } = useAuth();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const [kategori, setKategori] = useState<KategoriSlug>("pertanian");
+  const [kategori, setKategori] = useState<KategoriSlug>("umkm");
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
 
@@ -177,7 +177,6 @@ export default function AdminImportPage() {
             disabled={loading}
             className="w-full px-3.5 py-2.5 text-sm bg-white border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary] text-[--text-primary] disabled:bg-gray-100 transition"
           >
-            <option value="pertanian">Pertanian & Perkebunan</option>
             <option value="umkm">UMKM & Usaha Warga</option>
             <option value="wisata">Wisata & Budaya</option>
             <option value="infrastruktur">Infrastruktur</option>

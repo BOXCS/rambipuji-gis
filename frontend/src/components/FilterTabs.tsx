@@ -1,4 +1,4 @@
-import { Compass, Landmark, ShoppingBag, Sparkles, Sprout } from "lucide-react";
+import { Compass, Landmark, ShoppingBag, Sparkles } from "lucide-react";
 import React from "react";
 import type { KategoriSlug } from "../types";
 
@@ -19,7 +19,6 @@ const TAB_OPTIONS: TabOption[] = [
   { key: "wisata", label: "Wisata", icon: Sparkles, accentColor: "#0284c7" },
   { key: "umkm", label: "UMKM", icon: ShoppingBag, accentColor: "#d97706" },
   { key: "infrastruktur", label: "Infrastruktur", icon: Landmark, accentColor: "#475569" },
-  { key: "pertanian", label: "Pertanian", icon: Sprout, accentColor: "#16a34a" },
 ];
 
 export default function FilterTabs({ active, onChange }: FilterTabsProps) {

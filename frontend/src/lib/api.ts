@@ -127,9 +127,8 @@ export async function getPotensiAll(
   }
 
   const slugs: KategoriSlug[] = [
-    "pertanian",
-    "umkm",
     "wisata",
+    "umkm",
     "infrastruktur",
   ];
   const results = await Promise.all(

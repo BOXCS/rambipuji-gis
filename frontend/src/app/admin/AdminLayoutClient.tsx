@@ -4,7 +4,6 @@ import {
   Building2,
   FileText,
   LayoutDashboard,
-  Leaf,
   LogOut,
   Menu,
   Mountain,
@@ -45,11 +44,6 @@ export default function AdminLayoutClient({
       href: "/admin/dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
-    },
-    {
-      href: "/admin/data/pertanian",
-      label: "Pertanian",
-      icon: Leaf,
     },
     {
       href: "/admin/data/umkm",

@@ -5,14 +5,14 @@ export const metadata: Metadata = {
   title: "Peta Potensi",
   description:
     "Peta interaktif potensi Desa Rambipuji. " +
-    "Lihat lokasi pertanian, UMKM, wisata budaya, " +
+    "Lihat lokasi UMKM, wisata budaya, " +
     "dan fasilitas umum dalam satu tampilan peta.",
   alternates: { canonical: "/peta" },
   openGraph: {
     title: "Peta Potensi Desa Rambipuji",
     description:
       "Peta interaktif potensi Desa Rambipuji — " +
-      "pertanian, UMKM, wisata, dan infrastruktur.",
+      "UMKM, wisata, dan infrastruktur.",
     url: "/peta",
   },
 };

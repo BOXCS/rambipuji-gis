@@ -3,7 +3,6 @@
 import {
   Building2,
   Calendar,
-  Leaf,
   Mountain,
   Plus,
   Store,
@@ -17,7 +16,6 @@ import { adminGetPotensiList, getStatistik } from "../../../lib/api";
 import type { KategoriSlug, PotensiFeature, StatistikData } from "../../../types";
 
 const CATEGORIES: KategoriSlug[] = [
-  "pertanian",
   "umkm",
   "wisata",
   "infrastruktur",
@@ -111,7 +109,7 @@ export default function AdminDashboardPage() {
         </div>
 
         <Link
-          href="/admin/data/pertanian"
+          href="/admin/data/umkm"
           className="inline-flex items-center px-4 py-2.5 bg-[--color-primary] hover:bg-[--color-primary-hover] text-white text-xs font-semibold rounded-lg shadow-sm transition"
         >
           <Plus className="w-4 h-4 mr-1.5" />
@@ -120,12 +118,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* StatCard Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={Leaf}
-          value={statistik.pertanian}
-          label="Pertanian & Perkebunan"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard icon={Store} value={statistik.umkm} label="UMKM & Usaha" />
         <StatCard
           icon={Mountain}

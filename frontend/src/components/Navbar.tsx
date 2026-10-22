@@ -47,15 +47,26 @@ export default function Navbar() {
       }`}
     >
       <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="p-1 rounded-xl bg-white/10 border border-white/20 group-hover:scale-105 transition-transform duration-300">
-            <Image
-              src="/logo-kabupaten-jember.png"
-              alt="Logo Kabupaten Jember"
-              width={34}
-              height={34}
-              className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0"
-            />
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="p-1 rounded-xl bg-white/10 border border-white/20 group-hover:scale-105 transition-transform duration-300">
+              <Image
+                src="/logo-kabupaten-jember.png"
+                alt="Logo Kabupaten Jember"
+                width={34}
+                height={34}
+                className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0"
+              />
+            </div>
+            <div className="p-1 rounded-xl bg-white/10 border border-white/20 group-hover:scale-105 transition-transform duration-300">
+              <Image
+                src="/logo Polije.png"
+                alt="Logo Politeknik Negeri Jember"
+                width={34}
+                height={34}
+                className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0"
+              />
+            </div>
           </div>
           <div className="flex flex-col">
             <span
@@ -63,14 +74,14 @@ export default function Navbar() {
                 isLightText ? "text-white" : "text-[--color-primary]"
               }`}
             >
-              Desa Rambipuji
+              WebGIS Desa Rambipuji
             </span>
             <span
               className={`text-[10px] uppercase tracking-widest font-sans transition-colors ${
                 isLightText ? "text-white/70" : "text-[--text-muted]"
               }`}
             >
-              WebGIS &amp; Potensi Desa
+              Kec. Rambipuji · Kab. Jember
             </span>
           </div>
         </Link>
@@ -150,7 +161,7 @@ export default function Navbar() {
                   : "border-[--color-primary] text-[--color-primary] hover:bg-[--color-primary-subtle]"
               }`}
             >
-              Masuk Admin
+              Login
             </Link>
           )}
         </div>
@@ -226,7 +237,7 @@ export default function Navbar() {
               onClick={() => setIsMobileNavOpen(false)}
               className="w-full text-center py-2 text-xs font-medium border border-[--color-primary] text-[--color-primary] hover:bg-[--color-primary-subtle] rounded-lg transition"
             >
-              Masuk Admin
+              Login
             </Link>
           </div>
         </div>

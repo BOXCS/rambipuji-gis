@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Katalog Potensi Desa",
   description:
     "Direktori lengkap potensi Desa Rambipuji — " +
-    "pertanian, UMKM, destinasi wisata budaya, " +
+    "UMKM, destinasi wisata budaya, " +
     "dan fasilitas infrastruktur desa.",
   alternates: { canonical: "/potensi" },
   openGraph: {

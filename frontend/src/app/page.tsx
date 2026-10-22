@@ -4,7 +4,6 @@ import {
   Compass,
   ExternalLink,
   Layers,
-  Leaf,
   Map,
   MapPin,
   Ruler,
@@ -51,13 +50,13 @@ const fallbackProfile: DesaProfile = {
   visi: "Terwujudnya Desa Rambipuji yang Maju, Sejahtera, Berbudaya, dan Berdaya Saing Berbasis Potensi Lokal dan Teknologi Informasi.",
   misi: [
     "Meningkatkan kualitas pelayanan publik berbasis digital.",
-    "Mengembangkan potensi pertanian, UMKM, pariwisata, dan infrastruktur desa.",
+    "Mengembangkan potensi UMKM, pariwisata, dan infrastruktur desa.",
     "Mendorong kemandirian ekonomi masyarakat melalui pemberdayaan dan inovasi lokal.",
   ],
   sejarah:
-    "Desa Rambipuji merupakan salah satu desa bersejarah di Kabupaten Jember yang memiliki kekayaan alam berupa gumuk-gumuk eksotis, sentra industri kerajinan tempe turun-temurun, serta hamparan persawahan yang subur.",
+    "Desa Rambipuji merupakan salah satu desa bersejarah di Kabupaten Jember yang memiliki kekayaan alam berupa gumuk-gumuk eksotis, sentra industri kerajinan tempe turun-temurun, serta kemajuan infrastruktur terintegrasi.",
   deskripsi:
-    "Desa Rambipuji adalah desa dinamis di Kabupaten Jember dengan potensi agrikultur subur, sentra UMKM tempe legendaris, serta warisan wisata budaya gumuk.",
+    "Desa Rambipuji adalah desa dinamis di Kabupaten Jember dengan sentra UMKM tempe legendaris, warisan wisata budaya gumuk, dan infrastruktur terintegrasi.",
   alamat_kantor: "Jl. Balai Desa No. 1, Rambipuji, Jember",
   email: "desa.rambipuji@jemberkab.go.id",
   telepon: "(0331) 711xxx",
@@ -362,7 +361,7 @@ export default async function HomePage() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 mb-3">
                 <Layers className="w-3.5 h-3.5" />
-                Jelajahi Empat Pilar
+                Pilar Potensi Unggulan
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
                 Potensi Unggulan Rambipuji
@@ -374,8 +373,8 @@ export default async function HomePage() {
             </p>
           </div>
 
-          {/* Large Visual Card Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Large Visual Card Grid — 3 Pillars */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {/* Card 1: Wisata */}
             <Link
               href="/potensi"
@@ -433,37 +432,6 @@ export default async function HomePage() {
                 </p>
                 <div className="pt-2 flex items-center gap-1.5 text-xs font-semibold text-amber-400 group-hover:gap-2.5 transition-all">
                   <span>Jelajahi Usaha Warga</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </div>
-            </Link>
-
-            {/* Card 3: Pertanian */}
-            <Link
-              href="/potensi"
-              className="group relative rounded-2xl overflow-hidden aspect-[3/4] bg-gray-800 shadow-xl border border-white/10 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-end p-6"
-            >
-              <Image
-                src={heroImages[1]?.url || "/logo-kabupaten-jember.png"}
-                alt="Pertanian & Perkebunan"
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-85"
-                sizes="(max-width: 768px) 100vw, 300px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-              <div className="relative z-10 space-y-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-600/80 text-white backdrop-blur-md">
-                  <Leaf className="w-3.5 h-3.5" />
-                  Pertanian Subur
-                </span>
-                <h3 className="font-serif text-xl font-bold text-white group-hover:text-emerald-300 transition-colors">
-                  Lumbung Pangan Hijau
-                </h3>
-                <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed">
-                  Lanskap persawahan produktif penopang ketahanan pangan Jember barat.
-                </p>
-                <div className="pt-2 flex items-center gap-1.5 text-xs font-semibold text-emerald-400 group-hover:gap-2.5 transition-all">
-                  <span>Telusuri Agrikultur</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               </div>
@@ -617,7 +585,7 @@ export default async function HomePage() {
                   Politeknik Negeri Jember
                 </span>
                 <span className="text-[11px] text-[--text-muted]">
-                  Pendanaan PNBP Polije 2026
+                  Pendanaan PNBP Skema Desa Binaan Tahun 2026
                 </span>
               </div>
             </div>

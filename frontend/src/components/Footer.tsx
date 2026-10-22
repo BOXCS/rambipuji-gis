@@ -20,10 +20,18 @@ export default function Footer() {
             height={18}
             className="w-4 h-4 object-contain"
           />
+          <Image
+            src="/logo Polije.png"
+            alt="Logo Politeknik Negeri Jember"
+            width={18}
+            height={18}
+            className="w-4 h-4 object-contain"
+          />
           <span className="font-medium text-[--text-primary]">WebGIS Desa Rambipuji</span>
         </div>
-        <div className="text-center sm:text-right">
-          Copyright Politeknik Negeri Jember 2026. Pendanaan PNBP Polije 2026
+        <div className="text-center sm:text-right leading-tight">
+          <p className="font-medium">Copyright Politeknik Negeri Jember</p>
+          <p className="text-[11px] text-[--text-muted]">Pendanaan PNBP Skema Desa Binaan Tahun 2026</p>
         </div>
       </footer>
     );
@@ -31,15 +39,27 @@ export default function Footer() {
 
   if (isPetaRoute) {
     return (
-      <div className="absolute bottom-3 right-4 z-40 bg-white/90 backdrop-blur-md border border-gray-200/80 px-3 py-1.5 rounded-lg shadow-sm text-[11px] text-gray-700 flex items-center gap-2 max-w-[calc(100vw-2rem)] sm:max-w-none">
-        <Image
-          src="/logo-kabupaten-jember.png"
-          alt="Logo Kabupaten Jember"
-          width={14}
-          height={14}
-          className="w-3.5 h-3.5 object-contain flex-shrink-0"
-        />
-        <span className="truncate">Copyright Politeknik Negeri Jember 2026. Pendanaan PNBP Polije 2026</span>
+      <div className="absolute bottom-3 right-4 z-40 bg-white/95 backdrop-blur-md border border-gray-200/80 px-3 py-1.5 rounded-lg shadow-sm text-[11px] text-gray-700 flex items-center gap-2 max-w-[calc(100vw-2rem)] sm:max-w-none">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <Image
+            src="/logo-kabupaten-jember.png"
+            alt="Logo Kabupaten Jember"
+            width={14}
+            height={14}
+            className="w-3.5 h-3.5 object-contain flex-shrink-0"
+          />
+          <Image
+            src="/logo Polije.png"
+            alt="Logo Politeknik Negeri Jember"
+            width={14}
+            height={14}
+            className="w-3.5 h-3.5 object-contain flex-shrink-0"
+          />
+        </div>
+        <div className="flex flex-col text-[10px] leading-tight sm:flex-row sm:gap-1.5 sm:text-[11px]">
+          <span className="font-medium">Copyright Politeknik Negeri Jember ·</span>
+          <span className="text-gray-500">Pendanaan PNBP Skema Desa Binaan Tahun 2026</span>
+        </div>
       </div>
     );
   }
@@ -66,8 +86,9 @@ export default function Footer() {
             WebGIS Desa Rambipuji
           </span>
         </div>
-        <div className="text-center sm:text-right font-medium text-gray-600">
-          Copyright Politeknik Negeri Jember 2026. Pendanaan PNBP Polije 2026
+        <div className="text-center sm:text-right leading-relaxed font-medium text-gray-600">
+          <p>Copyright Politeknik Negeri Jember</p>
+          <p className="text-[11px] text-gray-500">Pendanaan PNBP Skema Desa Binaan Tahun 2026</p>
         </div>
       </div>
     </footer>

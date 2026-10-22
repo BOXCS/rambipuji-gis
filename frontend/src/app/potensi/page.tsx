@@ -12,11 +12,10 @@ import SearchInput from "../../components/SearchInput";
 import { usePotensi } from "../../hooks/usePotensi";
 import type { KategoriSlug } from "../../types";
 
-const FILTER_LABELS: Record<KategoriSlug | "semua", string> = {
+const FILTER_LABELS: Partial<Record<KategoriSlug | "semua", string>> = {
   semua: "Semua",
-  pertanian: "Pertanian",
-  umkm: "UMKM",
   wisata: "Wisata",
+  umkm: "UMKM",
   infrastruktur: "Infrastruktur",
   "batas-wilayah": "Batas Wilayah",
 };
@@ -94,7 +93,7 @@ export default function PotensiPage() {
             </h1>
             <p className="text-white/80 text-sm sm:text-base leading-relaxed max-w-2xl">
               Telusuri pesona destinasi wisata, kreativitas produk UMKM masyarakat,
-              lumbung hasil tani agraris, serta infrastruktur penunjang kehidupan desa.
+              serta fasilitas infrastruktur penunjang kehidupan desa.
             </p>
           </div>
         </div>
