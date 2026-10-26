@@ -31,6 +31,9 @@ export type { MiniMapProps } from "./MiniMap";
 export { default as Navbar } from "./Navbar";
 export { default as NavbarWrapper } from "./NavbarWrapper";
 
+export { default as Pagination } from "./Pagination";
+export type { PaginationProps } from "./Pagination";
+
 export { default as PhotoUpload } from "./PhotoUpload";
 export type { PhotoUploadProps } from "./PhotoUpload";
 

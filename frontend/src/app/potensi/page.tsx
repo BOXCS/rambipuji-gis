@@ -3,14 +3,17 @@
 import { ChevronRight, ExternalLink, Home, MapPin, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CategoryBadge from "../../components/CategoryBadge";
 import EmptyState from "../../components/EmptyState";
 import FilterTabs from "../../components/FilterTabs";
+import Pagination from "../../components/Pagination";
 import PotensiCard from "../../components/PotensiCard";
 import SearchInput from "../../components/SearchInput";
 import { usePotensi } from "../../hooks/usePotensi";
 import type { KategoriSlug } from "../../types";
+
+const ITEMS_PER_PAGE = 9;
 
 const FILTER_LABELS: Partial<Record<KategoriSlug | "semua", string>> = {
   semua: "Semua",
@@ -23,8 +26,14 @@ const FILTER_LABELS: Partial<Record<KategoriSlug | "semua", string>> = {
 export default function PotensiPage() {
   const [activeTab, setActiveTab] = useState<KategoriSlug | "semua">("semua");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { data, loading, error } = usePotensi();
+
+  // Reset to page 1 whenever active category or search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchQuery]);
 
   const filteredFeatures = useMemo(() => {
     if (!data || !data.features) {
@@ -49,6 +58,47 @@ export default function PotensiPage() {
       return true;
     });
   }, [data, activeTab, searchQuery]);
+
+  // Whether external UMKM portal card should be appended
+  const hasExternalCard = activeTab === "semua" || activeTab === "umkm";
+
+  // Total display items (including the external portal card if applicable)
+  const totalItems = filteredFeatures.length + (hasExternalCard ? 1 : 0);
+  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+
+  // Current page boundary indices
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+
+  // Features to render on the current page (max 9 cards total on any page)
+  const paginatedFeatures = useMemo(() => {
+    if (startIndex >= filteredFeatures.length) {
+      return [];
+    }
+    return filteredFeatures.slice(
+      startIndex,
+      Math.min(endIndex, filteredFeatures.length)
+    );
+  }, [filteredFeatures, startIndex, endIndex]);
+
+  // External card is displayed at the end of the collection
+  const showExternalCardOnPage =
+    hasExternalCard &&
+    endIndex > filteredFeatures.length &&
+    startIndex <= filteredFeatures.length;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const catalogElement = document.getElementById("katalog-content");
+    if (catalogElement) {
+      const yOffset = -90;
+      const y =
+        catalogElement.getBoundingClientRect().top +
+        window.pageYOffset +
+        yOffset;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    }
+  };
 
   const activeFilterLabel =
     activeTab !== "semua" ? FILTER_LABELS[activeTab] : null;
@@ -114,7 +164,10 @@ export default function PotensiPage() {
       </div>
 
       {/* Stats bar */}
-      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm text-slate-600 w-full">
+      <div
+        id="katalog-content"
+        className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm text-slate-600 w-full"
+      >
         {loading ? (
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-emerald-600 animate-ping" />
@@ -133,6 +186,12 @@ export default function PotensiPage() {
             {searchQuery.trim() !== "" && (
               <span className="text-slate-500">
                 Kata kunci: &ldquo;<strong className="text-slate-900">{searchQuery}</strong>&rdquo;
+              </span>
+            )}
+            {totalPages > 1 && (
+              <span className="text-slate-400 hidden sm:inline">
+                • Halaman <strong className="text-slate-700">{currentPage}</strong> dari{" "}
+                <strong className="text-slate-700">{totalPages}</strong>
               </span>
             )}
           </div>
@@ -198,60 +257,71 @@ export default function PotensiPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-            {filteredFeatures.map((feature) => (
-              <PotensiCard
-                key={`${feature.properties.kategori}-${feature.properties.id ?? feature.id}`}
-                feature={feature}
-              />
-            ))}
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+              {paginatedFeatures.map((feature) => (
+                <PotensiCard
+                  key={`${feature.properties.kategori}-${feature.properties.id ?? feature.id}`}
+                  feature={feature}
+                />
+              ))}
 
-            {/* Kartu Portal Katalog UMKM di Bagian Akhir List Potensi */}
-            {(activeTab === "semua" || activeTab === "umkm") && (
-              <div className="group bg-white rounded-2xl border border-amber-200/80 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full ring-1 ring-amber-400/20">
-                {/* Photo area */}
-                <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
-                  <Image
-                    src="/katalog UMKM.png"
-                    alt="Portal Katalog UMKM Masyarakat Desa Rambipuji"
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                    sizes="(max-width: 768px) 100vw, 400px"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
-                  <div className="absolute top-3 left-3 z-10 shadow-sm backdrop-blur-md">
-                    <CategoryBadge kategori="umkm" />
+              {/* Kartu Portal Katalog UMKM di Bagian Akhir List Potensi */}
+              {showExternalCardOnPage && (
+                <div className="group bg-white rounded-2xl border border-amber-200/80 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full ring-1 ring-amber-400/20">
+                  {/* Photo area */}
+                  <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
+                    <Image
+                      src="/katalog UMKM.png"
+                      alt="Portal Katalog UMKM Masyarakat Desa Rambipuji"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      sizes="(max-width: 768px) 100vw, 400px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
+                    <div className="absolute top-3 left-3 z-10 shadow-sm backdrop-blur-md">
+                      <CategoryBadge kategori="umkm" />
+                    </div>
+                    <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 text-amber-200 text-xs font-medium drop-shadow-md">
+                      <MapPin className="h-3.5 w-3.5 text-amber-400" />
+                      <span>Portal Eksternal UMKM</span>
+                    </div>
                   </div>
-                  <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 text-amber-200 text-xs font-medium drop-shadow-md">
-                    <MapPin className="h-3.5 w-3.5 text-amber-400" />
-                    <span>Portal Eksternal UMKM</span>
+
+                  {/* Card body */}
+                  <div className="p-5 flex flex-col flex-grow">
+                    <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-amber-700 transition-colors line-clamp-1">
+                      UMKM Masyarakat Desa Rambipuji
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 line-clamp-2 mt-2 flex-grow leading-relaxed">
+                      Jelajahi ekosistem & direktori lengkap produk olahan dan karya UMKM warga Desa Rambipuji secara interaktif melalui portal katalog khusus.
+                    </p>
+
+                    <div className="border-t border-slate-100 mt-4 pt-3.5">
+                      <a
+                        href="https://katalog-preview-by-relva-studio-plum.vercel.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-sm hover:shadow group/btn transition-all duration-200"
+                      >
+                        <span>Buka Katalog UMKM</span>
+                        <ExternalLink className="h-4 w-4 transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                      </a>
+                    </div>
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* Card body */}
-                <div className="p-5 flex flex-col flex-grow">
-                  <h3 className="font-serif font-bold text-lg text-slate-900 group-hover:text-amber-700 transition-colors line-clamp-1">
-                    UMKM Masyarakat Desa Rambipuji
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 line-clamp-2 mt-2 flex-grow leading-relaxed">
-                    Jelajahi ekosistem & direktori lengkap produk olahan dan karya UMKM warga Desa Rambipuji secara interaktif melalui portal katalog khusus.
-                  </p>
-
-                  <div className="border-t border-slate-100 mt-4 pt-3.5">
-                    <a
-                      href="https://katalog-preview-by-relva-studio-plum.vercel.app/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-sm hover:shadow group/btn transition-all duration-200"
-                    >
-                      <span>Buka Katalog UMKM</span>
-                      <ExternalLink className="h-4 w-4 transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+            {/* Pagination Controls */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={handlePageChange}
+            />
+          </>
         )}
       </main>
     </div>
