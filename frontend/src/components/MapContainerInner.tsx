@@ -21,6 +21,7 @@ import {
   MapContainer,
   TileLayer,
   WMSTileLayer,
+  useMap,
 } from "react-leaflet";
 import { LAYER_NAMES, getWMSParams, getWMSUrl } from "../lib/geoserver";
 import {
@@ -140,12 +141,65 @@ export default function MapContainerInner({
     };
   }
 
+  /**
+   * MapFocusController ensures that when the page is loaded/reloaded, the map
+   * immediately centers and focuses on the active pinpoints.
+   *
+   * It computes the bounds of the point features and accounts for the desktop
+   * LayerToggle sidebar (top-left) using paddingTopLeft so pinpoints are
+   * comfortably centered in the visible map canvas.
+   */
+  function MapFocusController() {
+    const map = useMap();
+    const hasFocusedRef = React.useRef(false);
+
+    useEffect(() => {
+      if (hasFocusedRef.current) return;
+      if (!pointFeatures || pointFeatures.length === 0) return;
+
+      const latLngs: [number, number][] = [];
+      for (const f of pointFeatures) {
+        if (f.geometry && f.geometry.type === "Point") {
+          const coords = f.geometry.coordinates as [number, number];
+          // GeoJSON coordinate order is [longitude, latitude]
+          latLngs.push([coords[1], coords[0]]);
+        }
+      }
+
+      if (latLngs.length === 0) return;
+
+      hasFocusedRef.current = true;
+
+      const isDesktop =
+        typeof window !== "undefined" && window.innerWidth >= 640;
+      const paddingTopLeft: [number, number] = isDesktop
+        ? [240, 80]
+        : [40, 80];
+      const paddingBottomRight: [number, number] = [40, 40];
+
+      if (latLngs.length === 1) {
+        map.setView(latLngs[0], 15, { animate: false });
+      } else {
+        const bounds = L.latLngBounds(latLngs);
+        map.fitBounds(bounds, {
+          paddingTopLeft,
+          paddingBottomRight,
+          maxZoom: 15,
+          animate: false,
+        });
+      }
+    }, [map]);
+
+    return null;
+  }
+
   return (
     <MapContainer
-      center={[-8.25, 113.6]}
-      zoom={13}
+      center={[-8.2228, 113.6059]}
+      zoom={14}
       className="w-full h-full z-0"
     >
+      <MapFocusController />
       {/* ── Base tile ───────────────────────────────────────────────────── */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

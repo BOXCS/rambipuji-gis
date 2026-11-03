@@ -51,7 +51,7 @@ export default function HeroCarousel({
         heightClass
           ? heightClass
           : fullScreen
-          ? "min-h-screen h-screen"
+          ? "min-h-[100dvh]"
           : "min-h-[420px] pt-16"
       }`}
     >
@@ -87,15 +87,17 @@ export default function HeroCarousel({
 
       {/* Hero content container */}
       <div
-        className={`relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-16 flex flex-col justify-between ${
-          fullScreen ? "h-full pt-24 pb-12" : ""
+        className={`relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex flex-col justify-between ${
+          fullScreen
+            ? "min-h-[100dvh] pt-20 sm:pt-24 pb-8 sm:pb-12"
+            : "py-16"
         }`}
       >
-        <div className="my-auto">{children}</div>
+        <div className="my-auto py-4">{children}</div>
 
         {/* Floating slide indicators & current slide title */}
         {images.length > 1 && (
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/10 text-xs text-white/80">
+          <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-between gap-3 pt-3 sm:pt-4 border-t border-white/10 text-xs text-white/80">
             <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="truncate max-w-[280px] sm:max-w-md">
@@ -124,7 +126,7 @@ export default function HeroCarousel({
       </div>
 
       {showScrollPrompt && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 text-white/70 animate-bounce pointer-events-none">
+        <div className="hidden lg:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex-col items-center gap-1 text-white/70 animate-bounce pointer-events-none">
           <span className="text-[10px] uppercase tracking-widest font-sans">Jelajahi</span>
           <ChevronDown className="w-4 h-4" />
         </div>

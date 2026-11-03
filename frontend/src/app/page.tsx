@@ -162,21 +162,21 @@ export default async function HomePage() {
       >
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
           {/* Eyebrow / Kicker */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider uppercase glass-pill text-white/95 shadow-lg mb-6 hover:bg-white/20 transition-all">
-            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
-            <span>JELAJAHI PESONA RAMBIPUJI · JEMBER BARAT</span>
+          <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase glass-pill text-white/95 shadow-lg mb-3 sm:mb-5 hover:bg-white/20 transition-all">
+            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse flex-shrink-0" />
+            <span className="truncate sm:whitespace-normal">JELAJAHI PESONA RAMBIPUJI · JEMBER BARAT</span>
           </div>
 
           {/* Expressive Editorial Headline */}
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[1.1] mb-6 text-shadow-hero">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.15] mb-3 sm:mb-5 text-shadow-hero">
             Jejak Sejarah, Tradisi, dan Kreativitas Warga
-            <span className="block mt-2 font-serif italic text-emerald-300 font-normal">
+            <span className="block mt-1 sm:mt-2 font-serif italic text-emerald-300 font-normal text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
               Desa Rambipuji
             </span>
           </h1>
 
           {/* Engaging Subtitle / Paragraf Deskripsi */}
-          <p className="text-base sm:text-lg md:text-xl text-white/85 max-w-2xl mx-auto font-sans leading-relaxed mb-10 text-shadow-subtle">
+          <p className="text-xs sm:text-sm md:text-base text-white/90 max-w-2xl mx-auto font-sans leading-relaxed mb-6 sm:mb-8 text-shadow-subtle">
             Selamat datang di gerbang digital Desa Rambipuji. Temukan kekayaan
             lanskap gumuk, warisan sejarah dan wisata religi, ruang edukasi
             lingkungan, serta industri kreatif masyarakat yang terus berkembang di
@@ -184,20 +184,20 @@ export default async function HomePage() {
           </p>
 
           {/* CTA Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
             <Link
               href="/peta"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm sm:text-base shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm md:text-base shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Map className="w-5 h-5" />
+              <Map className="w-4 h-4 sm:w-5 sm:h-5" />
               Jelajahi Peta Digital
             </Link>
 
             <Link
               href="/potensi"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full glass-pill hover:bg-white/25 text-white font-semibold text-sm sm:text-base shadow-md hover:-translate-y-0.5 transition-all duration-300"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full glass-pill hover:bg-white/25 text-white font-semibold text-xs sm:text-sm md:text-base shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Compass className="w-5 h-5 text-amber-300" />
+              <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
               Temukan Potensi Desa
             </Link>
           </div>

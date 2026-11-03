@@ -6,7 +6,7 @@ import React from "react";
 
 export default function Footer() {
   const pathname = usePathname() || "";
-  const isPetaRoute = pathname === "/peta" || pathname === "/";
+  const isPetaRoute = pathname === "/peta";
   const isAdminRoute = pathname.startsWith("/admin");
 
   if (isAdminRoute) {

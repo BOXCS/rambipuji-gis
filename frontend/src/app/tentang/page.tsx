@@ -336,36 +336,36 @@ export default async function TentangPage() {
         overlayGradient="linear-gradient(180deg, rgba(6, 26, 16, 0.45) 0%, rgba(6, 26, 16, 0.70) 55%, rgba(4, 18, 11, 0.96) 100%)"
       >
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider uppercase glass-pill text-white/95 shadow-lg mb-6">
-            <Sparkles className="w-4 h-4 text-emerald-300" />
-            <span>KECAMATAN RAMBIPUJI · KABUPATEN JEMBER · JAWA TIMUR</span>
+          <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase glass-pill text-white/95 shadow-lg mb-3 sm:mb-5">
+            <Sparkles className="w-4 h-4 text-emerald-300 flex-shrink-0" />
+            <span className="truncate sm:whitespace-normal">KECAMATAN RAMBIPUJI · KABUPATEN JEMBER · JAWA TIMUR</span>
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-6 text-shadow-hero">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.15] mb-3 sm:mb-5 text-shadow-hero">
             Rambipuji: Warisan Lokal di Tengah Dinamika Perkotaan
           </h1>
 
-          <div className="text-base sm:text-lg md:text-xl text-white/85 max-w-3xl mx-auto font-sans leading-relaxed mb-8 text-shadow-subtle space-y-4">
+          <div className="text-xs sm:text-sm md:text-base text-white/90 max-w-3xl mx-auto font-sans leading-relaxed mb-6 sm:mb-8 text-shadow-subtle space-y-3">
             <p>
               Desa Rambipuji merupakan kawasan berkarakter perkotaan di sebelah barat Kota Jember yang berkembang melalui aktivitas perdagangan, jasa, permukiman, dan kehidupan sosial masyarakat. Di tengah perkembangan tersebut, Rambipuji tetap menyimpan kekayaan sejarah, budaya, dan potensi ekonomi lokal yang menjadi bagian dari identitas wilayahnya.
             </p>
-            <p className="text-white/80 text-sm sm:text-base">
+            <p className="text-white/80 text-xs sm:text-sm">
               Lanskap Gumuk Gong dan Gumuk Dempet, wisata religi Makam Mbah Puji dan Mbah Plecutan, Taman Edukasi Kampung Dinoyo, serta sentra produksi tempe yang berkembang secara turun-temurun mencerminkan keberagaman potensi desa. Perpaduan warisan lokal dan dinamika perkotaan inilah yang menjadikan Rambipuji memiliki karakter serta daya tarik tersendiri.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <a
               href="#sejarah"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-lg hover:-translate-y-0.5 transition-all"
+              className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm md:text-base shadow-lg hover:-translate-y-0.5 transition-all"
             >
               Telusuri Sejarah &amp; Rekam Jejak &rarr;
             </a>
             <Link
               href="/peta"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full glass-pill hover:bg-white/20 text-white font-semibold text-sm shadow-md transition-all"
+              className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full glass-pill hover:bg-white/20 text-white font-semibold text-xs sm:text-sm md:text-base shadow-md transition-all"
             >
-              <Map className="w-4 h-4 text-emerald-300" />
+              <Map className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-300" />
               Jelajahi Peta Potensi &rarr;
             </Link>
           </div>
