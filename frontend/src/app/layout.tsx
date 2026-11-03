@@ -1,22 +1,8 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import Footer from "../components/Footer";
+import JsonLd from "../components/JsonLd";
 import NavbarWrapper from "../components/NavbarWrapper";
 import "./globals.css";
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-sans",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800", "900"],
-  variable: "--font-serif",
-});
-
-import JsonLd from "../components/JsonLd";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -97,9 +83,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body
-        className={`${plusJakarta.variable} ${playfair.variable} font-sans antialiased min-h-screen flex flex-col`}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="font-sans antialiased min-h-screen flex flex-col">
         <JsonLd data={{
           "@context": "https://schema.org",
           "@type": "GovernmentOrganization",
