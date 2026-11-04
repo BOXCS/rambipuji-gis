@@ -372,7 +372,7 @@ export default async function HomePage() {
               className="group relative rounded-2xl overflow-hidden aspect-[3/4] bg-gray-800 shadow-xl border border-white/10 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-end p-6"
             >
               <Image
-                src={heroImages[0]?.url || "/katalog UMKM.png"}
+                src={heroImages[1]?.url || "/katalog UMKM.png"}
                 alt="Jejak Gumuk dan Sejarah Desa"
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-85"
@@ -432,7 +432,7 @@ export default async function HomePage() {
               className="group relative rounded-2xl overflow-hidden aspect-[3/4] bg-gray-800 shadow-xl border border-white/10 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-end p-6"
             >
               <Image
-                src={heroImages[1]?.url || heroImages[0]?.url || "/katalog UMKM.png"}
+                src={heroImages[3]?.url || heroImages[0]?.url || "/katalog UMKM.png"}
                 alt="Warisan Religi & Ruang Edukasi"
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-85"
@@ -462,7 +462,7 @@ export default async function HomePage() {
               className="group relative rounded-2xl overflow-hidden aspect-[3/4] bg-gray-800 shadow-xl border border-white/10 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-end p-6"
             >
               <Image
-                src={heroImages[2]?.url || profile.foto_hero_url || "/logo-kabupaten-jember.png"}
+                src={heroImages[20]?.url || profile.foto_hero_url || "/logo-kabupaten-jember.png"}
                 alt="Alun-Alun & Pusat Aktivitas Warga"
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-70 group-hover:opacity-85"

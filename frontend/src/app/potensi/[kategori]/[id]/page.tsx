@@ -8,6 +8,7 @@ import ImageCarousel from "../../../../components/ImageCarousel";
 import JsonLd from "../../../../components/JsonLd";
 import MiniMap from "../../../../components/MiniMap";
 import { getPotensiDetail } from "../../../../lib/api";
+import { getUmkmSubCategory } from "../../../../lib/umkmSubCategories";
 import type { KategoriSlug, PotensiFeature } from "../../../../types";
 
 const VALID_KATEGORI: KategoriSlug[] = [
@@ -158,8 +159,18 @@ export default async function PotensiDetailPage({
   if (komoditas) attributes.push({ label: "Komoditas", value: komoditas });
   if (luas_ha !== undefined && luas_ha !== null)
     attributes.push({ label: "Luas Lahan", value: `${luas_ha} Ha` });
-  if (jenis_produk)
+  if (kategori === "umkm") {
+    const subCat = getUmkmSubCategory(jenis_produk);
+    attributes.push({ label: "Sub Kategori", value: subCat.label });
+    if (
+      jenis_produk &&
+      jenis_produk.trim().toLowerCase() !== subCat.label.trim().toLowerCase()
+    ) {
+      attributes.push({ label: "Detail Produk", value: jenis_produk });
+    }
+  } else if (jenis_produk) {
     attributes.push({ label: "Jenis Produk", value: jenis_produk });
+  }
   if (jam_operasional)
     attributes.push({ label: "Jam Operasional", value: jam_operasional });
   if (harga_tiket)

@@ -14,6 +14,7 @@ import PhotoUpload from "../../../../../components/PhotoUpload";
 import Toast from "../../../../../components/Toast";
 import { useAuth } from "../../../../../hooks/useAuth";
 import { adminCreatePotensi } from "../../../../../lib/api";
+import { UMKM_SUB_CATEGORIES } from "../../../../../lib/umkmSubCategories";
 import type { KategoriSlug } from "../../../../../types";
 
 const VALID_KATEGORI: KategoriSlug[] = [
@@ -61,7 +62,7 @@ export default function AdminTambahPage() {
   const [luasHa, setLuasHa] = useState<string>("");
   const [musimTanam, setMusimTanam] = useState<string>("");
 
-  const [jenisProduk, setJenisProduk] = useState<string>("");
+  const [jenisProduk, setJenisProduk] = useState<string>("Olahan Pangan");
   const [jamOperasional, setJamOperasional] = useState<string>("08:00 - 17:00");
 
   const [jamKunjungan, setJamKunjungan] = useState<string>("08:00 - 17:00");
@@ -400,17 +401,24 @@ export default function AdminTambahPage() {
 
             {kategori === "umkm" && (
               <>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-[--text-primary]">
-                    Jenis Produk
+                    Sub Kategori UMKM *
                   </label>
-                  <input
-                    type="text"
-                    value={jenisProduk}
+                  <select
+                    value={jenisProduk || "Olahan Pangan"}
                     onChange={(e) => setJenisProduk(e.target.value)}
-                    placeholder="Contoh: Olahan Pangan, Kerajinan"
-                    className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary]"
-                  />
+                    className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary] bg-white font-medium text-slate-800"
+                  >
+                    {UMKM_SUB_CATEGORIES.map((cat) => (
+                      <option key={cat.slug} value={cat.label}>
+                        {cat.label} ({cat.description})
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-[--text-muted]">
+                    Pilih sub-kategori untuk pengelompokan dan penyaringan di Katalog Potensi publik.
+                  </p>
                 </div>
                 <JamOperasionalPicker
                   value={jamOperasional}

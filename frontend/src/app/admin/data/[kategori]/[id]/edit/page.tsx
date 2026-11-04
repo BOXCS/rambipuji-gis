@@ -18,6 +18,10 @@ import {
   adminUpdatePotensi,
   getPotensiDetail,
 } from "../../../../../../lib/api";
+import {
+  UMKM_SUB_CATEGORIES,
+  getUmkmSubCategory,
+} from "../../../../../../lib/umkmSubCategories";
 import type { KategoriSlug, PotensiFeature } from "../../../../../../types";
 
 const VALID_KATEGORI: KategoriSlug[] = [
@@ -534,16 +538,41 @@ export default function AdminEditPage() {
 
             {kategori === "umkm" && (
               <>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-[--text-primary]">
-                    Jenis Produk
+                    Sub Kategori UMKM *
                   </label>
-                  <input
-                    type="text"
-                    value={jenisProduk}
+                  <select
+                    value={
+                      jenisProduk
+                        ? getUmkmSubCategory(jenisProduk).label
+                        : "Olahan Pangan"
+                    }
                     onChange={(e) => setJenisProduk(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary]"
-                  />
+                    className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary] bg-white font-medium text-slate-800"
+                  >
+                    {UMKM_SUB_CATEGORIES.map((cat) => (
+                      <option key={cat.slug} value={cat.label}>
+                        {cat.label} ({cat.description})
+                      </option>
+                    ))}
+                  </select>
+                  {jenisProduk &&
+                    !UMKM_SUB_CATEGORIES.some(
+                      (c) => c.label.toLowerCase() === jenisProduk.toLowerCase()
+                    ) && (
+                      <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
+                        Data lama di database: <strong>&ldquo;{jenisProduk}&rdquo;</strong>.
+                        Sistem otomatis memetakannya ke sub-kategori{" "}
+                        <span className="font-bold underline">
+                          {getUmkmSubCategory(jenisProduk).label}
+                        </span>
+                        . Klik Simpan untuk memperbarui secara permanen.
+                      </div>
+                    )}
+                  <p className="text-[11px] text-[--text-muted]">
+                    Pilih sub-kategori untuk pengelompokan dan penyaringan di Katalog Potensi publik.
+                  </p>
                 </div>
                 <JamOperasionalPicker
                   value={jamOperasional || "08:00 - 17:00"}

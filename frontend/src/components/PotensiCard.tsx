@@ -1,6 +1,7 @@
 import { ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { getUmkmSubCategory } from "../lib/umkmSubCategories";
 import type { PotensiFeature } from "../types";
 import CategoryBadge from "./CategoryBadge";
 import ImageCarousel from "./ImageCarousel";
@@ -37,7 +38,8 @@ function getCardDescription(properties: Record<string, any>, title: string): str
     if (hasil_panen) parts.push(`Hasil: ${hasil_panen}`);
     if (nama_pemilik) parts.push(`Pemilik: ${nama_pemilik}`);
   } else if (kategori === "umkm") {
-    if (jenis_produk) parts.push(`Produk: ${jenis_produk}`);
+    const subCat = getUmkmSubCategory(jenis_produk);
+    parts.push(`Sektor: ${subCat.label}`);
     if (nama_pemilik) parts.push(`Pemilik: ${nama_pemilik}`);
     if (jam_operasional) parts.push(`Jam: ${jam_operasional}`);
   } else if (kategori === "wisata") {
@@ -89,8 +91,15 @@ export default function PotensiCard({ feature }: PotensiCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20 pointer-events-none" />
 
         {/* CategoryBadge overlaid top-3 left-3 */}
-        <div className="absolute top-3 left-3 z-10 shadow-sm backdrop-blur-md">
-          <CategoryBadge kategori={kategori} />
+        <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-1.5 shadow-sm">
+          <div className="backdrop-blur-md">
+            <CategoryBadge kategori={kategori} />
+          </div>
+          {kategori === "umkm" && (
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-amber-950/85 text-amber-200 border border-amber-400/30 backdrop-blur-md shadow-xs">
+              {getUmkmSubCategory(feature.properties.jenis_produk).label}
+            </span>
+          )}
         </div>
 
         {/* Location pill bottom-3 left-3 */}

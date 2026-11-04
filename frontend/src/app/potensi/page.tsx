@@ -1,6 +1,14 @@
 "use client";
 
-import { ChevronRight, ExternalLink, Home, MapPin, Search } from "lucide-react";
+import {
+  ChevronRight,
+  ExternalLink,
+  Home,
+  MapPin,
+  Search,
+  ShoppingBag,
+  Tag,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
@@ -11,6 +19,11 @@ import Pagination from "../../components/Pagination";
 import PotensiCard from "../../components/PotensiCard";
 import SearchInput from "../../components/SearchInput";
 import { usePotensi } from "../../hooks/usePotensi";
+import {
+  UMKM_SUB_CATEGORIES,
+  UmkmSubCategorySlug,
+  getUmkmSubCategory,
+} from "../../lib/umkmSubCategories";
 import type { KategoriSlug } from "../../types";
 
 const ITEMS_PER_PAGE = 9;
@@ -25,15 +38,38 @@ const FILTER_LABELS: Partial<Record<KategoriSlug | "semua", string>> = {
 
 export default function PotensiPage() {
   const [activeTab, setActiveTab] = useState<KategoriSlug | "semua">("semua");
+  const [umkmSubTab, setUmkmSubTab] =
+    useState<UmkmSubCategorySlug | "semua">("semua");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { data, loading, error } = usePotensi();
 
-  // Reset to page 1 whenever active category or search query changes
+  // Reset to page 1 whenever active category, UMKM sub-category, or search query changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab, searchQuery]);
+  }, [activeTab, umkmSubTab, searchQuery]);
+
+  // Calculate count of UMKM per sub-category for badge counters
+  const umkmCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      semua: 0,
+      "olahan-pangan": 0,
+      "kerajinan-seni": 0,
+      "usaha-lainnya": 0,
+    };
+    if (!data || !data.features) return counts;
+
+    data.features.forEach((f) => {
+      if (f.properties.kategori === "umkm") {
+        counts.semua += 1;
+        const sub = getUmkmSubCategory(f.properties.jenis_produk);
+        counts[sub.slug] = (counts[sub.slug] || 0) + 1;
+      }
+    });
+
+    return counts;
+  }, [data]);
 
   const filteredFeatures = useMemo(() => {
     if (!data || !data.features) {
@@ -41,26 +77,36 @@ export default function PotensiPage() {
     }
 
     return data.features.filter((feature) => {
-      const { kategori, nama, nama_usaha } = feature.properties;
+      const { kategori, nama, nama_usaha, jenis_produk } = feature.properties;
 
       if (activeTab !== "semua" && kategori !== activeTab) {
         return false;
       }
 
+      // Filter by UMKM sub-category if activeTab is umkm and a sub-tab is chosen
+      if (activeTab === "umkm" && umkmSubTab !== "semua") {
+        const sub = getUmkmSubCategory(jenis_produk);
+        if (sub.slug !== umkmSubTab) {
+          return false;
+        }
+      }
+
       if (searchQuery.trim() !== "") {
         const query = searchQuery.trim().toLowerCase();
         const title = (nama || nama_usaha || "").toLowerCase();
-        if (!title.includes(query)) {
+        const jenis = (jenis_produk || "").toLowerCase();
+        if (!title.includes(query) && !jenis.includes(query)) {
           return false;
         }
       }
 
       return true;
     });
-  }, [data, activeTab, searchQuery]);
+  }, [data, activeTab, umkmSubTab, searchQuery]);
 
   // Whether external UMKM portal card should be appended
-  const hasExternalCard = activeTab === "semua" || activeTab === "umkm";
+  const hasExternalCard =
+    activeTab === "semua" || (activeTab === "umkm" && umkmSubTab === "semua");
 
   // Total display items (including the external portal card if applicable)
   const totalItems = filteredFeatures.length + (hasExternalCard ? 1 : 0);
@@ -152,7 +198,13 @@ export default function PotensiPage() {
       {/* Sticky filter & search bar — Frosted Glass */}
       <div className="sticky top-16 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <FilterTabs active={activeTab} onChange={setActiveTab} />
+          <FilterTabs
+            active={activeTab}
+            onChange={(tab) => {
+              setActiveTab(tab);
+              if (tab !== "umkm") setUmkmSubTab("semua");
+            }}
+          />
           <div className="w-full md:max-w-xs flex-shrink-0">
             <SearchInput
               value={searchQuery}
@@ -161,6 +213,65 @@ export default function PotensiPage() {
             />
           </div>
         </div>
+
+        {/* Sub-kategori Filter Bar khusus UMKM */}
+        {activeTab === "umkm" && (
+          <div className="border-t border-slate-200/60 bg-amber-50/50 backdrop-blur-sm">
+            <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar">
+              <span className="text-xs font-semibold text-amber-900 uppercase tracking-wider flex-shrink-0 mr-1 flex items-center gap-1.5">
+                <Tag className="w-3.5 h-3.5 text-amber-600" />
+                Sub Sektor:
+              </span>
+              <button
+                type="button"
+                onClick={() => setUmkmSubTab("semua")}
+                className={`px-3 py-1.5 rounded-full text-xs transition-all select-none flex-shrink-0 flex items-center gap-1.5 ${
+                  umkmSubTab === "semua"
+                    ? "bg-amber-600 text-white shadow-xs font-semibold ring-2 ring-amber-600/20"
+                    : "bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80 font-medium"
+                }`}
+              >
+                <span>Semua UMKM</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                    umkmSubTab === "semua"
+                      ? "bg-white/25 text-white"
+                      : "bg-slate-100 text-slate-600"
+                  }`}
+                >
+                  {umkmCounts.semua}
+                </span>
+              </button>
+              {UMKM_SUB_CATEGORIES.map((sub) => {
+                const isActive = umkmSubTab === sub.slug;
+                const count = umkmCounts[sub.slug] || 0;
+                return (
+                  <button
+                    key={sub.slug}
+                    type="button"
+                    onClick={() => setUmkmSubTab(sub.slug)}
+                    className={`px-3 py-1.5 rounded-full text-xs transition-all select-none flex-shrink-0 flex items-center gap-1.5 ${
+                      isActive
+                        ? "bg-amber-600 text-white shadow-xs font-semibold ring-2 ring-amber-600/20"
+                        : "bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80 font-medium"
+                    }`}
+                  >
+                    <span>{sub.label}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                        isActive
+                          ? "bg-white/25 text-white"
+                          : "bg-amber-100/80 text-amber-800"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Stats bar */}
@@ -181,6 +292,17 @@ export default function PotensiPage() {
             {activeFilterLabel && (
               <span className="text-slate-500">
                 Filter: <strong className="text-slate-900">{activeFilterLabel}</strong>
+                {activeTab === "umkm" && umkmSubTab !== "semua" && (
+                  <>
+                    {" › "}
+                    <strong className="text-amber-700">
+                      {
+                        UMKM_SUB_CATEGORIES.find((s) => s.slug === umkmSubTab)
+                          ?.label
+                      }
+                    </strong>
+                  </>
+                )}
               </span>
             )}
             {searchQuery.trim() !== "" && (
@@ -233,7 +355,9 @@ export default function PotensiPage() {
             <p className="text-sm text-slate-500 max-w-md mb-6 leading-relaxed">
               Kami tidak menemukan data untuk pencarian atau filter yang dipilih. Silakan ubah filter atau gunakan kata kunci lain.
             </p>
-            {(searchQuery.trim() !== "" || activeTab !== "semua") && (
+            {(searchQuery.trim() !== "" ||
+              activeTab !== "semua" ||
+              umkmSubTab !== "semua") && (
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {searchQuery.trim() !== "" && (
                   <button
@@ -244,10 +368,22 @@ export default function PotensiPage() {
                     Hapus Kata Kunci
                   </button>
                 )}
+                {activeTab === "umkm" && umkmSubTab !== "semua" && (
+                  <button
+                    type="button"
+                    onClick={() => setUmkmSubTab("semua")}
+                    className="text-xs font-semibold uppercase tracking-wider text-amber-800 bg-amber-100 hover:bg-amber-200 px-4 py-2.5 rounded-xl transition"
+                  >
+                    Lihat Semua Sub Sektor UMKM
+                  </button>
+                )}
                 {activeTab !== "semua" && (
                   <button
                     type="button"
-                    onClick={() => setActiveTab("semua")}
+                    onClick={() => {
+                      setActiveTab("semua");
+                      setUmkmSubTab("semua");
+                    }}
                     className="text-xs font-semibold uppercase tracking-wider text-white bg-slate-900 hover:bg-emerald-700 px-4 py-2.5 rounded-xl shadow-sm transition"
                   >
                     Lihat Semua Kategori
