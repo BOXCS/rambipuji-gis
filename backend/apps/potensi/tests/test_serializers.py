@@ -64,6 +64,9 @@ def _fake_instance(**kwargs: Any) -> MagicMock:
     # foto returns a falsy value by default (no file uploaded)
     if "foto" not in kwargs:
         instance.foto = None
+    # luas_ha returns None by default instead of a MagicMock so DecimalField can serialize
+    if "luas_ha" not in kwargs:
+        instance.luas_ha = None
     return instance
 
 
@@ -272,8 +275,8 @@ class TestPotensiInfrastrukturListSerializer:
         )
         data = _serialize(PotensiInfrastrukturListSerializer, instance)
         props = data["properties"]
-        assert "kondisi" not in props
-        assert "pengelola" not in props
+        assert "kontak" not in props
+        assert "kapasitas" not in props
 
 
 @pytest.mark.django_db

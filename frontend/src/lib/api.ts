@@ -131,13 +131,21 @@ export async function getPotensiAll(
     "umkm",
     "infrastruktur",
   ];
-  const results = await Promise.all(
+  const results = await Promise.allSettled(
     slugs.map((k) => getPotensiByKategori(k))
   );
 
+  const features = results.flatMap((res) => {
+    if (res.status === "fulfilled") {
+      return res.value.features || [];
+    }
+    console.error("Failed to fetch category in getPotensiAll:", res.reason);
+    return [];
+  });
+
   return {
     type: "FeatureCollection",
-    features: results.flatMap((r) => r.features || []),
+    features,
   };
 }
 

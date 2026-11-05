@@ -179,9 +179,9 @@ class TestFotoValidation:
         assert res.data["status"] == "error"
         assert "foto" in res.data["errors"]
 
-    def test_post_with_foto_exceeding_5mb_returns_422(self, auth_client):
-        # Create dummy data > 5MB (5 * 1024 * 1024 + 1 bytes)
-        large_content = b"\x00" * (5 * 1024 * 1024 + 1)
+    def test_post_with_foto_exceeding_10mb_returns_422(self, auth_client):
+        # Create dummy data > 10MB (10 * 1024 * 1024 + 1 bytes)
+        large_content = b"\x00" * (10 * 1024 * 1024 + 1)
         large_file = SimpleUploadedFile(
             "big.jpg", large_content, content_type="image/jpeg"
         )

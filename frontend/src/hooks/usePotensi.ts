@@ -80,13 +80,21 @@ export function usePotensi(
       const slugs: KategoriSlug[] =
         current.size > 0 ? (Array.from(current) as KategoriSlug[]) : ALL_KATEGORI;
 
-      const results = await Promise.all(
+      const results = await Promise.allSettled(
         slugs.map((k) => getPotensiByKategori(k))
       );
 
+      const features = results.flatMap((res) => {
+        if (res.status === "fulfilled") {
+          return res.value.features ?? [];
+        }
+        console.error("Failed to fetch layer category in usePotensi:", res.reason);
+        return [];
+      });
+
       setData({
         type: "FeatureCollection",
-        features: results.flatMap((r) => r.features ?? []),
+        features,
       });
       setError(null);
     } catch (err: unknown) {

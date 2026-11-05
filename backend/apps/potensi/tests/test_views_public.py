@@ -343,3 +343,48 @@ class TestDesaProfileView:
         data = response.data["data"]
         for key in ["alamat_kantor", "telepon", "email", "jam_pelayanan"]:
             assert key in data, f"Missing flat contact field: {key}"
+
+
+# ---------------------------------------------------------------------------
+# Comprehensive Smoke Test for All 5 Categories (List & Detail)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.django_db
+class TestAllCategoriesListAndDetailSmokeTest:
+    """Verifies that both list AND detail endpoints return HTTP 200 for all 5 categories.
+
+    Guards against ImproperlyConfigured / 500 errors caused by serializer Meta.fields
+    referencing non-existent model fields (e.g. `deskripsi` on PotensiInfrastruktur or PotensiPertanian).
+    """
+
+    @pytest.mark.parametrize(
+        "kategori,list_url,fixture_name",
+        [
+            ("pertanian", URL_PERTANIAN, "pertanian"),
+            ("umkm", URL_UMKM, "umkm"),
+            ("wisata", URL_WISATA, "wisata"),
+            ("infrastruktur", URL_INFRASTRUKTUR, "infrastruktur"),
+            ("batas-wilayah", URL_BATAS, "batas"),
+        ],
+    )
+    def test_list_and_detail_endpoints_return_200(
+        self, client, request, kategori, list_url, fixture_name
+    ):
+        obj = request.getfixturevalue(fixture_name)
+
+        # 1. List endpoint must return 200 and a GeoJSON FeatureCollection
+        list_response = client.get(list_url)
+        assert list_response.status_code == status.HTTP_200_OK, (
+            f"List endpoint {list_url} failed with {list_response.status_code}: {list_response.data}"
+        )
+        assert list_response.data["type"] == "FeatureCollection"
+        assert len(list_response.data["features"]) >= 1
+
+        # 2. Detail endpoint must return 200 and a GeoJSON Feature
+        detail_url = f"/api/public/potensi/{kategori}/{obj.pk}/"
+        detail_response = client.get(detail_url)
+        assert detail_response.status_code == status.HTTP_200_OK, (
+            f"Detail endpoint {detail_url} failed with {detail_response.status_code}: {detail_response.data}"
+        )
+        assert detail_response.data["type"] == "Feature"
+        assert detail_response.data["id"] == obj.pk
