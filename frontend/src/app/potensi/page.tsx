@@ -63,7 +63,11 @@ export default function PotensiPage() {
     data.features.forEach((f) => {
       if (f.properties.kategori === "umkm") {
         counts.semua += 1;
-        const sub = getUmkmSubCategory(f.properties.jenis_produk);
+        const sub = getUmkmSubCategory(
+          f.properties.jenis_produk,
+          f.properties.nama_usaha || f.properties.nama,
+          f.properties.deskripsi
+        );
         counts[sub.slug] = (counts[sub.slug] || 0) + 1;
       }
     });
@@ -77,7 +81,7 @@ export default function PotensiPage() {
     }
 
     return data.features.filter((feature) => {
-      const { kategori, nama, nama_usaha, jenis_produk } = feature.properties;
+      const { kategori, nama, nama_usaha, jenis_produk, deskripsi } = feature.properties;
 
       if (activeTab !== "semua" && kategori !== activeTab) {
         return false;
@@ -85,7 +89,11 @@ export default function PotensiPage() {
 
       // Filter by UMKM sub-category if activeTab is umkm and a sub-tab is chosen
       if (activeTab === "umkm" && umkmSubTab !== "semua") {
-        const sub = getUmkmSubCategory(jenis_produk);
+        const sub = getUmkmSubCategory(
+          jenis_produk,
+          nama_usaha || nama,
+          deskripsi
+        );
         if (sub.slug !== umkmSubTab) {
           return false;
         }

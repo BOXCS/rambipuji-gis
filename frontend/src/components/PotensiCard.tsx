@@ -38,7 +38,11 @@ function getCardDescription(properties: Record<string, any>, title: string): str
     if (hasil_panen) parts.push(`Hasil: ${hasil_panen}`);
     if (nama_pemilik) parts.push(`Pemilik: ${nama_pemilik}`);
   } else if (kategori === "umkm") {
-    const subCat = getUmkmSubCategory(jenis_produk);
+    const subCat = getUmkmSubCategory(
+      jenis_produk,
+      properties.nama_usaha || properties.nama,
+      deskripsi
+    );
     parts.push(`Sektor: ${subCat.label}`);
     if (nama_pemilik) parts.push(`Pemilik: ${nama_pemilik}`);
     if (jam_operasional) parts.push(`Jam: ${jam_operasional}`);
@@ -97,7 +101,13 @@ export default function PotensiCard({ feature }: PotensiCardProps) {
           </div>
           {kategori === "umkm" && (
             <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-amber-950/85 text-amber-200 border border-amber-400/30 backdrop-blur-md shadow-xs">
-              {getUmkmSubCategory(feature.properties.jenis_produk).label}
+              {
+                getUmkmSubCategory(
+                  feature.properties.jenis_produk,
+                  feature.properties.nama_usaha || feature.properties.nama,
+                  feature.properties.deskripsi
+                ).label
+              }
             </span>
           )}
         </div>

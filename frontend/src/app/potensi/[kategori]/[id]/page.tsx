@@ -160,7 +160,7 @@ export default async function PotensiDetailPage({
   if (luas_ha !== undefined && luas_ha !== null)
     attributes.push({ label: "Luas Lahan", value: `${luas_ha} Ha` });
   if (kategori === "umkm") {
-    const subCat = getUmkmSubCategory(jenis_produk);
+    const subCat = getUmkmSubCategory(jenis_produk, nama_usaha || nama, deskripsi);
     attributes.push({ label: "Sub Kategori", value: subCat.label });
     if (
       jenis_produk &&

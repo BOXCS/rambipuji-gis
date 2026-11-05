@@ -109,6 +109,7 @@ export default function AdminEditPage() {
   const [musimTanam, setMusimTanam] = useState<string>("");
 
   const [jenisProduk, setJenisProduk] = useState<string>("");
+  const [legacyJenisProduk, setLegacyJenisProduk] = useState<string | null>(null);
   const [jamOperasional, setJamOperasional] = useState<string>("");
 
   const [jamKunjungan, setJamKunjungan] = useState<string>("");
@@ -203,7 +204,25 @@ export default function AdminEditPage() {
         setLuasHa(String(p.luas_ha));
       if (p.musim_tanam) setMusimTanam(p.musim_tanam);
 
-      if (p.jenis_produk) setJenisProduk(p.jenis_produk);
+      if (kategori === "umkm") {
+        const rawJenis = p.jenis_produk || "";
+        const resolved = getUmkmSubCategory(
+          rawJenis,
+          p.nama_usaha || p.nama,
+          p.deskripsi
+        );
+        setJenisProduk(resolved.label);
+        if (
+          rawJenis &&
+          !UMKM_SUB_CATEGORIES.some(
+            (c) => c.label.toLowerCase() === rawJenis.trim().toLowerCase()
+          )
+        ) {
+          setLegacyJenisProduk(rawJenis);
+        }
+      } else if (p.jenis_produk) {
+        setJenisProduk(p.jenis_produk);
+      }
       if (p.jam_operasional) setJamOperasional(p.jam_operasional);
 
       setJamKunjungan(p.jam_kunjungan || "08:00 - 17:00");
@@ -543,12 +562,11 @@ export default function AdminEditPage() {
                     Sub Kategori UMKM *
                   </label>
                   <select
-                    value={
-                      jenisProduk
-                        ? getUmkmSubCategory(jenisProduk).label
-                        : "Olahan Pangan"
-                    }
-                    onChange={(e) => setJenisProduk(e.target.value)}
+                    value={jenisProduk || "Olahan Pangan"}
+                    onChange={(e) => {
+                      setJenisProduk(e.target.value);
+                      setLegacyJenisProduk(null);
+                    }}
                     className="w-full px-3 py-2 text-sm border border-[--border-default] rounded-lg focus:outline-none focus:border-[--color-primary] bg-white font-medium text-slate-800"
                   >
                     {UMKM_SUB_CATEGORIES.map((cat) => (
@@ -557,19 +575,16 @@ export default function AdminEditPage() {
                       </option>
                     ))}
                   </select>
-                  {jenisProduk &&
-                    !UMKM_SUB_CATEGORIES.some(
-                      (c) => c.label.toLowerCase() === jenisProduk.toLowerCase()
-                    ) && (
-                      <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
-                        Data lama di database: <strong>&ldquo;{jenisProduk}&rdquo;</strong>.
-                        Sistem otomatis memetakannya ke sub-kategori{" "}
-                        <span className="font-bold underline">
-                          {getUmkmSubCategory(jenisProduk).label}
-                        </span>
-                        . Klik Simpan untuk memperbarui secara permanen.
-                      </div>
-                    )}
+                  {legacyJenisProduk && (
+                    <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
+                      Data awal di database: <strong>&ldquo;{legacyJenisProduk}&rdquo;</strong>.
+                      Sistem telah memetakan ke sub-kategori{" "}
+                      <span className="font-bold underline">
+                        {jenisProduk}
+                      </span>
+                      . Klik Simpan untuk memperbarui secara permanen.
+                    </div>
+                  )}
                   <p className="text-[11px] text-[--text-muted]">
                     Pilih sub-kategori untuk pengelompokan dan penyaringan di Katalog Potensi publik.
                   </p>
