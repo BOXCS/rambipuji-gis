@@ -3,6 +3,7 @@
 import {
   Building2,
   FileText,
+  KeyRound,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -10,6 +11,7 @@ import {
   Store,
   Upload,
   User,
+  Users,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -44,31 +46,49 @@ export default function AdminLayoutClient({
       href: "/admin/dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
+      superadminOnly: false,
     },
     {
       href: "/admin/data/umkm",
       label: "UMKM",
       icon: Store,
+      superadminOnly: false,
     },
     {
       href: "/admin/data/wisata",
       label: "Wisata",
       icon: Mountain,
+      superadminOnly: false,
     },
     {
       href: "/admin/data/infrastruktur",
       label: "Infrastruktur",
       icon: Building2,
+      superadminOnly: false,
     },
     {
       href: "/admin/import",
       label: "Import Shapefile",
       icon: Upload,
+      superadminOnly: false,
     },
     {
       href: "/admin/tentang",
       label: "Profil Desa",
       icon: FileText,
+      superadminOnly: false,
+    },
+    {
+      href: "/admin/akun",
+      label: "Akun Admin",
+      icon: Users,
+      superadminOnly: true,
+    },
+    {
+      href: "/admin/ganti-password",
+      label: "Ganti Password",
+      icon: KeyRound,
+      superadminOnly: false,
     },
   ];
 
@@ -85,6 +105,8 @@ export default function AdminLayoutClient({
     if (pathname.includes("/data/infrastruktur")) return "Data Infrastruktur";
     if (pathname === "/admin/import") return "Import Shapefile";
     if (pathname === "/admin/tentang") return "Profil Desa";
+    if (pathname.startsWith("/admin/akun")) return "Manajemen Akun";
+    if (pathname === "/admin/ganti-password") return "Ganti Password";
     return "Admin Panel";
   };
 
@@ -137,8 +159,9 @@ export default function AdminLayoutClient({
         {/* Navigation */}
         <nav className="p-3 space-y-1 flex-grow overflow-y-auto">
           {navItems.map((item) => {
+            if (item.superadminOnly && user?.role !== "superadmin") return null;
             const Icon = item.icon;
-            const active = pathname === item.href;
+            const active = pathname === item.href || (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
             return (
               <Link
                 key={item.href}

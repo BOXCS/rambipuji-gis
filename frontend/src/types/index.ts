@@ -113,3 +113,31 @@ export interface AdminUser {
   email: string;
   role: "superadmin" | "operator";
 }
+
+// Admin Account Management
+export interface AdminAccountData {
+  id: number;
+  username: string;
+  email: string;
+  role: "superadmin" | "operator";
+  is_active: boolean;
+  date_joined: string;
+  last_login: string | null;
+}
+
+export interface AdminAccountCreatePayload {
+  username: string;
+  email?: string;
+  role: "operator" | "superadmin";
+  password: string;
+  confirm_password: string;
+}
+
+export interface AdminAccountUpdatePayload {
+  username: string;
+  email?: string;
+  role: "operator" | "superadmin";
+  is_active: boolean;
+  new_password?: string;
+  confirm_new_password?: string;
+}

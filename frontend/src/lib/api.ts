@@ -1,4 +1,7 @@
 import type {
+  AdminAccountCreatePayload,
+  AdminAccountData,
+  AdminAccountUpdatePayload,
   AdminUser,
   AuthToken,
   DesaProfile,
@@ -325,4 +328,89 @@ export async function adminUpdateDesaProfile(
   }
   const data = await res.json();
   return (data as { data: DesaProfile }).data;
+}
+
+// Admin Account Management endpoints (superadmin only)
+
+export async function adminListAccounts(
+  token: string
+): Promise<AdminAccountData[]> {
+  const response = await fetchAPI<{ status: string; data: AdminAccountData[] }>(
+    "admin/akun/",
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return response.data;
+}
+
+export async function adminCreateAccount(
+  payload: AdminAccountCreatePayload,
+  token: string
+): Promise<AdminAccountData> {
+  const response = await fetchAPI<{ status: string; data: AdminAccountData }>(
+    "admin/akun/",
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(payload),
+    }
+  );
+  return response.data;
+}
+
+export async function adminGetAccount(
+  id: number,
+  token: string
+): Promise<AdminAccountData> {
+  const response = await fetchAPI<{ status: string; data: AdminAccountData }>(
+    `admin/akun/${id}/`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return response.data;
+}
+
+export async function adminUpdateAccount(
+  id: number,
+  payload: AdminAccountUpdatePayload,
+  token: string
+): Promise<AdminAccountData> {
+  const response = await fetchAPI<{ status: string; data: AdminAccountData }>(
+    `admin/akun/${id}/`,
+    {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(payload),
+    }
+  );
+  return response.data;
+}
+
+export async function adminDeleteAccount(
+  id: number,
+  token: string
+): Promise<void> {
+  await fetchAPI<void>(`admin/akun/${id}/`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function adminChangeOwnPassword(
+  currentPassword: string,
+  newPassword: string,
+  confirmNewPassword: string,
+  token: string
+): Promise<void> {
+  await fetchAPI<void>("admin/akun/me/password/", {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+      confirm_new_password: confirmNewPassword,
+    }),
+  });
 }
