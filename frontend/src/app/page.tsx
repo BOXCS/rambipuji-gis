@@ -331,10 +331,10 @@ export default async function HomePage() {
               </div>
               <div className="text-xs leading-snug">
                 <strong className="block text-[--text-primary] font-semibold">
-                  Sentra Tempe Warga
+                  Gumuk Gong
                 </strong>
                 <span className="text-[--text-muted]">
-                  Tradisi kuliner khas yang diakui luas
+                  Destinasi wisata yang diakui luas
                 </span>
               </div>
             </div>
