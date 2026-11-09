@@ -8,7 +8,8 @@
  * createPinIcon / createDotIcon functions are safe to define here.
  *
  * Layer strategy:
- *  - WMS tiles: batas_wilayah (always), wisata polygon areas
+ *  - WMS tiles: batas_wilayah (always)
+ *  - GeoJSON polygon layers: all POLYGON features for active categories
  *  - GeoJSON pin markers: all POINT features for active categories
  *  - UMKM + Infrastruktur: pin markers only (always Point geometry)
  */
@@ -78,12 +79,6 @@ export interface MapContainerInnerProps {
   potensiData?: PotensiCollection;
 }
 
-// CQL filter to show only polygon-type geometries in WMS tiles.
-// This prevents double-rendering on point features that also have
-// a pin marker drawn from GeoJSON.
-const POLYGON_CQL =
-  "strGeometryType(geom)='Polygon' OR strGeometryType(geom)='MultiPolygon'";
-
 export default function MapContainerInner({
   activeLayers,
   onFeatureClick,
@@ -118,15 +113,22 @@ export default function MapContainerInner({
     POINT_TYPES.has(f.geometry.type)
   );
 
+  // Polygon features → rendered as interactive vector polygons
+  const POLYGON_TYPES = new Set(["Polygon", "MultiPolygon"]);
+  const polygonFeatures = visibleFeatures.filter((f) =>
+    POLYGON_TYPES.has(f.geometry.type)
+  );
+
   // ── Click handler factory ────────────────────────────────────────────────
 
   function makeClickHandler(feature: PotensiFeature) {
     return (e: L.LeafletMouseEvent) => {
       L.DomEvent.stopPropagation(e);
-      const layer = e.target as L.Marker;
-      // Use the marker's own latlng for accurate popup placement
+      const layer = e.target as L.Marker | L.Path;
+      // Use the layer's or event target's map for accurate popup placement
       const map: L.Map | undefined =
-        (layer as unknown as { _map?: L.Map })._map;
+        (layer as unknown as { _map?: L.Map })?._map ||
+        (e.target as unknown as { _map?: L.Map })?._map;
       const latlng =
         feature.geometry.type === "Point"
           ? L.latLng(
@@ -143,10 +145,10 @@ export default function MapContainerInner({
 
   /**
    * MapFocusController ensures that when the page is loaded/reloaded, the map
-   * immediately centers and focuses on the active pinpoints.
+   * immediately centers and focuses on all active features (points and polygons).
    *
-   * It computes the bounds of the point features and accounts for the desktop
-   * LayerToggle sidebar (top-left) using paddingTopLeft so pinpoints are
+   * It computes the bounds of visible features and accounts for the desktop
+   * LayerToggle sidebar (top-left) using paddingTopLeft so features are
    * comfortably centered in the visible map canvas.
    */
   function MapFocusController() {
@@ -155,14 +157,27 @@ export default function MapContainerInner({
 
     useEffect(() => {
       if (hasFocusedRef.current) return;
-      if (!pointFeatures || pointFeatures.length === 0) return;
+      if (!visibleFeatures || visibleFeatures.length === 0) return;
 
       const latLngs: [number, number][] = [];
-      for (const f of pointFeatures) {
-        if (f.geometry && f.geometry.type === "Point") {
+      for (const f of visibleFeatures) {
+        if (!f.geometry) continue;
+        if (f.geometry.type === "Point") {
           const coords = f.geometry.coordinates as [number, number];
           // GeoJSON coordinate order is [longitude, latitude]
           latLngs.push([coords[1], coords[0]]);
+        } else if (f.geometry.type === "Polygon") {
+          const coords = f.geometry.coordinates as [number, number][][];
+          for (const pt of coords[0] || []) {
+            latLngs.push([pt[1], pt[0]]);
+          }
+        } else if (f.geometry.type === "MultiPolygon") {
+          const coords = f.geometry.coordinates as [number, number][][][];
+          for (const poly of coords || []) {
+            for (const pt of poly[0] || []) {
+              latLngs.push([pt[1], pt[0]]);
+            }
+          }
         }
       }
 
@@ -230,7 +245,8 @@ export default function MapContainerInner({
             layer.on("click", (e: L.LeafletMouseEvent) => {
               L.DomEvent.stopPropagation(e);
               const map =
-                (layer as unknown as { _map?: L.Map })._map || e.target._map;
+                (layer as unknown as { _map?: L.Map })._map ||
+                (e.target as unknown as { _map?: L.Map })._map;
               const point = map
                 ? map.latLngToContainerPoint(e.latlng)
                 : { x: 0, y: 0 };
@@ -243,17 +259,52 @@ export default function MapContainerInner({
         />
       )}
 
-      {/* ── Wisata WMS — polygon areas only (CQL excludes points) ───────── */}
-      {activeLayers.has("wisata") && (
-        <WMSTileLayer
-          key="wisata_polygon_wms"
-          url={getWMSUrl()}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          {...({...getWMSParams(LAYER_NAMES["wisata"]), CQL_FILTER: POLYGON_CQL} as any)}
-          opacity={0.5}
-          zIndex={2}
-        />
-      )}
+      {/*
+       * ── Vector polygons for POLYGON features ───────────────────────────
+       *
+       * Rendered directly via GeoJSON vector layers so they are:
+       * 1. 100% in sync with the database and immediately appear when input via CMS
+       * 2. Interactive with hover highlighting and click-to-open MarkerPopup
+       * 3. Consistently styled with the category color theme
+       */}
+      {polygonFeatures.map((feature) => {
+        const kategori = feature.properties.kategori as KategoriSlug;
+        const color = CATEGORY_COLORS[kategori] ?? "#0284C7";
+        const featureId = feature.id ?? feature.properties?.id ?? Math.random();
+
+        return (
+          <GeoJSON
+            key={`poly-${kategori}-${featureId}`}
+            data={feature as unknown as GeoJSON.Feature}
+            style={() => ({
+              color: color,
+              weight: 2.5,
+              opacity: 0.9,
+              fillColor: color,
+              fillOpacity: 0.35,
+            })}
+            onEachFeature={(_feat, layer) => {
+              layer.on({
+                click: makeClickHandler(feature),
+                mouseover: (e: L.LeafletMouseEvent) => {
+                  const target = e.target as L.Path;
+                  target.setStyle({
+                    weight: 3.5,
+                    fillOpacity: 0.55,
+                  });
+                },
+                mouseout: (e: L.LeafletMouseEvent) => {
+                  const target = e.target as L.Path;
+                  target.setStyle({
+                    weight: 2.5,
+                    fillOpacity: 0.35,
+                  });
+                },
+              });
+            }}
+          />
+        );
+      })}
 
       {/*
        * ── Pin markers for POINT features ────────────────────────────────
@@ -280,7 +331,7 @@ export default function MapContainerInner({
             pointToLayer={(_feat, latlng) =>
               L.marker(latlng, {
                 icon: createPinIcon(kategori),
-                // Pins must appear above WMS polygon tiles
+                // Pins must appear above polygon vector layers
                 zIndexOffset: 200,
               })
             }

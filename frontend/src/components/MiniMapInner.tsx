@@ -90,6 +90,22 @@ export default function MiniMapInner({ feature, boundaryFeature }: MiniMapInnerP
           />
         )}
 
+        {/* Feature polygon overlay if feature has Polygon or MultiPolygon geometry */}
+        {feature &&
+          (feature.geometry.type === "Polygon" ||
+            feature.geometry.type === "MultiPolygon") && (
+            <GeoJSON
+              key={`minimap-poly-${feature.id || feature.properties?.id || "poly"}`}
+              data={feature as unknown as GeoJSON.Feature}
+              style={() => ({
+                color: "var(--color-primary)",
+                weight: 2,
+                fillColor: "var(--color-primary)",
+                fillOpacity: 0.25,
+              })}
+            />
+          )}
+
         {/* Balai Desa Rambipuji point marker */}
         <Marker position={pointLocation}>
           <Popup>
