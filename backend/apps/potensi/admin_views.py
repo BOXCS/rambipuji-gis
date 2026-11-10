@@ -109,7 +109,8 @@ class AdminPotensiListCreateView(APIView):
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
             # Optimize before saving
-            request.FILES["foto"] = optimize_image(foto_file)
+            foto_file = optimize_image(foto_file)
+            request.FILES["foto"] = foto_file
 
         # ── Validate & save multiple foto_list files ──
         foto_list_files = request.FILES.getlist("foto_list")
@@ -226,7 +227,8 @@ class AdminPotensiDetailUpdateDeleteView(APIView):
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
             # Optimize before saving
-            request.FILES["foto"] = optimize_image(foto_file)
+            foto_file = optimize_image(foto_file)
+            request.FILES["foto"] = foto_file
 
         # ── Validate & save multiple foto_list files ──
         foto_list_files = request.FILES.getlist("foto_list")

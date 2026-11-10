@@ -515,7 +515,9 @@ class DesaProfileSerializer(serializers.ModelSerializer):
     def to_internal_value(self, data):
         import json
 
-        data_dict = data.copy() if hasattr(data, "copy") else dict(data)
+        # Avoid QueryDict.copy() which performs copy.deepcopy() and crashes on file handles
+        # with "TypeError: cannot pickle '_io.BufferedRandom' object".
+        data_dict = {k: v for k, v in data.items()} if hasattr(data, "items") else dict(data)
         if "misi" in data_dict:
             if hasattr(data, "getlist"):
                 raw_misi_list = data.getlist("misi")
