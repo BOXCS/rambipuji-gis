@@ -2,6 +2,7 @@
 
 import {
   Building2,
+  ExternalLink,
   FileText,
   KeyRound,
   LayoutDashboard,
@@ -40,6 +41,18 @@ export default function AdminLayoutClient({
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
+
+  // Lock scroll background saat sidebar drawer terbuka di mobile/tablet
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   const navItems = [
     {
@@ -99,10 +112,26 @@ export default function AdminLayoutClient({
 
   const getPageTitle = () => {
     if (pathname === "/admin/dashboard") return "Dashboard";
-    if (pathname.includes("/data/pertanian")) return "Data Pertanian";
-    if (pathname.includes("/data/umkm")) return "Data UMKM";
-    if (pathname.includes("/data/wisata")) return "Data Wisata";
-    if (pathname.includes("/data/infrastruktur")) return "Data Infrastruktur";
+    if (pathname.includes("/data/pertanian")) {
+      if (pathname.includes("/tambah")) return "Tambah Pertanian";
+      if (pathname.includes("/edit")) return "Edit Pertanian";
+      return "Data Pertanian";
+    }
+    if (pathname.includes("/data/umkm")) {
+      if (pathname.includes("/tambah")) return "Tambah UMKM";
+      if (pathname.includes("/edit")) return "Edit UMKM";
+      return "Data UMKM";
+    }
+    if (pathname.includes("/data/wisata")) {
+      if (pathname.includes("/tambah")) return "Tambah Wisata";
+      if (pathname.includes("/edit")) return "Edit Wisata";
+      return "Data Wisata";
+    }
+    if (pathname.includes("/data/infrastruktur")) {
+      if (pathname.includes("/tambah")) return "Tambah Infrastruktur";
+      if (pathname.includes("/edit")) return "Edit Infrastruktur";
+      return "Data Infrastruktur";
+    }
     if (pathname === "/admin/import") return "Import Shapefile";
     if (pathname === "/admin/tentang") return "Profil Desa";
     if (pathname.startsWith("/admin/akun")) return "Manajemen Akun";
@@ -131,8 +160,12 @@ export default function AdminLayoutClient({
         }`}
       >
         {/* Top Branding */}
-        <div className="h-16 px-4 flex items-center justify-between border-b border-[--border-default]">
-          <div className="flex items-center space-x-2.5">
+        <div className="h-16 px-4 flex items-center justify-between border-b border-[--border-default] bg-white">
+          <Link
+            href="/admin/dashboard"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center space-x-2.5 focus:outline-none"
+          >
             <Image
               src="/logo-kabupaten-jember.png"
               alt="Logo Kabupaten Jember"
@@ -140,16 +173,21 @@ export default function AdminLayoutClient({
               height={32}
               className="w-8 h-8 object-contain flex-shrink-0"
             />
-            <span className="font-bold text-[--text-primary] text-sm">
-              Admin Panel
-            </span>
-          </div>
+            <div>
+              <span className="font-bold text-[--text-primary] text-sm block leading-tight">
+                Admin Panel
+              </span>
+              <span className="text-[10px] text-[--text-muted] block">
+                GIS Desa Rambipuji
+              </span>
+            </div>
+          </Link>
 
           {/* Tombol Tutup Sidebar untuk Mobile */}
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-1.5 rounded-lg text-[--text-secondary] hover:bg-gray-100 lg:hidden"
+            className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 lg:hidden transition"
             aria-label="Tutup Menu"
           >
             <X className="w-5 h-5" />
@@ -161,11 +199,14 @@ export default function AdminLayoutClient({
           {navItems.map((item) => {
             if (item.superadminOnly && user?.role !== "superadmin") return null;
             const Icon = item.icon;
-            const active = pathname === item.href || (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
+            const active =
+              pathname === item.href ||
+              (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`w-full px-3.5 py-3 rounded-lg flex items-center space-x-3 text-sm font-medium transition ${
                   active
                     ? "bg-[--color-primary-subtle] text-[--color-primary] font-semibold"
@@ -183,14 +224,24 @@ export default function AdminLayoutClient({
           })}
         </nav>
 
-        {/* Bottom Logout Action */}
-        <div className="p-3 border-t border-[--border-default]">
+        {/* Bottom Actions */}
+        <div className="p-3 border-t border-[--border-default] space-y-1 bg-white">
+          <Link
+            href="/peta"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full px-3.5 py-2.5 rounded-lg flex items-center space-x-3 text-sm font-medium text-[--text-secondary] hover:bg-gray-100 hover:text-[--text-primary] transition"
+          >
+            <ExternalLink className="w-4 h-4 text-[--text-muted] flex-shrink-0" />
+            <span className="truncate">Lihat Peta Publik</span>
+          </Link>
+
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full px-3.5 py-2.5 rounded-lg flex items-center space-x-3 text-sm font-medium text-[--text-secondary] hover:bg-red-50 hover:text-red-600 transition"
+            className="w-full px-3.5 py-2.5 rounded-lg flex items-center space-x-3 text-sm font-medium text-red-600 hover:bg-red-50 transition"
           >
-            <LogOut className="w-4 h-4 text-[--text-muted] flex-shrink-0" />
+            <LogOut className="w-4 h-4 text-red-500 flex-shrink-0" />
             <span>Keluar</span>
           </button>
         </div>
@@ -205,10 +256,10 @@ export default function AdminLayoutClient({
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 -ml-2 rounded-lg text-[--text-secondary] hover:bg-gray-100 lg:hidden"
+              className="p-2 -ml-1 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700 lg:hidden flex items-center justify-center shadow-xs transition active:scale-95 focus:outline-none focus:ring-2 focus:ring-[--color-primary]"
               aria-label="Buka Menu Admin"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-5 h-5 text-gray-700" />
             </button>
             <h1 className="text-base sm:text-lg font-semibold text-[--text-primary] truncate">
               {getPageTitle()}
